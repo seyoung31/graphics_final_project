@@ -1,0 +1,213 @@
+{
+	"archive" : {},
+	"artifacts" : 
+	[
+		{
+			"path" : "libStaticGLEW.a"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"include_directories"
+		],
+		"files" : 
+		[
+			"CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 54,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 24,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 55,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-Wno-deprecated-volatile -g -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX26.0.sdk -fcolor-diagnostics"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"path" : "/Users/max/BrownCS/cs1230/proj5-msmithstern/build/build-projects_realtime-Qt_6_9_2_for_macOS-Debug"
+				},
+				{
+					"path" : "/Users/max/BrownCS/cs1230/proj5-msmithstern"
+				},
+				{
+					"backtrace" : 0,
+					"path" : "/Users/max/BrownCS/cs1230/proj5-msmithstern/build/build-projects_realtime-Qt_6_9_2_for_macOS-Debug/StaticGLEW_autogen/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/Users/max/BrownCS/cs1230/proj5-msmithstern/src"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "/Users/max/BrownCS/cs1230/proj5-msmithstern/projects_realtime"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "/Users/max/BrownCS/cs1230/proj5-msmithstern/PRIVATE"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "/Users/max/BrownCS/cs1230/proj5-msmithstern/glew/include"
+				}
+			],
+			"language" : "CXX",
+			"languageStandard" : 
+			{
+				"backtraces" : 
+				[
+					1
+				],
+				"standard" : "20"
+			},
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX26.0.sdk -fcolor-diagnostics"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"path" : "/Users/max/BrownCS/cs1230/proj5-msmithstern/build/build-projects_realtime-Qt_6_9_2_for_macOS-Debug"
+				},
+				{
+					"path" : "/Users/max/BrownCS/cs1230/proj5-msmithstern"
+				},
+				{
+					"backtrace" : 0,
+					"path" : "/Users/max/BrownCS/cs1230/proj5-msmithstern/build/build-projects_realtime-Qt_6_9_2_for_macOS-Debug/StaticGLEW_autogen/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/Users/max/BrownCS/cs1230/proj5-msmithstern/src"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "/Users/max/BrownCS/cs1230/proj5-msmithstern/projects_realtime"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "/Users/max/BrownCS/cs1230/proj5-msmithstern/PRIVATE"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "/Users/max/BrownCS/cs1230/proj5-msmithstern/glew/include"
+				}
+			],
+			"language" : "C",
+			"sourceIndexes" : 
+			[
+				1
+			]
+		}
+	],
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 0,
+			"id" : "StaticGLEW_autogen::@6890427a1f51a3e7e1df"
+		},
+		{
+			"id" : "StaticGLEW_autogen_timestamp_deps::@6890427a1f51a3e7e1df"
+		}
+	],
+	"id" : "StaticGLEW::@6890427a1f51a3e7e1df",
+	"name" : "StaticGLEW",
+	"nameOnDisk" : "libStaticGLEW.a",
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0,
+				1
+			]
+		},
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				2
+			]
+		},
+		{
+			"name" : "CMake Rules",
+			"sourceIndexes" : 
+			[
+				3
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 0,
+			"compileGroupIndex" : 0,
+			"isGenerated" : true,
+			"path" : "build/build-projects_realtime-Qt_6_9_2_for_macOS-Debug/StaticGLEW_autogen/mocs_compilation.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "glew/src/glew.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/build-projects_realtime-Qt_6_9_2_for_macOS-Debug/StaticGLEW_autogen/timestamp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/build-projects_realtime-Qt_6_9_2_for_macOS-Debug/StaticGLEW_autogen/timestamp.rule",
+			"sourceGroupIndex" : 2
+		}
+	],
+	"type" : "STATIC_LIBRARY"
+}
