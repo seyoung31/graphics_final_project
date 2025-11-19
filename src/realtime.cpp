@@ -101,7 +101,10 @@ void Realtime::initializeGL() {
 
     m_shader = ShaderLoader::createShaderProgram(":/resources/shaders/default.vert",":/resources/shaders/default.frag");
 
-
+    std::cout<<"gets here"<<std::endl;
+    Particles particle;
+    particle.print();
+    std::cout<<"and here"<<std::endl;
 
     Sphere sphere;
     sphere.updateParams(settings.shapeParameter1, settings.shapeParameter2);
@@ -122,6 +125,9 @@ void Realtime::initializeGL() {
     cylinder.updateParams(settings.shapeParameter1, settings.shapeParameter2);
     m_cylinder.vertex_data = cylinder.generateShape();
     initGLShape(m_cylinder, m_cylinder.vertex_data);
+
+
+
 
 }
 
@@ -152,6 +158,7 @@ void Realtime::initGLShape(GLData &shape, std::vector<float> &data)
 
 void Realtime::paintGL() {
     // Students: anything requiring OpenGL calls every frame should be done here
+
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(m_shader);

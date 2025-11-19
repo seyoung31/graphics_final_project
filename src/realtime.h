@@ -18,6 +18,7 @@
 #include "shapes/Cone.h"
 #include "camera/camera.h"
 #include "shader.h"
+#include "particles/particles.h"
 
 struct GLShape {
     glm::mat4 model;
