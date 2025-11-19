@@ -1,0 +1,4 @@
+set(__QT_DEPLOY_TARGET_final_project_FILE /Users/max/BrownCS/cs1230/graphics_final_project/build/final_project)
+set(__QT_DEPLOY_TARGET_final_project_TYPE EXECUTABLE)
+set(__QT_DEPLOY_TARGET_StaticGLEW_FILE /Users/max/BrownCS/cs1230/graphics_final_project/build/libStaticGLEW.a)
+set(__QT_DEPLOY_TARGET_StaticGLEW_TYPE STATIC_LIBRARY)

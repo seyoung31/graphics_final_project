@@ -37,6 +37,7 @@ add_executable(${PROJECT_NAME}
     src/settings.cpp
     src/utils/scenefilereader.cpp
     src/utils/sceneparser.cpp
+    src/particles/particles.cpp
 
     src/mainwindow.h
     src/realtime.h
