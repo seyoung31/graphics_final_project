@@ -10,15 +10,20 @@ public:
     std::vector<float> generateShape() { return m_vertexData; }
 
 private:
+
     void insertVec3(std::vector<float> &data, glm::vec3 v);
     void setVertexData();
+    void makeCapTile(glm::vec3 topLeft,
+                     glm::vec3 topRight,
+                     glm::vec3 bottomLeft,
+                     glm::vec3 bottomRight);
     void makeCapSlice(float currentTheta, float nextTheta);
-    void makeCapTile(glm::vec3 outerA,
-                           glm::vec3 outerB,
-                           glm::vec3 innerA,
-                           glm::vec3 innerB,
-                     const glm::vec3& desiredNormal);
-    glm::vec3 calcNorm(glm::vec3& pt);
+    void makeSlopeTile(glm::vec3 topLeft,
+                       glm::vec3 topRight,
+                       glm::vec3 bottomLeft,
+                       glm::vec3 bottomRight,
+                       glm::vec3 nTL, glm::vec3 nTR,
+                       glm::vec3 nBL, glm::vec3 nBR);
     void makeSlopeSlice(float currentTheta, float nextTheta);
     void makeWedge(float currentTheta, float nextTheta);
 

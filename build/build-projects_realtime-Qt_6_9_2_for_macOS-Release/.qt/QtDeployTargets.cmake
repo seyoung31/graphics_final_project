@@ -1,4 +1,0 @@
-set(__QT_DEPLOY_TARGET_projects_realtime_FILE /Users/max/BrownCS/cs1230/proj5-msmithstern/build/build-projects_realtime-Qt_6_9_2_for_macOS-Release/projects_realtime)
-set(__QT_DEPLOY_TARGET_projects_realtime_TYPE EXECUTABLE)
-set(__QT_DEPLOY_TARGET_StaticGLEW_FILE /Users/max/BrownCS/cs1230/proj5-msmithstern/build/build-projects_realtime-Qt_6_9_2_for_macOS-Release/libStaticGLEW.a)
-set(__QT_DEPLOY_TARGET_StaticGLEW_TYPE STATIC_LIBRARY)

@@ -1,4 +1,4 @@
-# Install script for directory: /Users/max/BrownCS/cs1230/proj5-msmithstern
+# Install script for directory: /Users/seyoungjang/Desktop/csci_1230/proj6
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,7 +39,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/Users/max/BrownCS/cs1230/proj5-msmithstern/build/build-projects_realtime-Qt_6_9_2_for_macOS-Debug/glm/cmake_install.cmake")
+  include("/Users/seyoungjang/Desktop/csci_1230/proj6/build/build-projects_realtime-Qt_6_9_2_for_macOS-Debug/glm/cmake_install.cmake")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)
@@ -57,6 +57,6 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-  file(WRITE "/Users/max/BrownCS/cs1230/proj5-msmithstern/build/build-projects_realtime-Qt_6_9_2_for_macOS-Debug/${CMAKE_INSTALL_MANIFEST}"
+  file(WRITE "/Users/seyoungjang/Desktop/csci_1230/proj6/build/build-projects_realtime-Qt_6_9_2_for_macOS-Debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()

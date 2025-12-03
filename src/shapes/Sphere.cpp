@@ -1,9 +1,10 @@
-#include "Sphere.h"
-#include "numbers"
+#include "sphere.h"
+#include <glm/gtc/constants.hpp>
+
 void Sphere::updateParams(int param1, int param2) {
     m_vertexData = std::vector<float>();
-    m_param1 = param1;
-    m_param2 = param2;;
+    m_param1 = std::max(2, param1);
+    m_param2 = std::max(3, param2);
     setVertexData();
 }
 
@@ -11,102 +12,57 @@ void Sphere::makeTile(glm::vec3 topLeft,
                       glm::vec3 topRight,
                       glm::vec3 bottomLeft,
                       glm::vec3 bottomRight) {
-    // Task 5: Implement the makeTile() function for a Sphere
-    // Note: this function is very similar to the makeTile() function for Cube,
-    //       but the normals are calculated in a different way!
 
-    insertVec3(m_vertexData, topLeft);
-    insertVec3(m_vertexData, glm::normalize(topLeft));
+    insertVec3(m_vertexData, topLeft); insertVec3(m_vertexData, glm::normalize(topLeft));
+    insertVec3(m_vertexData, bottomLeft); insertVec3(m_vertexData, glm::normalize(bottomLeft));
+    insertVec3(m_vertexData, bottomRight); insertVec3(m_vertexData, glm::normalize(bottomRight));
 
-    insertVec3(m_vertexData, bottomLeft);
-    insertVec3(m_vertexData, glm::normalize(bottomLeft));
+    insertVec3(m_vertexData, topLeft); insertVec3(m_vertexData, glm::normalize(topLeft));
+    insertVec3(m_vertexData, bottomRight); insertVec3(m_vertexData, glm::normalize(bottomRight));
+    insertVec3(m_vertexData, topRight); insertVec3(m_vertexData, glm::normalize(topRight));
+}
 
-    insertVec3(m_vertexData, bottomRight);
-    insertVec3(m_vertexData, glm::normalize(bottomRight));
-
-
-
-    insertVec3(m_vertexData, bottomRight);
-    insertVec3(m_vertexData, glm::normalize(bottomRight));
-
-    insertVec3(m_vertexData, topRight);
-    insertVec3(m_vertexData, glm::normalize(topRight));
-    insertVec3(m_vertexData, topLeft);
-    insertVec3(m_vertexData, glm::normalize(topLeft));
+static inline glm::vec3 sphericalPoint(float phi, float theta, float r=0.5f) {
+    return glm::vec3 { r * glm::sin(phi) * glm::cos(theta),
+                     r * glm::cos(phi),
+                     -r * glm::sin(phi) * glm::sin(theta) };
 }
 
 void Sphere::makeWedge(float currentTheta, float nextTheta) {
-    // Task 6: create a single wedge of the sphere using the
-    //         makeTile() function you implemented in Task 5
-    // Note: think about how param 1 comes into play here!
-    float radius = 0.5f;
-    float phiStep = glm::radians(180.f) / m_param1;  // divide from top to bottom
 
-    for (int i = 0; i < m_param1; i++) {
-        float phiTop = i * phiStep;
-        float phiBottom = (i + 1) * phiStep;
+    const int stacks = m_param1;
+    const float dphi = glm::pi<float>() / stacks;
 
-        // compute the 4 corner points for this tile
-        glm::vec3 topLeft(
-            radius * sin(phiTop) * cos(currentTheta),
-            radius * cos(phiTop),
-            -radius * sin(phiTop) * sin(currentTheta)
-            );
+    for (int i=0; i < stacks; ++i) {
+        float phi0 = i * dphi;
+        float phi1 = (i+1) * dphi;
 
-        glm::vec3 topRight(
-            radius * sin(phiTop) * cos(nextTheta),
-            radius * cos(phiTop),
-            -radius * sin(phiTop) * sin(nextTheta)
-            );
+        glm::vec3 tl = sphericalPoint(phi0, currentTheta);
+        glm::vec3 tr = sphericalPoint(phi0, nextTheta);
+        glm::vec3 bl = sphericalPoint(phi1, currentTheta);
+        glm::vec3 br = sphericalPoint(phi1, nextTheta);
 
-        glm::vec3 bottomLeft(
-            radius * sin(phiBottom) * cos(currentTheta),
-            radius * cos(phiBottom),
-            -radius * sin(phiBottom) * sin(currentTheta)
-            );
-
-        glm::vec3 bottomRight(
-            radius * sin(phiBottom) * cos(nextTheta),
-            radius * cos(phiBottom),
-            -radius * sin(phiBottom) * sin(nextTheta)
-            );
-
-        makeTile(topLeft, topRight, bottomLeft, bottomRight);
+        makeTile(tl, tr, bl, br);
     }
-
 }
 
 void Sphere::makeSphere() {
-    // Task 7: create a full sphere using the makeWedge() function you
-    //         implemented in Task 6
-    // Note: think about how param 2 comes into play here!
 
-    float thetaStep = glm::radians(360.f / m_param2);
+    const float thetaStep = glm::radians(360.f / m_param2);
 
-    for (int i = 0; i < m_param2; i++) {
-        float currentTheta = i * thetaStep;
-        float nextTheta = (i + 1) * thetaStep;
-        makeWedge(currentTheta, nextTheta);
+    for (int k=0; k < m_param2; ++k) {
+        float theta0 = k * thetaStep;
+        float theta1 = (k+1) * thetaStep;
+        makeWedge(theta0, theta1);
     }
+
 }
 
 void Sphere::setVertexData() {
-    // Uncomment these lines to make a wedge for Task 6, then comment them out for Task 7:
-
-    // float thetaStep = glm::radians(360.f / m_param2);
-    // float currentTheta = 0 * thetaStep;
-    // float nextTheta = 1 * thetaStep;
-    // makeWedge(currentTheta, nextTheta);
-
-
-
-    // Uncomment these lines to make sphere for Task 7:
-
+    m_vertexData.clear();
     makeSphere();
 }
 
-// Inserts a glm::vec3 into a vector of floats.
-// This will come in handy if you want to take advantage of vectors to build your shape!
 void Sphere::insertVec3(std::vector<float> &data, glm::vec3 v) {
     data.push_back(v.x);
     data.push_back(v.y);

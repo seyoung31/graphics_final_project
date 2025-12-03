@@ -7,7 +7,6 @@
 #include <GL/glew.h>
 #include <QFile>
 #include <QTextStream>
-#include <iostream>
 
 class ShaderLoader{
 public:

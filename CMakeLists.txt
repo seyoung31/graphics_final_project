@@ -26,17 +26,17 @@ include_directories(src)
 # Specifies .cpp and .h files to be passed to the compiler
 add_executable(${PROJECT_NAME}
     src/main.cpp
-    src/camera/camera.cpp
-    src/shapes/Sphere.cpp
-    src/shapes/Cube.cpp
-    src/shapes/Cone.cpp
-    src/shapes/Cylinder.cpp
-    src/shader.cpp
+
     src/realtime.cpp
     src/mainwindow.cpp
     src/settings.cpp
     src/utils/scenefilereader.cpp
     src/utils/sceneparser.cpp
+    src/shapes/cone.cpp
+    src/shapes/cube.cpp
+    src/shapes/sphere.cpp
+    src/shapes/cylinder.cpp
+    src/utils/shaderutils.cpp
 
     src/mainwindow.h
     src/realtime.h
@@ -46,13 +46,22 @@ add_executable(${PROJECT_NAME}
     src/utils/sceneparser.h
     src/utils/shaderloader.h
     src/utils/aspectratiowidget/aspectratiowidget.hpp
+    src/shapes/cone.h
+    src/shapes/cube.h
+    src/shapes/sphere.h 
+    src/shapes/cylinder.h
+    src/shaderloader.h
+    src/utils/shaderutils.h
+    src/postprocess.h src/postprocess.cpp
+
 )
 
 # GLM: this creates its library and allows you to `#include "glm/..."`
 add_subdirectory(glm)
 
 # GLEW: this creates its library and allows you to `#include "GL/glew.h"`
-add_library(StaticGLEW STATIC glew/src/glew.c)
+add_library(StaticGLEW STATIC glew/src/glew.c
+)
 include_directories(${PROJECT_NAME} PRIVATE glew/include)
 
 # Specifies libraries to be linked (Qt components, glew, etc)
@@ -72,6 +81,14 @@ qt6_add_resources(${PROJECT_NAME} "Resources"
     FILES
         resources/shaders/default.frag
         resources/shaders/default.vert
+	resources/shaders/texture.frag
+    	resources/shaders/texture.vert
+	resources/images/ac_day_lut_4x4.png
+	resources/images/ac_night_lut_4x4.png
+	resources/images/identity_lut_4x4.png
+	resources/images/teal_orange_lut_4x4.png
+	resources/images/noir_lut_4x4.png
+	resources/images/vaporwave_lut_4x4.png
 )
 
 # GLEW: this provides support for Windows (including 64-bit)

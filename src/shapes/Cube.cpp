@@ -1,5 +1,4 @@
-#include "Cube.h"
-#include "Triangle.h"
+#include "cube.h"
 
 void Cube::updateParams(int param1) {
     m_vertexData = std::vector<float>();
@@ -11,52 +10,49 @@ void Cube::makeTile(glm::vec3 topLeft,
                     glm::vec3 topRight,
                     glm::vec3 bottomLeft,
                     glm::vec3 bottomRight) {
-    // Task 2: create a tile (i.e. 2 triangles) based on 4 given points.
 
-    glm::vec3 u = topRight - topLeft;
-    glm::vec3 v = bottomLeft - topLeft;
-    glm::vec3 normal = -glm::normalize(glm::cross(u, v));
+    glm::vec3 N = glm::normalize(glm::cross(bottomLeft - topLeft, bottomRight - topLeft));
 
-    insertVec3(m_vertexData, topLeft);
-    insertVec3(m_vertexData, normal);
+    // triangle 1
+    insertVec3(m_vertexData, topLeft); insertVec3(m_vertexData, N);
+    insertVec3(m_vertexData, bottomLeft); insertVec3(m_vertexData, N);
+    insertVec3(m_vertexData, bottomRight); insertVec3(m_vertexData, N);
 
-    insertVec3(m_vertexData, bottomLeft);
-    insertVec3(m_vertexData, normal);
+    // triangle 2
+    insertVec3(m_vertexData, topLeft); insertVec3(m_vertexData, N);
+    insertVec3(m_vertexData, bottomRight); insertVec3(m_vertexData, N);
+    insertVec3(m_vertexData, topRight); insertVec3(m_vertexData, N);
 
-    insertVec3(m_vertexData, bottomRight);
-    insertVec3(m_vertexData, normal);
-
-    insertVec3(m_vertexData, topLeft);
-    insertVec3(m_vertexData, normal);
-
-    insertVec3(m_vertexData, bottomRight);
-    insertVec3(m_vertexData, normal);
-
-    insertVec3(m_vertexData, topRight);
-    insertVec3(m_vertexData, normal);
 }
 
 void Cube::makeFace(glm::vec3 topLeft,
                     glm::vec3 topRight,
                     glm::vec3 bottomLeft,
                     glm::vec3 bottomRight) {
-    // Task 3: create a single side of the cube out of the 4
-    //         given points and makeTile()
-    // Note: think about how param 1 affects the number of triangles on
-    //       the face of the cube
-    glm::vec3 horizStep = (topRight - topLeft) / (float)m_param1;
-    glm::vec3 vertStep = (bottomLeft - topLeft) / (float)m_param1;
 
-    // Subdivide face into m_param1 x m_param1 tiles
-    for (int i = 0; i < m_param1; i++) {
-        for (int j = 0; j < m_param1; j++) {
-            // Compute the 4 corners of this small tile
-            glm::vec3 tl = topLeft + (float)i * vertStep + (float)j * horizStep;
-            glm::vec3 tr = topLeft + (float)i * vertStep + (float)(j + 1) * horizStep;
-            glm::vec3 bl = topLeft + (float)(i + 1) * vertStep + (float)j * horizStep;
-            glm::vec3 br = topLeft + (float)(i + 1) * vertStep + (float)(j + 1) * horizStep;
+    m_vertexData.reserve(m_vertexData.size() + 6 * 6 * m_param1 * m_param1);
+    const float step = 1.0f / m_param1;
 
-            // Make the tile
+    for (int r = 0; r < m_param1; ++r) {
+
+        float v0 = r * step;
+        float v1 = (r+1) * step;
+
+        glm::vec3 L0 = glm::mix(topLeft, bottomLeft, v0);
+        glm::vec3 R0 = glm::mix(topRight, bottomRight, v0);
+        glm::vec3 L1 = glm::mix(topLeft, bottomLeft, v1);
+        glm::vec3 R1 = glm::mix(topRight, bottomRight, v1);
+
+        for (int c = 0; c < m_param1; ++c) {
+            float u0 = c * step;
+            float u1 = (c+1) * step;
+
+            // corners
+            glm::vec3 tl = glm::mix(L0, R0, u0);
+            glm::vec3 tr = glm::mix(L0, R0, u1);
+            glm::vec3 bl = glm::mix(L1, R1, u0);
+            glm::vec3 br = glm::mix(L1, R1, u1);
+
             makeTile(tl, tr, bl, br);
         }
     }
@@ -65,55 +61,41 @@ void Cube::makeFace(glm::vec3 topLeft,
 }
 
 void Cube::setVertexData() {
-    // Uncomment these lines for Task 2, then comment them out for Task 3:
+    // +Z face (front)
+    makeFace(glm::vec3(-0.5f,  0.5f, 0.5f),
+             glm::vec3( 0.5f,  0.5f, 0.5f),
+             glm::vec3(-0.5f, -0.5f, 0.5f),
+             glm::vec3( 0.5f, -0.5f, 0.5f));
 
-    // makeTile(glm::vec3(-0.5f,  0.5f, 0.5f),
-    //          glm::vec3( 0.5f,  0.5f, 0.5f),
-    //          glm::vec3(-0.5f, -0.5f, 0.5f),
-    //          glm::vec3( 0.5f, -0.5f, 0.5f));
+    // -Z face (back)
+    makeFace(glm::vec3( 0.5f,  0.5f, -0.5f),
+             glm::vec3(-0.5f,  0.5f, -0.5f),
+             glm::vec3( 0.5f, -0.5f, -0.5f),
+             glm::vec3(-0.5f, -0.5f, -0.5f));
 
-    // Uncomment these lines for Task 3:
+    // +X (right)
+    makeFace(glm::vec3( 0.5f,  0.5f,  0.5f),
+             glm::vec3( 0.5f,  0.5f, -0.5f),
+             glm::vec3( 0.5f, -0.5f,  0.5f),
+             glm::vec3( 0.5f, -0.5f, -0.5f));
 
-    // FRONT (+Z)
-    makeFace(glm::vec3(-0.5f,  0.5f,  0.5f),  // top-left
-             glm::vec3( 0.5f,  0.5f,  0.5f),  // top-right
-             glm::vec3(-0.5f, -0.5f,  0.5f),  // bottom-left
-             glm::vec3( 0.5f, -0.5f,  0.5f)); // bottom-right
+    // -X (left)
+    makeFace(glm::vec3(-0.5f,  0.5f, -0.5f),
+             glm::vec3(-0.5f,  0.5f,  0.5f),
+             glm::vec3(-0.5f, -0.5f, -0.5f),
+             glm::vec3(-0.5f, -0.5f,  0.5f));
 
-    // BACK (−Z)
-    makeFace(glm::vec3( 0.5f,  0.5f, -0.5f),  // top-left
-             glm::vec3(-0.5f,  0.5f, -0.5f),  // top-right
-             glm::vec3( 0.5f, -0.5f, -0.5f),  // bottom-left
-             glm::vec3(-0.5f, -0.5f, -0.5f)); // bottom-right
+    // +Y (top)
+    makeFace(glm::vec3(-0.5f,  0.5f, -0.5f),
+             glm::vec3( 0.5f,  0.5f, -0.5f),
+             glm::vec3(-0.5f,  0.5f,  0.5f),
+             glm::vec3( 0.5f,  0.5f,  0.5f));
 
-    // LEFT (−X)
-    makeFace(glm::vec3(-0.5f,  0.5f, -0.5f),  // top-left
-             glm::vec3(-0.5f,  0.5f,  0.5f),  // top-right
-             glm::vec3(-0.5f, -0.5f, -0.5f),  // bottom-left
-             glm::vec3(-0.5f, -0.5f,  0.5f)); // bottom-right
-
-    // RIGHT (+X)
-    makeFace(glm::vec3( 0.5f,  0.5f,  0.5f),  // top-left
-             glm::vec3( 0.5f,  0.5f, -0.5f),  // top-right
-             glm::vec3( 0.5f, -0.5f,  0.5f),  // bottom-left
-             glm::vec3( 0.5f, -0.5f, -0.5f)); // bottom-right
-
-    // TOP (+Y)
-    makeFace(glm::vec3(-0.5f,  0.5f, -0.5f),  // top-left
-             glm::vec3( 0.5f,  0.5f, -0.5f),  // top-right
-             glm::vec3(-0.5f,  0.5f,  0.5f),  // bottom-left
-             glm::vec3( 0.5f,  0.5f,  0.5f)); // bottom-right
-
-    // BOTTOM (−Y)
-    makeFace(glm::vec3(-0.5f, -0.5f,  0.5f),  // top-left
-             glm::vec3( 0.5f, -0.5f,  0.5f),  // top-right
-             glm::vec3(-0.5f, -0.5f, -0.5f),  // bottom-left
-             glm::vec3( 0.5f, -0.5f, -0.5f)); // bottom-right
-
-
-
-    // Task 4: Use the makeFace() function to make all 6 sides of the cube
-
+    // -Y (bottom)
+    makeFace(glm::vec3(-0.5f, -0.5f,  0.5f),
+             glm::vec3( 0.5f, -0.5f,  0.5f),
+             glm::vec3(-0.5f, -0.5f, -0.5f),
+             glm::vec3( 0.5f, -0.5f, -0.5f));
 }
 
 // Inserts a glm::vec3 into a vector of floats.
