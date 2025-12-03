@@ -1,0 +1,4 @@
+set(__QT_DEPLOY_TARGET_projects_realtime_FILE /Users/yalisommer/Desktop/Schoolwork/CS/CS1230/graphics_final_project/build/build-projects_realtime-Qt_6_9_2_for_macOS-Release/projects_realtime)
+set(__QT_DEPLOY_TARGET_projects_realtime_TYPE EXECUTABLE)
+set(__QT_DEPLOY_TARGET_StaticGLEW_FILE /Users/yalisommer/Desktop/Schoolwork/CS/CS1230/graphics_final_project/build/build-projects_realtime-Qt_6_9_2_for_macOS-Release/libStaticGLEW.a)
+set(__QT_DEPLOY_TARGET_StaticGLEW_TYPE STATIC_LIBRARY)

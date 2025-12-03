@@ -83,6 +83,8 @@ qt6_add_resources(${PROJECT_NAME} "Resources"
         resources/shaders/default.vert
 	resources/shaders/texture.frag
     	resources/shaders/texture.vert
+        resources/shaders/shadow.frag
+        resources/shaders/shadow.vert
 	resources/images/ac_day_lut_4x4.png
 	resources/images/ac_night_lut_4x4.png
 	resources/images/identity_lut_4x4.png

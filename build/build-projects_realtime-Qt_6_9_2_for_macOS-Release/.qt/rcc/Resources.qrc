@@ -1,0 +1,17 @@
+<RCC>
+  <qresource prefix="/">
+    <file alias="resources/shaders/default.frag">/Users/yalisommer/Desktop/Schoolwork/CS/CS1230/graphics_final_project/resources/shaders/default.frag</file>
+    <file alias="resources/shaders/default.vert">/Users/yalisommer/Desktop/Schoolwork/CS/CS1230/graphics_final_project/resources/shaders/default.vert</file>
+    <file alias="resources/shaders/texture.frag">/Users/yalisommer/Desktop/Schoolwork/CS/CS1230/graphics_final_project/resources/shaders/texture.frag</file>
+    <file alias="resources/shaders/texture.vert">/Users/yalisommer/Desktop/Schoolwork/CS/CS1230/graphics_final_project/resources/shaders/texture.vert</file>
+    <file alias="resources/shaders/shadow.frag">/Users/yalisommer/Desktop/Schoolwork/CS/CS1230/graphics_final_project/resources/shaders/shadow.frag</file>
+    <file alias="resources/shaders/shadow.vert">/Users/yalisommer/Desktop/Schoolwork/CS/CS1230/graphics_final_project/resources/shaders/shadow.vert</file>
+    <file alias="resources/images/ac_day_lut_4x4.png">/Users/yalisommer/Desktop/Schoolwork/CS/CS1230/graphics_final_project/resources/images/ac_day_lut_4x4.png</file>
+    <file alias="resources/images/ac_night_lut_4x4.png">/Users/yalisommer/Desktop/Schoolwork/CS/CS1230/graphics_final_project/resources/images/ac_night_lut_4x4.png</file>
+    <file alias="resources/images/identity_lut_4x4.png">/Users/yalisommer/Desktop/Schoolwork/CS/CS1230/graphics_final_project/resources/images/identity_lut_4x4.png</file>
+    <file alias="resources/images/teal_orange_lut_4x4.png">/Users/yalisommer/Desktop/Schoolwork/CS/CS1230/graphics_final_project/resources/images/teal_orange_lut_4x4.png</file>
+    <file alias="resources/images/noir_lut_4x4.png">/Users/yalisommer/Desktop/Schoolwork/CS/CS1230/graphics_final_project/resources/images/noir_lut_4x4.png</file>
+    <file alias="resources/images/vaporwave_lut_4x4.png">/Users/yalisommer/Desktop/Schoolwork/CS/CS1230/graphics_final_project/resources/images/vaporwave_lut_4x4.png</file>
+  </qresource>
+</RCC>
+
