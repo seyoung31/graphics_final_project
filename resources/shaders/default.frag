@@ -49,7 +49,7 @@ float shadowFactor(int i) { //check how in shadow things are
     float current = proj.z;
 
     // to get rid of shadow acne
-    float alpha = 0.002;
+    float alpha = 0.02;
 
     if (current - alpha > closest) {
         return 0.0;
@@ -123,7 +123,7 @@ void main() {
         vec3 diffuse = k_d * diff * lightColor[i];
         vec3 specular = k_s * specIntensity * lightColor[i];
 
-        //shadow mapping
+        // shadow mapping
         float s = 1.0;
         if (use_shadow_mapping == 1 && lightType[i] != 0) { //not dealing with point lights :)
             //here we modify the diffuse/spec factor by the shadow factor!

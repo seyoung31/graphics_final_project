@@ -17,6 +17,11 @@ out vec3 w_normal;
 uniform mat4 view;
 uniform mat4 proj;
 
+//for shadow mapping!
+out vec4 lightSpacePos[8]; //light pos in space
+uniform int numLights; //num lights we have
+uniform mat4 lightVP[8]; //light VP matrix
+
 void main() {
 
     mat4 model = instanceModel;
@@ -28,6 +33,10 @@ void main() {
     // World-space normal
     mat3 normalMatrix = mat3(transpose(inverse(model)));
     w_normal = normalize(normalMatrix * normal);
+
+    for (int i = 0; i < numLights; i++) {
+        lightSpacePos[i] = lightVP[i] * posWorld; //pass into output the light space pos for each light
+    }
 
     gl_Position = proj * view * posWorld;
 

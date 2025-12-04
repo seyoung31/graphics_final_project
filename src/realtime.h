@@ -126,9 +126,13 @@ private:
 
     //Shadow Mapping
     GLuint m_shadow_shader;
-    int m_shadow_res;
+    int m_shadow_res = 2048;
     GLuint m_shadow_fbos[8];
     GLuint m_shadow_depth_texs[8];
     glm::mat4 m_lightVPs[8];
 
+    void makeShadowFBO();
+    glm::mat4 getLightVP(const SceneLightData& light);
+    void paintLightView(const SceneLightData& light, const glm::mat4& lightVP);
+    void renderShadows();
 };

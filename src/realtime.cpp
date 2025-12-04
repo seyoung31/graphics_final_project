@@ -52,6 +52,15 @@ void Realtime::finish() {
     m_post.destroy();
     m_particles.cleanup();
 
+
+    //clean up shadow fbos
+    for (int i = 0; i < 8; i++) {
+        if (m_shadow_depth_texs[i]) glDeleteTextures(1, &m_shadow_depth_texs[i]);
+        if (m_shadow_fbos[i]) glDeleteFramebuffers(1, &m_shadow_fbos[i]);
+        m_shadow_depth_texs[i] = 0;
+        m_shadow_fbos[i] = 0;
+    }
+
     this->doneCurrent();
 }
 
@@ -88,7 +97,11 @@ void Realtime::initializeGL() {
                                                  ":/resources/shaders/default.frag");
     m_particles_shader = ShaderLoader::createShaderProgram(":/resources/shaders//particles/particles.vert",
                                                            ":/resources/shaders/particles/particles.frag");
+
+    m_shadow_shader = ShaderLoader::createShaderProgram(":/resources/shaders/shadow.vert",
+                                                 ":/resources/shaders/shadow.frag");
     std::cout<<"particles shader: " <<m_particles_shader<<std::endl;
+    std::cout<<"shadow shader: " <<m_shadow_shader<<std::endl;
 
     // Create VAOs and VBOs for all primitive type
     glGenVertexArrays(PRIM_COUNT, m_vaos);
@@ -125,6 +138,9 @@ void Realtime::initializeGL() {
     m_glInitialized = true;
     // Initialize particle system (Particles will create VAO/VBO/texture)
     m_particles.init(m_particles_shader);
+
+    //prep shadow fbos for shadows if we use them :)
+    makeShadowFBO();
 }
 
 void Realtime::rebuildGeometryFromSettings() {
@@ -189,6 +205,8 @@ void Realtime::renderScene() {
     ShaderUtils::uploadGlobals(m_shader, m_renderData);
     ShaderUtils::uploadLights(m_shader, m_renderData);
 
+    renderShadows();
+
     ShaderUtils::drawShapes(m_shader, m_renderData, m_vaos, m_vertexCounts, m_instanceVBOs);
 
 }
@@ -199,6 +217,29 @@ void Realtime::paintGL() {
     // Remember which FBO was bound when we entered
     GLint prevFBO = 0;
     glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFBO);
+
+
+    // 0) SHADOW PASS needs to come first :)
+    if (settings.shadowMapping) {
+        int i = 0;
+        for (const SceneLightData &light : m_renderData.lights) {
+            if (i >= 8) break;
+
+            // skip point lights, *but keep index parity*
+            if (light.type == LightType::LIGHT_POINT) { i++; continue; }
+
+            // compute and cache VP matrix for this light
+            m_lightVPs[i] = getLightVP(light);
+
+            // render depth from light POV into its shadow FBO
+            glBindFramebuffer(GL_FRAMEBUFFER, m_shadow_fbos[i]);
+            glViewport(0, 0, m_shadow_res, m_shadow_res);
+            paintLightView(light, m_lightVPs[i]);
+
+            i++;
+        }
+    }
+
 
     // 1) Render scene into our offscreen FBO
     glBindFramebuffer(GL_FRAMEBUFFER, m_post.fbo());
@@ -555,4 +596,163 @@ void Realtime::saveViewportImage(std::string filePath) {
     glDeleteTextures(1, &texture);
     glDeleteRenderbuffers(1, &rbo);
     glDeleteFramebuffers(1, &fbo);
+}
+
+
+//Shadow Logic!!
+void Realtime::makeShadowFBO(){
+    //purge old stuff
+    for (int i = 0; i < 8; i++) {
+        if (m_shadow_depth_texs[i] != 0) glDeleteTextures(1, &m_shadow_depth_texs[i]);
+        if (m_shadow_fbos[i] != 0) glDeleteFramebuffers(1, &m_shadow_fbos[i]);
+        m_shadow_depth_texs[i] = 0;
+        m_shadow_fbos[i] = 0;
+    }
+
+    m_shadow_res = 2048;
+
+    for (int i = 0; i < 8; i++) {
+
+        //DEPTH TEX for shadows
+        glGenTextures(1, &m_shadow_depth_texs[i]); //
+        glBindTexture(GL_TEXTURE_2D, m_shadow_depth_texs[i]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, m_shadow_res, m_shadow_res, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        // Shadow FBO
+        glGenFramebuffers(1, &m_shadow_fbos[i]);
+        glBindFramebuffer(GL_FRAMEBUFFER, m_shadow_fbos[i]);
+        glDrawBuffer(GL_NONE);
+        glReadBuffer(GL_NONE);
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+                               GL_TEXTURE_2D, m_shadow_depth_texs[i], 0);
+
+        GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        if (status != GL_FRAMEBUFFER_COMPLETE) {
+            std::cerr << "Shadow FBO " << i << " incomplete, status = " << status << std::endl;
+        }
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0); //was m_defaultFBO in yali arch, try 0
+}
+
+void Realtime::paintLightView(const SceneLightData &light, const glm::mat4 &lightVP) {
+    glClear(GL_DEPTH_BUFFER_BIT);
+    glUseProgram(m_shadow_shader);
+
+    glUniformMatrix4fv(glGetUniformLocation(m_shadow_shader, "light_view_proj"),
+                       1, GL_FALSE, glm::value_ptr(lightVP));
+
+    for (const RenderShapeData &shape : m_renderData.shapes) {
+        GLuint vao;
+        int vertCount;
+        switch(shape.primitive.type) {
+        case PrimitiveType::PRIMITIVE_SPHERE: vao = m_vaos[PRIM_SPHERE]; vertCount = m_vertexCounts[PRIM_SPHERE]; break;
+        case PrimitiveType::PRIMITIVE_CUBE:   vao = m_vaos[PRIM_CUBE];   vertCount = m_vertexCounts[PRIM_CUBE];   break;
+        case PrimitiveType::PRIMITIVE_CONE:   vao = m_vaos[PRIM_CONE];   vertCount = m_vertexCounts[PRIM_CONE];   break;
+        case PrimitiveType::PRIMITIVE_CYLINDER: vao = m_vaos[PRIM_CYLINDER]; vertCount = m_vertexCounts[PRIM_CYLINDER]; break;
+        default: continue;
+        }
+
+        glBindVertexArray(vao);
+        glUniformMatrix4fv(glGetUniformLocation(m_shadow_shader, "model_matrix"),
+                           1, GL_FALSE, glm::value_ptr(shape.ctm));
+        glDrawArrays(GL_TRIANGLES, 0, vertCount);
+    }
+
+    glBindVertexArray(0);
+    glUseProgram(0);
+}
+
+// for light view/proj mat
+
+glm::mat4 Realtime::getLightVP(const SceneLightData& light) {
+
+    if (light.type == LightType::LIGHT_DIRECTIONAL) {
+        float backDist = 5.f;   // have to put the light somewhere, as dir doesnt have a position
+        float B = 5.f;          // orthogonal vals so we can use half-width/height
+
+        glm::vec3 dir = glm::normalize(glm::vec3(light.dir));
+
+        //look at, f
+        glm::vec3 target = glm::vec3(0.f);
+
+        glm::vec3 pos = target - dir * backDist;
+
+        // Up choice with safety fallback:
+        glm::vec3 up = glm::vec3(0,1,0);
+        if (std::abs(glm::dot(up, dir)) > 0.95f) {
+            up = glm::vec3(1,0,0); // avoid near-parallel up
+        }
+
+        glm::mat4 V = glm::lookAt(pos, target, up); //view mat
+
+        float nearL = settings.nearPlane;
+        float farL  = settings.farPlane;
+
+        glm::mat4 P = glm::ortho(-B, B, -B, B, nearL, farL); //proj mat
+
+        return P * V;
+    }
+
+    if (light.type == LightType::LIGHT_SPOT) {
+        glm::vec3 pos = glm::vec3(light.pos);
+        glm::vec3 dir = glm::normalize(glm::vec3(light.dir));
+        glm::vec3 target = pos + dir;
+
+        glm::vec3 up = glm::vec3(0,1,0);
+        if (std::abs(glm::dot(up, dir)) > 0.95f) {
+            up = glm::vec3(1,0,0);
+        }
+
+        glm::mat4 V = glm::lookAt(pos, target, up); //view mat
+
+        float fov = 2.f * light.angle; // angle already radians
+        float aspect = 1.f;            // shadow map is square
+        float nearL = settings.nearPlane;
+        float farL  = settings.farPlane;
+
+        glm::mat4 P = glm::perspective(fov, aspect, nearL, farL); //proj mat
+
+        return P * V;
+    }
+
+    if (light.type == LightType::LIGHT_POINT) {
+        return glm::mat4(1.f); //dont care about this case SOZ!
+    }
+
+    return glm::mat4(1.f);
+}
+
+void Realtime::renderShadows(){
+    GLint useShadowLoc = glGetUniformLocation(m_shader, "use_shadow_mapping");
+    glUniform1i(useShadowLoc, settings.shadowMapping);
+
+    if (settings.shadowMapping) {
+        int count = std::min((int)m_renderData.lights.size(), 8);
+
+        for (int i = 0; i < count; i++) {
+            if (m_renderData.lights[i].type == LightType::LIGHT_POINT) continue;
+
+            // Bind depth texture into a unique unit
+            int texUnit = 2 + i;
+            glActiveTexture(GL_TEXTURE0 + texUnit);
+            glBindTexture(GL_TEXTURE_2D, m_shadow_depth_texs[i]);
+
+            // sampler2D shadowMaps[i] = texUnit
+            std::string smName = "shadowMaps[" + std::to_string(i) + "]";
+            GLint smLoc = glGetUniformLocation(m_shader, smName.c_str());
+            glUniform1i(smLoc, texUnit);
+
+            // mat4 lightVP[i] = cached VP
+            std::string vpName = "lightVP[" + std::to_string(i) + "]";
+            GLint vpLoc = glGetUniformLocation(m_shader, vpName.c_str());
+            glUniformMatrix4fv(vpLoc, 1, GL_FALSE, glm::value_ptr(m_lightVPs[i]));
+        }
+    }
 }

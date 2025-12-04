@@ -155,18 +155,23 @@ namespace ShaderUtils {
                 mat4 baseModel = shapeData.ctm;
 
                 // One-time random jitter in position and uniform scale
-                float jx = posJitter(rng);
-                float jy = posJitter(rng);
-                float jz = posJitter(rng);
-                float s  = scaleJitter(rng);
+                //Turned off jitter SOZ!
 
-                mat4 randomTransform(1.0f);
-                randomTransform = translate(randomTransform, vec3(jx, jy, jz));
-                randomTransform = scale(randomTransform, vec3(s));
+                // float jx = posJitter(rng);
+                // float jy = posJitter(rng);
+                // float jz = posJitter(rng);
+                // float s  = scaleJitter(rng);
 
-                // Apply jitter on top of the existing placement
-                mat4 finalModel = baseModel * randomTransform;
+                // mat4 randomTransform(1.0f);
+                // randomTransform = translate(randomTransform, vec3(jx, jy, jz));
+                // randomTransform = scale(randomTransform, vec3(s));
 
+                // // Apply jitter on top of the existing placement
+                // mat4 finalModel = baseModel * randomTransform;
+
+                // instanceModels[idx].push_back(finalModel);
+
+                mat4 finalModel = shapeData.ctm;
                 instanceModels[idx].push_back(finalModel);
             }
 
