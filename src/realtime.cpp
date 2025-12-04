@@ -50,6 +50,7 @@ void Realtime::finish() {
 
     // Clean up post-processing resources
     m_post.destroy();
+    m_particles.cleanup();
 
     this->doneCurrent();
 }
@@ -85,6 +86,9 @@ void Realtime::initializeGL() {
     // Create shader program
     m_shader = ShaderLoader::createShaderProgram(":/resources/shaders/default.vert",
                                                  ":/resources/shaders/default.frag");
+    m_particles_shader = ShaderLoader::createShaderProgram(":/resources/shaders//particles/particles.vert",
+                                                           ":/resources/shaders/particles/particles.frag");
+    std::cout<<"particles shader: " <<m_particles_shader<<std::endl;
 
     // Create VAOs and VBOs for all primitive type
     glGenVertexArrays(PRIM_COUNT, m_vaos);
@@ -119,6 +123,8 @@ void Realtime::initializeGL() {
     m_post.init(m_screen_width, m_screen_height,
                 QString(":/resources/images/noir_lut_4x4.png"));
     m_glInitialized = true;
+    // Initialize particle system (Particles will create VAO/VBO/texture)
+    m_particles.init(m_particles_shader);
 }
 
 void Realtime::rebuildGeometryFromSettings() {
@@ -188,6 +194,8 @@ void Realtime::renderScene() {
 }
 
 void Realtime::paintGL() {
+
+
     // Remember which FBO was bound when we entered
     GLint prevFBO = 0;
     glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFBO);
@@ -199,12 +207,25 @@ void Realtime::paintGL() {
 
     renderScene();
 
+    //DO NOT MOVE THIS SNOW CALL -- MUST BE INBETWEEN renderScene() AND 2)
+    // let it snow!!!
+    if (settings.extraCredit4) {
+        // ensure we don't write depth from particles but they still get depth-tested correctly
+        glDepthMask(GL_FALSE);
+        bool wasCull = glIsEnabled(GL_CULL_FACE);
+        if (wasCull) glDisable(GL_CULL_FACE);
+        m_particles.render(m_view, m_proj, m_camera.pos);
+        if (wasCull) glEnable(GL_CULL_FACE);
+        glDepthMask(GL_TRUE);
+    }
+
     // 2) Render fullscreen quad into the FBO that was originally bound
     glBindFramebuffer(GL_FRAMEBUFFER, prevFBO);
     glViewport(0, 0, m_screen_width, m_screen_height);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     m_post.drawToScreen(m_gradeStrength, m_enableColorGrading);
+
 
 }
 
@@ -432,9 +453,42 @@ void Realtime::timerEvent(QTimerEvent *event) {
         updateViewMatrix();
     }
 
+    if (settings.extraCredit4) updateParticleSystem(deltaTime);
+
     update(); // asks for a PaintGL() call to occur
 }
 
+void Realtime::updateParticleSystem(float deltaTime){
+    // ---------- REPLACE existing camera-basis & setCameraData block WITH THIS ----------
+    // After moving the camera (m_camera.processKeyboard(...)) update view and projection
+    updateViewMatrix();
+    updateProjectionMatrix();
+    // world-space camera position
+    glm::vec3 camPos = m_camera.pos;
+
+    // Extract world-space camera basis from view matrix (view maps world -> camera).
+    // Right = column0, Up = column1, Forward = -column2
+    glm::vec3 camRight   = glm::vec3(m_view[0][0], m_view[1][0], m_view[2][0]);
+    glm::vec3 camUp      = glm::vec3(m_view[0][1], m_view[1][1], m_view[2][1]);
+    glm::vec3 camForward = -glm::vec3(m_view[0][2], m_view[1][2], m_view[2][2]);
+
+    // Choose a spawn distance that scales with camera frustum so snow appears at a sensible depth.
+    // This uses a fraction of the far plane (can be tuned). Clamp so it's never ridiculously near/far.
+    float desiredFractionOfFar = 0.25f; // spawn at 25% of the depth range by default
+    float spawnDistance = 8.0f; //glm::clamp(settings.nearPlane + (settings.farPlane - settings.nearPlane) * desiredFractionOfFar, 2.0f, 100.0f);
+    //NEAR/FAR PLANE
+    // If you prefer a fixed spawnDistance, replace the above with: float spawnDistance = 8.0f;
+
+    // Pass camera orientation + projection info to the particle system BEFORE update() so spawn uses the current view
+    float fov = m_camera.heightAngle;
+    float aspect = ((float) width()) / ((float) height());
+    m_particles.setCameraData(camPos, camForward, camRight, camUp, fov, aspect, spawnDistance);
+
+    // Also set camera world position for sorting/distance uses
+    m_particles.setCameraPos(camPos);
+
+    m_particles.update(deltaTime, camPos);
+}
 void Realtime::tick(QTimerEvent *event) {
     Q_UNUSED(event);
 }

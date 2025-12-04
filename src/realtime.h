@@ -24,6 +24,8 @@
 #include "shapes/cone.h"
 #include "shapes/cylinder.h"
 
+#include "particles/particles.h"
+
 class Realtime : public QOpenGLWidget {
     Q_OBJECT
 public:
@@ -81,7 +83,7 @@ private:
 
     void rotateCamera(float rad);
     void rotateCameraPitch(float rad);
-
+    void updateParticleSystem(float deltaTime);
     // Tick Related Variables
     int m_timer;                                        // Stores timer which attempts to run ~60 times per second
     QElapsedTimer m_elapsedTimer;                       // Stores timer which keeps track of actual time between frames
@@ -96,6 +98,9 @@ private:
 
     // Shader program for rendering
     GLuint m_shader = 0;
+
+    GLuint m_particles_shader;    //particle shader
+    Particles m_particles;        //particle object
 
     GLuint m_vaos[PRIM_COUNT];
     GLuint m_vbos[PRIM_COUNT];

@@ -1,0 +1,10 @@
+# Build directories
+build/
+build-*/
+cmake-build-*/
+
+# Qt Creator user config files
+*.user
+*.user.*
+*.pro.user
+*.pro.user.*

@@ -37,6 +37,8 @@ add_executable(${PROJECT_NAME}
     src/shapes/sphere.cpp
     src/shapes/cylinder.cpp
     src/utils/shaderutils.cpp
+    src/particles/particles.cpp
+
 
     src/mainwindow.h
     src/realtime.h
@@ -86,12 +88,15 @@ qt6_add_resources(${PROJECT_NAME} "Resources"
     	resources/shaders/texture.vert
         resources/shaders/shadow.frag
         resources/shaders/shadow.vert
+        resources/shaders/particles/particles.frag
+        resources/shaders/particles/particles.vert
 	resources/images/ac_day_lut_4x4.png
 	resources/images/ac_night_lut_4x4.png
 	resources/images/identity_lut_4x4.png
 	resources/images/teal_orange_lut_4x4.png
 	resources/images/noir_lut_4x4.png
 	resources/images/vaporwave_lut_4x4.png
+        resources/images/snowflake_only.png
 )
 
 # GLEW: this provides support for Windows (including 64-bit)
