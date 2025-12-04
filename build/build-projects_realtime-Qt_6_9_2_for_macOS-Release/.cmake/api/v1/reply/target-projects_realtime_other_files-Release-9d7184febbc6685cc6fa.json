@@ -23,7 +23,7 @@
 			{
 				"command" : 3,
 				"file" : 1,
-				"line" : 78,
+				"line" : 79,
 				"parent" : 0
 			},
 			{
@@ -163,6 +163,30 @@
 				"file" : 0,
 				"line" : 2172,
 				"parent" : 23
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 2437,
+				"parent" : 2
+			},
+			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 2172,
+				"parent" : 25
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 2437,
+				"parent" : 2
+			},
+			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 2172,
+				"parent" : 27
 			}
 		]
 	},
@@ -180,12 +204,12 @@
 			"sourceIndexes" : 
 			[
 				0,
-				5,
-				6,
 				7,
 				8,
 				9,
-				10
+				10,
+				11,
+				12
 			]
 		},
 		{
@@ -195,7 +219,9 @@
 				1,
 				2,
 				3,
-				4
+				4,
+				5,
+				6
 			]
 		}
 	],
@@ -229,31 +255,41 @@
 		},
 		{
 			"backtrace" : 14,
+			"path" : "resources/shaders/shadow.frag",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 16,
+			"path" : "resources/shaders/shadow.vert",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 18,
 			"path" : "resources/images/ac_day_lut_4x4.png",
 			"sourceGroupIndex" : 0
 		},
 		{
-			"backtrace" : 16,
+			"backtrace" : 20,
 			"path" : "resources/images/ac_night_lut_4x4.png",
 			"sourceGroupIndex" : 0
 		},
 		{
-			"backtrace" : 18,
+			"backtrace" : 22,
 			"path" : "resources/images/identity_lut_4x4.png",
 			"sourceGroupIndex" : 0
 		},
 		{
-			"backtrace" : 20,
+			"backtrace" : 24,
 			"path" : "resources/images/teal_orange_lut_4x4.png",
 			"sourceGroupIndex" : 0
 		},
 		{
-			"backtrace" : 22,
+			"backtrace" : 26,
 			"path" : "resources/images/noir_lut_4x4.png",
 			"sourceGroupIndex" : 0
 		},
 		{
-			"backtrace" : 24,
+			"backtrace" : 28,
 			"path" : "resources/images/vaporwave_lut_4x4.png",
 			"sourceGroupIndex" : 0
 		}

@@ -148,7 +148,7 @@ void MainWindow::initialize() {
 
     // Extra Credit:
     ec1 = new QCheckBox();
-    ec1->setText(QStringLiteral("Extra Credit 1"));
+    ec1->setText(QStringLiteral("Shadow Mapping"));
     ec1->setChecked(false);
 
     ec2 = new QCheckBox();
@@ -259,7 +259,7 @@ void MainWindow::connectFar() {
 }
 
 void MainWindow::connectExtraCredit() {
-    connect(ec1, &QCheckBox::clicked, this, &MainWindow::onExtraCredit1);
+    connect(ec1, &QCheckBox::clicked, this, &MainWindow::onShadowMapping);
     connect(ec2, &QCheckBox::clicked, this, &MainWindow::onExtraCredit2);
     connect(ec3, &QCheckBox::clicked, this, &MainWindow::onExtraCredit3);
     connect(ec4, &QCheckBox::clicked, this, &MainWindow::onExtraCredit4);
@@ -362,8 +362,8 @@ void MainWindow::onValChangeFarBox(double newValue) {
 
 // Extra Credit:
 
-void MainWindow::onExtraCredit1() {
-    settings.extraCredit1 = !settings.extraCredit1;
+void MainWindow::onShadowMapping() {
+    settings.shadowMapping = !settings.shadowMapping;
     realtime->settingsChanged();
 }
 

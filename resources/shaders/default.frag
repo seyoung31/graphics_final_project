@@ -28,6 +28,36 @@ uniform float lightPenumbra[MAX_LIGHTS];
 
 uniform vec4 camPos; // world-space camera pos
 
+//SHADOW MAPPING VARS
+in vec4 lightSpacePos[8]; //for shadow mapping
+uniform sampler2D shadowMaps[8];  // 2D maps for dir/spot
+uniform int use_shadow_mapping; //boolean for shadow mapping
+
+float shadowFactor(int i) { //check how in shadow things are
+    vec3 proj = lightSpacePos[i].xyz / lightSpacePos[i].w; //get perspective
+
+    proj = proj * 0.5 + 0.5; // bound from 0,1 instead of -1,1
+
+    // lit if not in the map
+    if (proj.x < 0.0 || proj.x > 1.0 ||
+        proj.y < 0.0 || proj.y > 1.0 ||
+        proj.z < 0.0 || proj.z > 1.0) {
+        return 1.0;
+    }
+
+    float closest = texture(shadowMaps[i], proj.xy).r;
+    float current = proj.z;
+
+    // to get rid of shadow acne
+    float alpha = 0.002;
+
+    if (current - alpha > closest) {
+        return 0.0;
+    } else {
+        return 1.0;
+    }
+}
+
 void main() {
     // Normalize normals (for interpolation)
     vec3 N = normalize(w_normal);
@@ -92,6 +122,16 @@ void main() {
 
         vec3 diffuse = k_d * diff * lightColor[i];
         vec3 specular = k_s * specIntensity * lightColor[i];
+
+        //shadow mapping
+        float s = 1.0;
+        if (use_shadow_mapping == 1 && lightType[i] != 0) { //not dealing with point lights :)
+            //here we modify the diffuse/spec factor by the shadow factor!
+            s = shadowFactor(i);
+            diffuse *= s;
+            specular *= s;
+
+        }
 
         color += (diffuse + specular) * attenuation * spotFactor;
 

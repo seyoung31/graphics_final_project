@@ -61,6 +61,7 @@ add_subdirectory(glm)
 
 # GLEW: this creates its library and allows you to `#include "GL/glew.h"`
 add_library(StaticGLEW STATIC glew/src/glew.c
+    src/shadows.h src/shadows.cpp
 )
 include_directories(${PROJECT_NAME} PRIVATE glew/include)
 

@@ -6659,7 +6659,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/usr/local"
+			"value" : "/tmp"
 		},
 		{
 			"name" : "projects_realtime_BINARY_DIR",

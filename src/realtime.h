@@ -119,4 +119,11 @@ private:
     float m_gradeStrength = 0.4f; // how strong LUT is
     bool m_enableColorGrading = true;
 
+    //Shadow Mapping
+    GLuint m_shadow_shader;
+    int m_shadow_res;
+    GLuint m_shadow_fbos[8];
+    GLuint m_shadow_depth_texs[8];
+    glm::mat4 m_lightVPs[8];
+
 };

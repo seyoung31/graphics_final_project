@@ -615,7 +615,15 @@
 	"CROSS_CONFIG" : false,
 	"DEP_FILE" : "/Users/yalisommer/Desktop/Schoolwork/CS/CS1230/graphics_final_project/build/build-projects_realtime-Qt_6_9_2_for_macOS-Release/StaticGLEW_autogen/deps",
 	"DEP_FILE_RULE_NAME" : "StaticGLEW_autogen/timestamp",
-	"HEADERS" : [],
+	"HEADERS" : 
+	[
+		[
+			"/Users/yalisommer/Desktop/Schoolwork/CS/CS1230/graphics_final_project/src/shadows.h",
+			"MU",
+			"UVLADIE3JM/moc_shadows.cpp",
+			null
+		]
+	],
 	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
 	"INCLUDE_DIR" : "/Users/yalisommer/Desktop/Schoolwork/CS/CS1230/graphics_final_project/build/build-projects_realtime-Qt_6_9_2_for_macOS-Release/StaticGLEW_autogen/include",
 	"MOC_COMPILATION_FILE" : "/Users/yalisommer/Desktop/Schoolwork/CS/CS1230/graphics_final_project/build/build-projects_realtime-Qt_6_9_2_for_macOS-Release/StaticGLEW_autogen/mocs_compilation.cpp",
@@ -679,6 +687,11 @@
 	[
 		[
 			"/Users/yalisommer/Desktop/Schoolwork/CS/CS1230/graphics_final_project/glew/src/glew.c",
+			"MU",
+			null
+		],
+		[
+			"/Users/yalisommer/Desktop/Schoolwork/CS/CS1230/graphics_final_project/src/shadows.cpp",
 			"MU",
 			null
 		]

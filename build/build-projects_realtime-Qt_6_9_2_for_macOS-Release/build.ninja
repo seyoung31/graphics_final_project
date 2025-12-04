@@ -202,6 +202,13 @@ build CMakeFiles/StaticGLEW.dir/glew/src/glew.c.o: C_COMPILER__StaticGLEW_unscan
   OBJECT_DIR = CMakeFiles/StaticGLEW.dir
   OBJECT_FILE_DIR = CMakeFiles/StaticGLEW.dir/glew/src
 
+build CMakeFiles/StaticGLEW.dir/src/shadows.cpp.o: CXX_COMPILER__StaticGLEW_unscanned_Release /Users/yalisommer/Desktop/Schoolwork/CS/CS1230/graphics_final_project/src/shadows.cpp || cmake_object_order_depends_target_StaticGLEW
+  DEP_FILE = CMakeFiles/StaticGLEW.dir/src/shadows.cpp.o.d
+  FLAGS = -Wno-deprecated-volatile -O3 -DNDEBUG -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -fcolor-diagnostics
+  INCLUDES = -I/Users/yalisommer/Desktop/Schoolwork/CS/CS1230/graphics_final_project/build/build-projects_realtime-Qt_6_9_2_for_macOS-Release -I/Users/yalisommer/Desktop/Schoolwork/CS/CS1230/graphics_final_project -I/Users/yalisommer/Desktop/Schoolwork/CS/CS1230/graphics_final_project/build/build-projects_realtime-Qt_6_9_2_for_macOS-Release/StaticGLEW_autogen/include -I/Users/yalisommer/Desktop/Schoolwork/CS/CS1230/graphics_final_project/src -I/Users/yalisommer/Desktop/Schoolwork/CS/CS1230/graphics_final_project/projects_realtime -I/Users/yalisommer/Desktop/Schoolwork/CS/CS1230/graphics_final_project/PRIVATE -I/Users/yalisommer/Desktop/Schoolwork/CS/CS1230/graphics_final_project/glew/include
+  OBJECT_DIR = CMakeFiles/StaticGLEW.dir
+  OBJECT_FILE_DIR = CMakeFiles/StaticGLEW.dir/src
+
 
 # =============================================================================
 # Link build statements for STATIC_LIBRARY target StaticGLEW
@@ -210,7 +217,7 @@ build CMakeFiles/StaticGLEW.dir/glew/src/glew.c.o: C_COMPILER__StaticGLEW_unscan
 #############################################
 # Link the static library libStaticGLEW.a
 
-build libStaticGLEW.a: CXX_STATIC_LIBRARY_LINKER__StaticGLEW_Release CMakeFiles/StaticGLEW.dir/StaticGLEW_autogen/mocs_compilation.cpp.o CMakeFiles/StaticGLEW.dir/glew/src/glew.c.o || StaticGLEW_autogen StaticGLEW_autogen_timestamp_deps
+build libStaticGLEW.a: CXX_STATIC_LIBRARY_LINKER__StaticGLEW_Release CMakeFiles/StaticGLEW.dir/StaticGLEW_autogen/mocs_compilation.cpp.o CMakeFiles/StaticGLEW.dir/glew/src/glew.c.o CMakeFiles/StaticGLEW.dir/src/shadows.cpp.o || StaticGLEW_autogen StaticGLEW_autogen_timestamp_deps
   ARCH_FLAGS = -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk
   LANGUAGE_COMPILE_FLAGS = -Wno-deprecated-volatile -O3 -DNDEBUG
   OBJECT_DIR = CMakeFiles/StaticGLEW.dir
