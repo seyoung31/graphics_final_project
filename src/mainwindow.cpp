@@ -160,7 +160,7 @@ void MainWindow::initialize() {
     ec3->setChecked(false);
 
     ec4 = new QCheckBox();
-    ec4->setText(QStringLiteral("Extra Credit 4"));
+    ec4->setText(QStringLiteral("Let it snow!!!"));
     ec4->setChecked(false);
 
     vLayout->addWidget(uploadFile);
