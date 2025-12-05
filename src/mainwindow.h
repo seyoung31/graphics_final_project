@@ -23,6 +23,7 @@ private:
     void connectParam2();
     void connectNear();
     void connectFar();
+    void connectFocus();
 
     // From old Project 6
     // void connectPerPixelFilter();
@@ -47,8 +48,10 @@ private:
     QSpinBox *p2Box;
     QSlider *nearSlider;
     QSlider *farSlider;
+    QSlider *focusSlider;    //new
     QDoubleSpinBox *nearBox;
     QDoubleSpinBox *farBox;
+    QDoubleSpinBox *focusBox; //new
 
     // Extra Credit:
     QCheckBox *ec1;
@@ -67,12 +70,14 @@ private slots:
     void onValChangeP2(int newValue);
     void onValChangeNearSlider(int newValue);
     void onValChangeFarSlider(int newValue);
+    void onValChangeFocusSlider(int newValue);//new
     void onValChangeNearBox(double newValue);
     void onValChangeFarBox(double newValue);
+    void onValChangeFocusBox(double newValue);//new
 
     // Extra Credit:
     void onShadowMapping();
-    void onExtraCredit2();
+    void onScreenSpaceDOF();
     void onExtraCredit3();
     void onExtraCredit4();
 };

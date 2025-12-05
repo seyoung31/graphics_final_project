@@ -62,6 +62,11 @@ void PostProcess::destroy() {
         glDeleteProgram(m_postprocessShader);
         m_postprocessShader = 0;
     }
+
+    if (m_fbo_depth_texture) {
+        glDeleteTextures(1, &m_fbo_depth_texture);
+        m_fbo_depth_texture = 0;
+    }
 }
 
 void PostProcess::makeFullscreenQuad() {
@@ -103,6 +108,7 @@ void PostProcess::makeFBO() {
     if (m_fbo_texture)      glDeleteTextures(1, &m_fbo_texture);
     if (m_fbo_renderbuffer) glDeleteRenderbuffers(1, &m_fbo_renderbuffer);
     if (m_fbo)              glDeleteFramebuffers(1, &m_fbo);
+    if (m_fbo_depth_texture) glDeleteTextures(1, &m_fbo_depth_texture); //dof
 
     // Generate and bind an empty texture, set its min/mag filter interpolation, then unbind
     glGenTextures(1, &m_fbo_texture);
@@ -117,6 +123,22 @@ void PostProcess::makeFBO() {
 
     glBindTexture(GL_TEXTURE_2D, 0); // done configuring texture
 
+    //Depth Tex!!
+    glGenTextures(1, &m_fbo_depth_texture);
+    glBindTexture(GL_TEXTURE_2D, m_fbo_depth_texture);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24,
+                 m_fboWidth, m_fboHeight, 0,
+                 GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+
     // Generate and bind a renderbuffer of the right size, set its format, then unbind
     glGenRenderbuffers(1, &m_fbo_renderbuffer);
     glBindRenderbuffer(GL_RENDERBUFFER, m_fbo_renderbuffer);
@@ -130,7 +152,8 @@ void PostProcess::makeFBO() {
 
     //Add our texture as a color attachment, and our renderbuffer as a depth+stencil attachment, to our FBO
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_fbo_texture, 0);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_fbo_renderbuffer);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+                           GL_TEXTURE_2D, m_fbo_depth_texture, 0);
 
     // Leave whatever was bound before up to caller
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -165,7 +188,12 @@ void PostProcess::loadLUT(const QString &lutPath) {
     glActiveTexture(GL_TEXTURE0);
 }
 
-void PostProcess::drawToScreen(float gradeStrength, bool enableCG) {
+void PostProcess::drawToScreen(float gradeStrength,
+                               bool enableCG,
+                               bool dofEnabled,
+                               float nearPlane,
+                               float farPlane,
+                               float focusPlane) {
     glUseProgram(m_postprocessShader);
 
     // Scene color texture (the one attached to our FBO) -> unit 0
@@ -173,10 +201,23 @@ void PostProcess::drawToScreen(float gradeStrength, bool enableCG) {
     glBindTexture(GL_TEXTURE_2D, m_fbo_texture);
     glUniform1i(m_loc_tOrig, 0);
 
-    // LUT texture -> unit 1
+    GLint locSceneColor = glGetUniformLocation(m_postprocessShader, "sceneColorTex");
+    if (locSceneColor >= 0) {
+        glUniform1i(locSceneColor, 0); // new name: sceneColorTex
+    }
+
+    // Scene depth texture -> unit 1
     glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, m_fbo_depth_texture);
+    GLint locSceneDepth = glGetUniformLocation(m_postprocessShader, "sceneDepthTex");
+    if (locSceneDepth >= 0) {
+        glUniform1i(locSceneDepth, 1);
+    }
+
+    // LUT texture -> unit 2
+    glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D, m_lutTexture);
-    glUniform1i(m_loc_tLUT, 1);
+    glUniform1i(m_loc_tLUT, 2);
 
     // Optional grading controls
     if (m_loc_gradeStr >= 0) {
@@ -186,11 +227,32 @@ void PostProcess::drawToScreen(float gradeStrength, bool enableCG) {
         glUniform1i(m_loc_enableCG, enableCG ? 1 : 0);
     }
 
+    //dof uniforms
+    GLint locDof   = glGetUniformLocation(m_postprocessShader, "dof");
+    if (locDof >= 0)   glUniform1i(locDof,   dofEnabled ? 1 : 0);
+
+    GLint locNear  = glGetUniformLocation(m_postprocessShader, "uNear");
+    GLint locFar   = glGetUniformLocation(m_postprocessShader, "uFar");
+    GLint locFocus = glGetUniformLocation(m_postprocessShader, "uFocus");
+    if (locNear  >= 0) glUniform1f(locNear,  nearPlane);
+    if (locFar   >= 0) glUniform1f(locFar,   farPlane);
+    if (locFocus >= 0) glUniform1f(locFocus, focusPlane);
+
+    // Real inverse screen size for blur radius
+    GLint locInvScreen = glGetUniformLocation(m_postprocessShader, "uInvScreenSize");
+    if (locInvScreen >= 0) {
+        glUniform2f(locInvScreen,
+                    1.0f / float(m_fboWidth),
+                    1.0f / float(m_fboHeight));
+    }
+
     glBindVertexArray(m_fullscreen_vao);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
 
     // Clean up texture bindings
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, 0);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, 0);
     glActiveTexture(GL_TEXTURE0);

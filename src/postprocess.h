@@ -15,7 +15,11 @@ public:
     void destroy();
 
     // Draw fullscreen quad using the scene texture and LUT
-    void drawToScreen(float gradeStrength, bool enableCG);
+    void drawToScreen(float gradeStrength, bool enableCG,
+                  bool dofEnabled,
+                  float nearPlane,
+                  float farPlane,
+                  float focusPlane);
 
     // Access the offscreen FBO so Realtime can render into it
     GLuint fbo() const { return m_fbo; };
@@ -35,6 +39,7 @@ private:
     GLuint m_fbo = 0;
     GLuint m_fbo_texture = 0;
     GLuint m_fbo_renderbuffer = 0;
+    GLuint m_fbo_depth_texture = 0;  // used for DOF
 
     GLuint m_fullscreen_vao = 0;
     GLuint m_fullscreen_vbo = 0;

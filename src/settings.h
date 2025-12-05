@@ -9,10 +9,11 @@ struct Settings {
     int shapeParameter2 = 1;
     float nearPlane = 1;
     float farPlane = 1;
+    float focusPlane = 1;
     bool perPixelFilter = false;
     bool kernelBasedFilter = false;
     bool shadowMapping = false;
-    bool extraCredit2 = false;
+    bool screenSpaceDOF = false;
     bool extraCredit3 = false;
     bool extraCredit4 = false;
 };

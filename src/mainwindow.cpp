@@ -48,6 +48,9 @@ void MainWindow::initialize() {
     QLabel *far_label = new QLabel(); // Far plane label
     far_label->setText("Far Plane:");
 
+    //Focus plane
+    QLabel *focus_label = new QLabel(); // Focus plane label
+    focus_label->setText("Focus Plane:");
 
     // From old Project 6
     // // Create checkbox for per-pixel filter
@@ -111,6 +114,9 @@ void MainWindow::initialize() {
     QHBoxLayout *lnear = new QHBoxLayout();
     QGroupBox *farLayout = new QGroupBox(); // horizonal far slider alignment
     QHBoxLayout *lfar = new QHBoxLayout();
+    //new for focus
+    QGroupBox *focusLayout = new QGroupBox(); // horizonal focus slider alignment
+    QHBoxLayout *lfocus = new QHBoxLayout();
 
     // Create slider controls to control near/far planes
     nearSlider = new QSlider(Qt::Orientation::Horizontal); // Near plane slider
@@ -137,6 +143,18 @@ void MainWindow::initialize() {
     farBox->setSingleStep(0.1f);
     farBox->setValue(100.f);
 
+    focusSlider = new QSlider(Qt::Orientation::Horizontal); // focus plane slider
+    focusSlider->setTickInterval(1);
+    focusSlider->setMinimum(0.01f);
+    focusSlider->setMaximum(10000);
+    focusSlider->setValue(10000);
+
+    focusBox = new QDoubleSpinBox();
+    focusBox->setMinimum(0.01f);
+    focusBox->setMaximum(100.f);
+    focusBox->setSingleStep(0.1f);
+    focusBox->setValue(100.f);
+
     // Adds the slider and number box to the parameter layouts
     lnear->addWidget(nearSlider);
     lnear->addWidget(nearBox);
@@ -146,13 +164,17 @@ void MainWindow::initialize() {
     lfar->addWidget(farBox);
     farLayout->setLayout(lfar);
 
+    lfocus->addWidget(focusSlider);
+    lfocus->addWidget(focusBox);
+    focusLayout->setLayout(lfocus);
+
     // Extra Credit:
     ec1 = new QCheckBox();
     ec1->setText(QStringLiteral("Shadow Mapping"));
     ec1->setChecked(false);
 
     ec2 = new QCheckBox();
-    ec2->setText(QStringLiteral("Extra Credit 2"));
+    ec2->setText(QStringLiteral("Screen Space DOF"));
     ec2->setChecked(false);
 
     ec3 = new QCheckBox();
@@ -175,6 +197,9 @@ void MainWindow::initialize() {
     vLayout->addWidget(nearLayout);
     vLayout->addWidget(far_label);
     vLayout->addWidget(farLayout);
+    //focus
+    vLayout->addWidget(focus_label);
+    vLayout->addWidget(focusLayout);
 
     // From old Project 6
     // vLayout->addWidget(filters_label);
@@ -197,6 +222,8 @@ void MainWindow::initialize() {
     // Set default values for near and far planes
     onValChangeNearBox(0.1f);
     onValChangeFarBox(10.f);
+    //default focus
+    onValChangeFocusBox(5.f);
 }
 
 void MainWindow::finish() {
@@ -214,6 +241,7 @@ void MainWindow::connectUIElements() {
     connectParam2();
     connectNear();
     connectFar();
+    connectFocus();
     connectExtraCredit();
 }
 
@@ -258,9 +286,15 @@ void MainWindow::connectFar() {
             this, &MainWindow::onValChangeFarBox);
 }
 
+void MainWindow::connectFocus() {
+    connect(focusSlider, &QSlider::valueChanged, this, &MainWindow::onValChangeFocusSlider);
+    connect(focusBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+            this, &MainWindow::onValChangeFocusBox);
+}
+
 void MainWindow::connectExtraCredit() {
     connect(ec1, &QCheckBox::clicked, this, &MainWindow::onShadowMapping);
-    connect(ec2, &QCheckBox::clicked, this, &MainWindow::onExtraCredit2);
+    connect(ec2, &QCheckBox::clicked, this, &MainWindow::onScreenSpaceDOF);
     connect(ec3, &QCheckBox::clicked, this, &MainWindow::onExtraCredit3);
     connect(ec4, &QCheckBox::clicked, this, &MainWindow::onExtraCredit4);
 }
@@ -346,6 +380,13 @@ void MainWindow::onValChangeFarSlider(int newValue) {
     realtime->settingsChanged();
 }
 
+void MainWindow::onValChangeFocusSlider(int newValue) {
+    //farSlider->setValue(newValue);
+    focusBox->setValue(newValue/100.f);
+    settings.focusPlane = focusBox->value();
+    realtime->settingsChanged();
+}
+
 void MainWindow::onValChangeNearBox(double newValue) {
     nearSlider->setValue(int(newValue*100.f));
     //nearBox->setValue(newValue);
@@ -360,6 +401,13 @@ void MainWindow::onValChangeFarBox(double newValue) {
     realtime->settingsChanged();
 }
 
+void MainWindow::onValChangeFocusBox(double newValue) {
+    focusSlider->setValue(int(newValue*100.f));
+    //farBox->setValue(newValue);
+    settings.focusPlane = focusBox->value();
+    realtime->settingsChanged();
+}
+
 // Extra Credit:
 
 void MainWindow::onShadowMapping() {
@@ -367,8 +415,8 @@ void MainWindow::onShadowMapping() {
     realtime->settingsChanged();
 }
 
-void MainWindow::onExtraCredit2() {
-    settings.extraCredit2 = !settings.extraCredit2;
+void MainWindow::onScreenSpaceDOF() {
+    settings.screenSpaceDOF = !settings.screenSpaceDOF;
     realtime->settingsChanged();
 }
 

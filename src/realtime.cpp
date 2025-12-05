@@ -265,7 +265,12 @@ void Realtime::paintGL() {
     glViewport(0, 0, m_screen_width, m_screen_height);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    m_post.drawToScreen(m_gradeStrength, m_enableColorGrading);
+    m_post.drawToScreen(m_gradeStrength,
+                        m_enableColorGrading,
+                        settings.screenSpaceDOF,
+                        settings.nearPlane,
+                        settings.farPlane,
+                        settings.focusPlane);
 
 
 }
