@@ -53,7 +53,6 @@ vec3 applyLUT(vec3 color) {
 }
 
 vec3 gradeColor(vec3 c) {
-    if (length(c) < 0.001 || !u_EnableColorGrading) return c;
     vec3 lutColor = applyLUT(c);
     return mix(c, lutColor, u_GradeStrength);
 }
