@@ -68,7 +68,8 @@ vec3 dofBlur(vec2 uv, float zView) {
 
     if (radiusPx < 0.5) {
         // DOF second => return graded center pixel
-        return gradeColor(texture(tOrig, uv).rgb);
+        vec3 c = texture(tOrig, uv).rgb;
+        return useColorGrade ? gradeColor(c) : c;
     }
 
     const int TAP_COUNT = 13;
@@ -92,11 +93,17 @@ vec3 dofBlur(vec2 uv, float zView) {
         vec2 sampleUV = clamp(uv + offsetUV, vec2(0.0), vec2(1.0));
 
         vec3 raw = texture(tOrig, sampleUV).rgb;
-        vec3 graded = gradeColor(raw);   // DOF second fix
+        if (useColorGrade){
+            vec3 processed = gradeColor(raw);   // DOF second fix
+            float w = (i == 0) ? 3.0 : 1.0;
+            accum += processed * w;
+            wsum  += w;
 
-        float w = (i == 0) ? 3.0 : 1.0;
-        accum += graded * w;
-        wsum  += w;
+        }else{
+            float w = (i == 0) ? 3.0 : 1.0;
+            accum += raw * w;
+            wsum  += w;
+        }
     }
 
     return accum / wsum;

@@ -71,6 +71,45 @@ float shadowFactor(int i) { //check how in shadow things are
     }
 }
 
+float shadowFactorPCF(int i) {
+    //shadow factor with some offset now to make soft
+
+    vec3 proj = lightSpacePos[i].xyz / lightSpacePos[i].w;
+    proj = proj * 0.5 + 0.5;
+
+    if (proj.x < 0.0 || proj.x > 1.0 ||
+        proj.y < 0.0 || proj.y > 1.0 ||
+        proj.z < 0.0 || proj.z > 1.0) {
+        return 1.0;
+    }
+
+    float current = proj.z;
+    float alpha = 0.002; // bias
+
+    // texel size in UV space
+    vec2 texelSize = 1.0 / vec2(textureSize(shadowMaps[i], 0));
+
+    // kernel radius in texels (tune 1–3)
+    int radius = 2;
+
+    float sum = 0.0;
+    float count = 0.0;
+
+    float softness = 2;
+
+    //softening
+    for (int x = -radius; x <= radius; x++) {
+        for (int y = -radius; y <= radius; y++) {
+            vec2 offset = vec2(x, y) * texelSize * softness;
+            float closest = texture(shadowMaps[i], proj.xy + offset).r;
+            sum += (current - alpha > closest) ? 0.0 : 1.0;
+            count += 1.0;
+        }
+    }
+
+    return sum / count; // smooth edge
+}
+
 void main() {
     // Normalize normals (for interpolation)
     vec3 N = normalize(w_normal);
@@ -176,7 +215,7 @@ void main() {
         float s = 1.0;
         if (use_shadow_mapping == 1 && lightType[i] != 0) { //not dealing with point lights :)
             //here we modify the diffuse/spec factor by the shadow factor!
-            s = shadowFactor(i);
+            s = shadowFactorPCF(i);
             diffuse *= s;
             specular *= s;
 
