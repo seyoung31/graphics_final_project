@@ -1,28 +1,58 @@
-#include "cube.h"
+#include "Cube.h"
 
 void Cube::updateParams(int param1) {
-    m_vertexData = std::vector<float>();
-    m_param1 = param1;
+    m_param1 = std::max(1, param1);
     setVertexData();
 }
 
 void Cube::makeTile(glm::vec3 topLeft,
                     glm::vec3 topRight,
                     glm::vec3 bottomLeft,
-                    glm::vec3 bottomRight) {
-
+                    glm::vec3 bottomRight,
+                    glm::vec2 uvTopLeft,
+                    glm::vec2 uvTopRight,
+                    glm::vec2 uvBottomLeft,
+                    glm::vec2 uvBottomRight) {
+    
     glm::vec3 N = glm::normalize(glm::cross(bottomLeft - topLeft, bottomRight - topLeft));
 
     // triangle 1
-    insertVec3(m_vertexData, topLeft); insertVec3(m_vertexData, N);
-    insertVec3(m_vertexData, bottomLeft); insertVec3(m_vertexData, N);
-    insertVec3(m_vertexData, bottomRight); insertVec3(m_vertexData, N);
+    Vertex v1;
+    v1.position = topLeft;
+    v1.normal = N;
+    v1.uv = uvTopLeft;
+    m_vertices.push_back(v1);
+    
+    Vertex v2;
+    v2.position = bottomLeft;
+    v2.normal = N;
+    v2.uv = uvBottomLeft;
+    m_vertices.push_back(v2);
+    
+    Vertex v3;
+    v3.position = bottomRight;
+    v3.normal = N;
+    v3.uv = uvBottomRight;
+    m_vertices.push_back(v3);
 
     // triangle 2
-    insertVec3(m_vertexData, topLeft); insertVec3(m_vertexData, N);
-    insertVec3(m_vertexData, bottomRight); insertVec3(m_vertexData, N);
-    insertVec3(m_vertexData, topRight); insertVec3(m_vertexData, N);
-
+    Vertex v4;
+    v4.position = topLeft;
+    v4.normal = N;
+    v4.uv = uvTopLeft;
+    m_vertices.push_back(v4);
+    
+    Vertex v5;
+    v5.position = bottomRight;
+    v5.normal = N;
+    v5.uv = uvBottomRight;
+    m_vertices.push_back(v5);
+    
+    Vertex v6;
+    v6.position = topRight;
+    v6.normal = N;
+    v6.uv = uvTopRight;
+    m_vertices.push_back(v6);
 }
 
 void Cube::makeFace(glm::vec3 topLeft,
@@ -30,11 +60,9 @@ void Cube::makeFace(glm::vec3 topLeft,
                     glm::vec3 bottomLeft,
                     glm::vec3 bottomRight) {
 
-    m_vertexData.reserve(m_vertexData.size() + 6 * 6 * m_param1 * m_param1);
     const float step = 1.0f / m_param1;
 
     for (int r = 0; r < m_param1; ++r) {
-
         float v0 = r * step;
         float v1 = (r+1) * step;
 
@@ -53,14 +81,18 @@ void Cube::makeFace(glm::vec3 topLeft,
             glm::vec3 bl = glm::mix(L1, R1, u0);
             glm::vec3 br = glm::mix(L1, R1, u1);
 
-            makeTile(tl, tr, bl, br);
+            // UV coordinates
+            glm::vec2 uvTL(u0, v0);
+            glm::vec2 uvTR(u1, v0);
+            glm::vec2 uvBL(u0, v1);
+            glm::vec2 uvBR(u1, v1);
+
+            makeTile(tl, tr, bl, br, uvTL, uvTR, uvBL, uvBR);
         }
     }
-
-
 }
 
-void Cube::setVertexData() {
+void Cube::buildVertices() {
     // +Z face (front)
     makeFace(glm::vec3(-0.5f,  0.5f, 0.5f),
              glm::vec3( 0.5f,  0.5f, 0.5f),
@@ -96,12 +128,4 @@ void Cube::setVertexData() {
              glm::vec3( 0.5f, -0.5f,  0.5f),
              glm::vec3(-0.5f, -0.5f, -0.5f),
              glm::vec3( 0.5f, -0.5f, -0.5f));
-}
-
-// Inserts a glm::vec3 into a vector of floats.
-// This will come in handy if you want to take advantage of vectors to build your shape!
-void Cube::insertVec3(std::vector<float> &data, glm::vec3 v) {
-    data.push_back(v.x);
-    data.push_back(v.y);
-    data.push_back(v.z);
 }

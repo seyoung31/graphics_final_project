@@ -178,7 +178,7 @@ void MainWindow::initialize() {
     ec2->setChecked(false);
 
     ec3 = new QCheckBox();
-    ec3->setText(QStringLiteral("Extra Credit 3"));
+    ec3->setText(QStringLiteral("Normal Mapping"));
     ec3->setChecked(false);
 
     ec4 = new QCheckBox();
@@ -421,7 +421,7 @@ void MainWindow::onScreenSpaceDOF() {
 }
 
 void MainWindow::onExtraCredit3() {
-    settings.extraCredit3 = !settings.extraCredit3;
+    settings.normalMapping = !settings.normalMapping;
     realtime->settingsChanged();
 }
 

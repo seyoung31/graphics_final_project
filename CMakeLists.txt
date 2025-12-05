@@ -32,10 +32,11 @@ add_executable(${PROJECT_NAME}
     src/settings.cpp
     src/utils/scenefilereader.cpp
     src/utils/sceneparser.cpp
-    src/shapes/cone.cpp
-    src/shapes/cube.cpp
-    src/shapes/sphere.cpp
-    src/shapes/cylinder.cpp
+    src/shapes/Shape.cpp
+    src/shapes/Cone.cpp
+    src/shapes/Cube.cpp
+    src/shapes/Sphere.cpp
+    src/shapes/Cylinder.cpp
     src/utils/shaderutils.cpp
     src/particles/particles.cpp
 
@@ -48,10 +49,11 @@ add_executable(${PROJECT_NAME}
     src/utils/sceneparser.h
     src/utils/shaderloader.h
     src/utils/aspectratiowidget/aspectratiowidget.hpp
-    src/shapes/cone.h
-    src/shapes/cube.h
-    src/shapes/sphere.h 
-    src/shapes/cylinder.h
+    src/shapes/Shape.h
+    src/shapes/Cone.h
+    src/shapes/Cube.h
+    src/shapes/Sphere.h 
+    src/shapes/Cylinder.h
     src/shaderloader.h
     src/utils/shaderutils.h
     src/postprocess.h src/postprocess.cpp

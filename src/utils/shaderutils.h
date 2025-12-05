@@ -2,9 +2,11 @@
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
-#include "utils/scenedata.h"
-#include "realtime.h"
+#include "utils/sceneparser.h"
 #include <vector>
+
+// Forward declaration
+class Realtime;
 
 namespace ShaderUtils {
 
@@ -18,7 +20,8 @@ namespace ShaderUtils {
                     const RenderData &m_renderData,
                     const GLuint vaos[],
                     const int vertexCounts[],
-                    const GLuint instanceVBOs[]);
+                    const GLuint instanceVBOs[],
+                    Realtime* realtime = nullptr);
 }
 
 

@@ -14,15 +14,16 @@
 #include <glm/glm.hpp>
 
 #include <unordered_map>
+#include <string>
 #include <QElapsedTimer>
 #include <QOpenGLWidget>
 #include <QTime>
 #include <QTimer>
 
-#include "shapes/cube.h"
-#include "shapes/sphere.h"
-#include "shapes/cone.h"
-#include "shapes/cylinder.h"
+#include "shapes/Cube.h"
+#include "shapes/Sphere.h"
+#include "shapes/Cone.h"
+#include "shapes/Cylinder.h"
 
 #include "particles/particles.h"
 
@@ -135,4 +136,12 @@ private:
     glm::mat4 getLightVP(const SceneLightData& light);
     void paintLightView(const SceneLightData& light, const glm::mat4& lightVP);
     void renderShadows();
+
+    // Texture loading for normal mapping
+    std::unordered_map<std::string, GLuint> m_textureCache;
+    void cleanupTextures();
+
+public:
+    // Public texture loading function (needed by ShaderUtils)
+    GLuint loadTexture(const std::string& filename);
 };

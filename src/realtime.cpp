@@ -3,6 +3,7 @@
 #include <QCoreApplication>
 #include <QMouseEvent>
 #include <QKeyEvent>
+#include <QImage>
 #include <iostream>
 #include "glm/gtc/type_ptr.hpp"
 #include "settings.h"
@@ -52,6 +53,8 @@ void Realtime::finish() {
     m_post.destroy();
     m_particles.cleanup();
 
+    // Clean up texture cache
+    cleanupTextures();
 
     //clean up shadow fbos
     for (int i = 0; i < 8; i++) {
@@ -122,8 +125,9 @@ void Realtime::initializeGL() {
         std::size_t vec4Size = sizeof(glm::vec4);
         GLsizei stride = sizeof(glm::mat4);
 
+        // Instance model matrix starts at location 5 (after pos, normal, uv, tangent, bitangent)
         for (int col=0; col < 4; ++col) {
-            GLuint attribIndex = 2 + col;
+            GLuint attribIndex = 5 + col;
             glEnableVertexAttribArray(attribIndex);
             glVertexAttribPointer(attribIndex, 4, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(col * vec4Size));
             glVertexAttribDivisor(attribIndex, 1);
@@ -172,8 +176,8 @@ void Realtime::rebuildGeometryFromSettings() {
 
 void Realtime::uploadPrimitive(PrimitiveIndex idx, const std::vector<float> &data) {
 
-    // How many vertices the primitive has
-    m_vertexCounts[idx] = int(data.size() / 6);
+    // 14 floats per vertex: position(3) + normal(3) + uv(2) + tangent(3) + bitangent(3)
+    m_vertexCounts[idx] = int(data.size() / 14);
 
     // Bind this primitive's VAO and VBO
     glBindVertexArray(m_vaos[idx]);
@@ -182,11 +186,25 @@ void Realtime::uploadPrimitive(PrimitiveIndex idx, const std::vector<float> &dat
     // Copy vertex data into VBO
     glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), data.data(), GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), reinterpret_cast<void*>(0));
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), reinterpret_cast<void*>(3*sizeof(GLfloat)));
-
+    // Position (location 0)
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 14*sizeof(GLfloat), reinterpret_cast<void*>(0));
     glEnableVertexAttribArray(0);
+
+    // Normal (location 1)
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 14*sizeof(GLfloat), reinterpret_cast<void*>(3*sizeof(GLfloat)));
     glEnableVertexAttribArray(1);
+
+    // UV (location 2)
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 14*sizeof(GLfloat), reinterpret_cast<void*>(6*sizeof(GLfloat)));
+    glEnableVertexAttribArray(2);
+
+    // Tangent (location 3)
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 14*sizeof(GLfloat), reinterpret_cast<void*>(8*sizeof(GLfloat)));
+    glEnableVertexAttribArray(3);
+
+    // Bitangent (location 4)
+    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 14*sizeof(GLfloat), reinterpret_cast<void*>(11*sizeof(GLfloat)));
+    glEnableVertexAttribArray(4);
 
     // Unbind VAO when done
     glBindVertexArray(0);
@@ -207,7 +225,7 @@ void Realtime::renderScene() {
 
     renderShadows();
 
-    ShaderUtils::drawShapes(m_shader, m_renderData, m_vaos, m_vertexCounts, m_instanceVBOs);
+    ShaderUtils::drawShapes(m_shader, m_renderData, m_vaos, m_vertexCounts, m_instanceVBOs, this);
 
 }
 
@@ -603,6 +621,57 @@ void Realtime::saveViewportImage(std::string filePath) {
     glDeleteFramebuffers(1, &fbo);
 }
 
+
+// Texture loading for normal mapping
+GLuint Realtime::loadTexture(const std::string& filename) {
+    // Check if texture is already loaded
+    auto it = m_textureCache.find(filename);
+    if (it != m_textureCache.end()) {
+        return it->second;
+    }
+    
+    // Load image using Qt
+    QImage image(QString::fromStdString(filename));
+    if (image.isNull()) {
+        std::cerr << "Failed to load texture: " << filename << std::endl;
+        return 0;
+    }
+    
+    // Convert to RGBA format
+    QImage convertedImage = image.convertToFormat(QImage::Format_RGBA8888);
+    
+    // Generate OpenGL texture
+    GLuint textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    
+    // Upload texture data
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, convertedImage.width(), convertedImage.height(), 
+                 0, GL_RGBA, GL_UNSIGNED_BYTE, convertedImage.bits());
+    
+    // Set texture parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    
+    // Unbind texture
+    glBindTexture(GL_TEXTURE_2D, 0);
+    
+    // Cache the texture
+    m_textureCache[filename] = textureID;
+    
+    return textureID;
+}
+
+void Realtime::cleanupTextures() {
+    for (auto& pair : m_textureCache) {
+        if (pair.second != 0) {
+            glDeleteTextures(1, &pair.second);
+        }
+    }
+    m_textureCache.clear();
+}
 
 //Shadow Logic!!
 void Realtime::makeShadowFBO(){

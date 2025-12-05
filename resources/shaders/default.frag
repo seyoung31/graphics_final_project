@@ -3,8 +3,10 @@
 // Declare 'in' variables received post-interpolation from the vertex shader
 in vec3 w_pos; // world-space position
 in vec3 w_normal; // world-space normal
+in vec2 fragUV;
+in mat3 TBN;
 
-// Declare an 'out' vec4 for outptu color
+// Declare an 'out' vec4 for output color
 out vec4 fragColor;
 
 // Material parameters
@@ -27,6 +29,17 @@ uniform float lightAngle[MAX_LIGHTS];
 uniform float lightPenumbra[MAX_LIGHTS];
 
 uniform vec4 camPos; // world-space camera pos
+uniform mat4 view; // view matrix for TBN calculations
+
+// Texture samplers
+uniform sampler2D DiffuseTextureSampler;
+uniform sampler2D NormalTextureSampler;
+
+// Texture control flags
+uniform bool useNormalMapping;
+uniform bool useTextureMap;
+uniform float textureRepeatU;
+uniform float textureRepeatV;
 
 //SHADOW MAPPING VARS
 in vec4 lightSpacePos[8]; //for shadow mapping
@@ -62,6 +75,14 @@ void main() {
     // Normalize normals (for interpolation)
     vec3 N = normalize(w_normal);
     vec3 V = normalize(vec3(camPos) - w_pos); // view dir
+    
+    // Sample diffuse texture if available
+    vec3 diffuseColor = k_d;
+    if (useTextureMap) {
+        vec2 scaledUV = fragUV * vec2(textureRepeatU, textureRepeatV);
+        vec4 diffuseTexSample = texture(DiffuseTextureSampler, scaledUV);
+        diffuseColor = diffuseTexSample.rgb;
+    }
 
     vec3 color = k_a * vec3(1.0);
 
@@ -115,12 +136,40 @@ void main() {
             }
         }
 
-        // Phong shading
-        float diff = max(dot(N, L), 0.0);
-        vec3 R = reflect(-L, N);
-        float specIntensity = pow(max(dot(R, V), 0.0), shininess);
+        float diff;
+        float specIntensity;
+        
+        // If using normal mapping, do lighting in tangent space
+        if (useNormalMapping) {
+            mat3 View3x3 = mat3(view);
+            vec3 L_cameraspace = normalize(View3x3 * L);
+            vec3 l_tangentspace = TBN * L_cameraspace;
+            // Transform eye direction to tangent space
+            vec3 E_tangentspace = TBN * normalize(View3x3 * V);
+            
+            // Get normal in tangent space (from the normal map)
+            vec3 n = normalize(texture(NormalTextureSampler, fragUV).rgb * 2.0 - 1.0);
+            
+            // Diffuse lighting: clamp(dot(n,l), 0, 1) with n and l in tangent space
+            diff = clamp(dot(n, l_tangentspace), 0.0, 1.0);
+            
+            // Specular lighting: clamp(dot(E,R), 0, 1) with E and R in tangent space
+            vec3 R_tangentspace = reflect(-l_tangentspace, n);
+            float rdotv = clamp(dot(E_tangentspace, R_tangentspace), 0.0, 1.0);
+            
+            if (diff > 0.0 && rdotv > 0.0 && shininess > 0.0) {
+                specIntensity = pow(rdotv, shininess);
+            } else {
+                specIntensity = 0.0;
+            }
+        } else {
+            // Standard Phong shading in world space
+            diff = max(dot(N, L), 0.0);
+            vec3 R = reflect(-L, N);
+            specIntensity = pow(max(dot(R, V), 0.0), shininess);
+        }
 
-        vec3 diffuse = k_d * diff * lightColor[i];
+        vec3 diffuse = diffuseColor * diff * lightColor[i];
         vec3 specular = k_s * specIntensity * lightColor[i];
 
         // shadow mapping

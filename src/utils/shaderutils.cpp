@@ -2,6 +2,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <random>
 #include "realtime.h"
+#include "settings.h"
 
 using namespace glm;
 
@@ -99,35 +100,43 @@ namespace ShaderUtils {
                     const RenderData &m_renderData,
                     const GLuint vaos[],
                     const int vertexCounts[],
-                    const GLuint instanceVBOs[]) {
+                    const GLuint instanceVBOs[],
+                    Realtime* realtime) {
 
         glUseProgram(m_shader);
 
         // Global material coefficients
         const SceneGlobalData &global = m_renderData.globalData;
 
-        // 1) Group shapes by primitive type and remember a representative material
-        static bool initialized = false;
-        static int lastShapeCount = -1;
-        static std::vector<mat4> instanceModels[Realtime::PRIM_COUNT];
-        static SceneMaterial batchMaterial[Realtime::PRIM_COUNT];
-        static bool hasMaterial[Realtime::PRIM_COUNT] = {false, false, false, false};
+        // Get uniform locations
+        GLint k_a_loc = glGetUniformLocation(m_shader, "k_a");
+        GLint k_d_loc = glGetUniformLocation(m_shader, "k_d");
+        GLint k_s_loc = glGetUniformLocation(m_shader, "k_s");
+        GLint shininess_loc = glGetUniformLocation(m_shader, "shininess");
+        GLint useNormalMappingLoc = glGetUniformLocation(m_shader, "useNormalMapping");
+        GLint useTextureMapLoc = glGetUniformLocation(m_shader, "useTextureMap");
+        GLint textureRepeatULoc = glGetUniformLocation(m_shader, "textureRepeatU");
+        GLint textureRepeatVLoc = glGetUniformLocation(m_shader, "textureRepeatV");
+        GLint diffuseTextureLoc = glGetUniformLocation(m_shader, "DiffuseTextureSampler");
+        GLint normalTextureLoc = glGetUniformLocation(m_shader, "NormalTextureSampler");
 
-        if (!initialized || int(m_renderData.shapes.size()) != lastShapeCount) {
-            for (int i=0; i < Realtime::PRIM_COUNT; ++i) {
-                instanceModels[i].clear();
-                hasMaterial[i] = false;
-            }
+        // Separate shapes into textured and non-textured groups
+        std::vector<const RenderShapeData*> texturedShapes;
+        std::vector<mat4> instanceModels[Realtime::PRIM_COUNT];
+        SceneMaterial batchMaterial[Realtime::PRIM_COUNT];
+        bool hasMaterial[Realtime::PRIM_COUNT] = {false, false, false, false};
 
-            // Randomization
-            std::mt19937 rng{std::random_device{}()};
-            std::uniform_real_distribution<float> posJitter(-0.5f, 0.5f);
-            std::uniform_real_distribution<float> scaleJitter(0.8f, 1.2f);
+        for (const RenderShapeData &shapeData : m_renderData.shapes) {
+            const ScenePrimitive &prim = shapeData.primitive;
 
-            for (const RenderShapeData &shapeData : m_renderData.shapes) {
-                const ScenePrimitive &prim = shapeData.primitive;
+            // Check if shape has textures (normal map or diffuse texture with normal mapping enabled)
+            bool hasTexture = prim.material.bumpMap.isUsed || prim.material.textureMap.isUsed;
 
-                // Choose VAO based on primitive type
+            if (hasTexture && realtime != nullptr && settings.normalMapping) {
+                // Shapes with textures drawn individually
+                texturedShapes.push_back(&shapeData);
+            } else {
+                // Shapes without textures - batch for instanced rendering
                 Realtime::PrimitiveIndex idx;
 
                 switch (prim.type) {
@@ -152,40 +161,17 @@ namespace ShaderUtils {
                     hasMaterial[idx] = true;
                 }
 
-                mat4 baseModel = shapeData.ctm;
-
-                // One-time random jitter in position and uniform scale
-                //Turned off jitter SOZ!
-
-                // float jx = posJitter(rng);
-                // float jy = posJitter(rng);
-                // float jz = posJitter(rng);
-                // float s  = scaleJitter(rng);
-
-                // mat4 randomTransform(1.0f);
-                // randomTransform = translate(randomTransform, vec3(jx, jy, jz));
-                // randomTransform = scale(randomTransform, vec3(s));
-
-                // // Apply jitter on top of the existing placement
-                // mat4 finalModel = baseModel * randomTransform;
-
-                // instanceModels[idx].push_back(finalModel);
-
-                mat4 finalModel = shapeData.ctm;
-                instanceModels[idx].push_back(finalModel);
+                instanceModels[idx].push_back(shapeData.ctm);
             }
-
-            initialized = true;
-            lastShapeCount = int(m_renderData.shapes.size());
-
         }
 
-        // 2) Upload per-instance data and issue instanced draws
-        GLint k_a_loc = glGetUniformLocation(m_shader, "k_a");
-        GLint k_d_loc = glGetUniformLocation(m_shader, "k_d");
-        GLint k_s_loc = glGetUniformLocation(m_shader, "k_s");
-        GLint shininess_loc = glGetUniformLocation(m_shader, "shininess");
+        // Set default texture state (no textures)
+        glUniform1i(useNormalMappingLoc, 0);
+        glUniform1i(useTextureMapLoc, 0);
+        glUniform1f(textureRepeatULoc, 1.0f);
+        glUniform1f(textureRepeatVLoc, 1.0f);
 
+        // 1) Draw non-textured shapes using instanced rendering
         for (int idx=0; idx < Realtime::PRIM_COUNT; ++idx) {
             const auto &models = instanceModels[idx];
             if (models.empty() || !hasMaterial[idx]) {
@@ -217,5 +203,97 @@ namespace ShaderUtils {
             glDrawArraysInstanced(GL_TRIANGLES, 0, vertexCounts[idx], static_cast<GLsizei>(models.size()));
             glBindVertexArray(0);
         }
+
+        // 2) Draw textured shapes individually (non-instanced)
+        for (const RenderShapeData* shapePtr : texturedShapes) {
+            const RenderShapeData &shapeData = *shapePtr;
+            const ScenePrimitive &prim = shapeData.primitive;
+            const SceneMaterial &mat = prim.material;
+
+            // Get VAO and vertex count for this primitive type
+            Realtime::PrimitiveIndex idx;
+            switch (prim.type) {
+            case PrimitiveType::PRIMITIVE_SPHERE:
+                idx = Realtime::PRIM_SPHERE;
+                break;
+            case PrimitiveType::PRIMITIVE_CUBE:
+                idx = Realtime::PRIM_CUBE;
+                break;
+            case PrimitiveType::PRIMITIVE_CYLINDER:
+                idx = Realtime::PRIM_CYLINDER;
+                break;
+            case PrimitiveType::PRIMITIVE_CONE:
+                idx = Realtime::PRIM_CONE;
+                break;
+            default:
+                continue;
+            }
+
+            // Set material uniforms
+            glm::vec3 k_a = global.ka * glm::vec3(mat.cAmbient);
+            glm::vec3 k_d = global.kd * glm::vec3(mat.cDiffuse);
+            glm::vec3 k_s = global.ks * glm::vec3(mat.cSpecular);
+
+            float shininess = mat.shininess;
+            if (shininess <= 0.f) {
+                shininess = 1.f;
+            }
+
+            glUniform3fv(k_a_loc, 1, glm::value_ptr(k_a));
+            glUniform3fv(k_d_loc, 1, glm::value_ptr(k_d));
+            glUniform3fv(k_s_loc, 1, glm::value_ptr(k_s));
+            glUniform1f(shininess_loc, shininess);
+
+            // Handle diffuse texture
+            bool hasValidDiffuseTexture = false;
+            if (mat.textureMap.isUsed && realtime != nullptr) {
+                GLuint diffuseTexture = realtime->loadTexture(mat.textureMap.filename);
+                if (diffuseTexture != 0) {
+                    hasValidDiffuseTexture = true;
+                    glActiveTexture(GL_TEXTURE0);
+                    glBindTexture(GL_TEXTURE_2D, diffuseTexture);
+                    glUniform1i(diffuseTextureLoc, 0);
+                    glUniform1f(textureRepeatULoc, mat.textureMap.repeatU);
+                    glUniform1f(textureRepeatVLoc, mat.textureMap.repeatV);
+                }
+            }
+            glUniform1i(useTextureMapLoc, hasValidDiffuseTexture ? 1 : 0);
+            if (!hasValidDiffuseTexture) {
+                glUniform1f(textureRepeatULoc, 1.0f);
+                glUniform1f(textureRepeatVLoc, 1.0f);
+            }
+
+            // Handle normal map texture
+            bool hasValidNormalTexture = false;
+            if (mat.bumpMap.isUsed && realtime != nullptr) {
+                GLuint normalTexture = realtime->loadTexture(mat.bumpMap.filename);
+                if (normalTexture != 0) {
+                    hasValidNormalTexture = true;
+                    glActiveTexture(GL_TEXTURE1);
+                    glBindTexture(GL_TEXTURE_2D, normalTexture);
+                    glUniform1i(normalTextureLoc, 1);
+                }
+            }
+            glUniform1i(useNormalMappingLoc, hasValidNormalTexture ? 1 : 0);
+
+            // Upload single instance model matrix
+            glBindVertexArray(vaos[idx]);
+            glBindBuffer(GL_ARRAY_BUFFER, instanceVBOs[idx]);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4), glm::value_ptr(shapeData.ctm), GL_DYNAMIC_DRAW);
+
+            // Draw single instance
+            glDrawArraysInstanced(GL_TRIANGLES, 0, vertexCounts[idx], 1);
+            glBindVertexArray(0);
+
+            // Unbind textures
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, 0);
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
+
+        // Reset texture state
+        glUniform1i(useNormalMappingLoc, 0);
+        glUniform1i(useTextureMapLoc, 0);
     }
 }

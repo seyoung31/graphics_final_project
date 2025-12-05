@@ -1,0 +1,119 @@
+{
+  "name": "Normal Mapping All Shapes Test",
+  "globalData": {
+    "ambientCoeff": 0.3,
+    "diffuseCoeff": 0.7,
+    "specularCoeff": 0.5,
+    "transparentCoeff": 1
+  },
+  "cameraData": {
+    "position": [-6.0, 4.0, 8.0],
+    "up": [0.0, 1.0, 0.0],
+    "look": [6.0, -4.0, -8.0],
+    "heightAngle": 45.0
+  },
+  "groups": [
+    {
+      "lights": [
+        {
+          "type": "point",
+          "color": [1.0, 1.0, 1.0],
+          "attenuationCoeff": [1.0, 0.0, 0.0]
+        }
+      ],
+      "translate": [5, 6, 5]
+    },
+    {
+      "lights": [
+        {
+          "type": "point",
+          "color": [0.6, 0.6, 0.9],
+          "attenuationCoeff": [1.0, 0.0, 0.0]
+        }
+      ],
+      "translate": [-5, 3, -3]
+    },
+    {
+      "lights": [
+        {
+          "type": "directional",
+          "color": [0.3, 0.3, 0.3],
+          "direction": [0, -1, -0.5]
+        }
+      ]
+    },
+    {
+      "translate": [-2.0, 0.0, 0.0],
+      "primitives": [
+        {
+          "type": "sphere",
+          "diffuse": [1.0, 1.0, 1.0],
+          "specular": [1.0, 1.0, 1.0],
+          "shininess": 25.0,
+          "blend": 1.0,
+          "textureFile": "normal_mapping/textures/rock_diffuse.jpg",
+          "textureU": 2.0,
+          "textureV": 2.0,
+          "bumpMapFile": "normal_mapping/textures/rock_normal.jpg",
+          "bumpMapU": 2.0,
+          "bumpMapV": 2.0
+        }
+      ]
+    },
+    {
+      "translate": [1.5, 0.0, 0.0],
+      "primitives": [
+        {
+          "type": "cube",
+          "diffuse": [1.0, 1.0, 1.0],
+          "specular": [1.0, 1.0, 1.0],
+          "shininess": 25.0,
+          "blend": 1.0,
+          "textureFile": "normal_mapping/textures/brick_diffuse.jpg",
+          "textureU": 1.0,
+          "textureV": 1.0,
+          "bumpMapFile": "normal_mapping/textures/brick_normal.jpg",
+          "bumpMapU": 1.0,
+          "bumpMapV": 1.0
+        }
+      ]
+    },
+    {
+      "translate": [-2.0, 0.0, 2.5],
+      "primitives": [
+        {
+          "type": "cylinder",
+          "diffuse": [1.0, 1.0, 1.0],
+          "specular": [1.0, 1.0, 1.0],
+          "shininess": 25.0,
+          "blend": 1.0,
+          "textureFile": "normal_mapping/textures/tree_diffuse.jpg",
+          "textureU": 2.0,
+          "textureV": 1.0,
+          "bumpMapFile": "normal_mapping/textures/tree_normal.jpg",
+          "bumpMapU": 2.0,
+          "bumpMapV": 1.0
+        }
+      ]
+    },
+    {
+      "translate": [1.5, 0.0, 2.5],
+      "primitives": [
+        {
+          "type": "cone",
+          "diffuse": [1.0, 1.0, 1.0],
+          "specular": [1.0, 1.0, 1.0],
+          "shininess": 25.0,
+          "blend": 1.0,
+          "textureFile": "normal_mapping/textures/rubber_diffuse.jpg",
+          "textureU": 2.0,
+          "textureV": 1.0,
+          "bumpMapFile": "normal_mapping/textures/rubber_normal.jpg",
+          "bumpMapU": 2.0,
+          "bumpMapV": 1.0
+        }
+      ]
+    }
+  ]
+}
+
