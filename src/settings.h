@@ -17,6 +17,7 @@ struct Settings {
     bool normalMapping = false;
     bool extraCredit3 = false;
     bool extraCredit4 = false;
+    bool colorGrading = false;
 };
 
 

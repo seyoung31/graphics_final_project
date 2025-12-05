@@ -193,7 +193,8 @@ void PostProcess::drawToScreen(float gradeStrength,
                                bool dofEnabled,
                                float nearPlane,
                                float farPlane,
-                               float focusPlane) {
+                               float focusPlane,
+                               bool settingsCG) {
     glUseProgram(m_postprocessShader);
 
     // Scene color texture (the one attached to our FBO) -> unit 0
@@ -226,6 +227,10 @@ void PostProcess::drawToScreen(float gradeStrength,
     if (m_loc_enableCG >= 0) {
         glUniform1i(m_loc_enableCG, enableCG ? 1 : 0);
     }
+
+    //pass in settings CG
+    GLint useCGLoc   = glGetUniformLocation(m_postprocessShader, "useColorGrade");
+    if (useCGLoc >= 0)   glUniform1i(useCGLoc,   settingsCG ? 1 : 0);
 
     //dof uniforms
     GLint locDof   = glGetUniformLocation(m_postprocessShader, "dof");

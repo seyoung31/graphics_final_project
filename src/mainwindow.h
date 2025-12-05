@@ -58,6 +58,7 @@ private:
     QCheckBox *ec2;
     QCheckBox *ec3;
     QCheckBox *ec4;
+    QCheckBox *colorGradeCB;
 
 private slots:
     // From old Project 6
@@ -80,4 +81,5 @@ private slots:
     void onScreenSpaceDOF();
     void onExtraCredit3();
     void onExtraCredit4();
+    void onColorGrading();
 };

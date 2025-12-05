@@ -288,7 +288,8 @@ void Realtime::paintGL() {
                         settings.screenSpaceDOF,
                         settings.nearPlane,
                         settings.farPlane,
-                        settings.focusPlane);
+                        settings.focusPlane,
+                        settings.colorGrading);
 
 
 }

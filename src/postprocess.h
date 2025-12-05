@@ -19,7 +19,8 @@ public:
                   bool dofEnabled,
                   float nearPlane,
                   float farPlane,
-                  float focusPlane);
+                  float focusPlane,
+                      bool settingsCG);
 
     // Access the offscreen FBO so Realtime can render into it
     GLuint fbo() const { return m_fbo; };

@@ -11,7 +11,7 @@ uniform bool u_EnableColorGrading;
 
 out vec4 fragColor;
 
-
+uniform bool useColorGrade;
 //dof vars
 uniform bool dof;
 uniform float uNear;
@@ -110,8 +110,10 @@ void main() {
     float zView = linearizeDepth(depth);
 
     // LUT first
-    vec3 lutColor = applyLUT(baseColor);
-    baseColor = mix(baseColor, lutColor, u_GradeStrength);
+    if (useColorGrade){
+        vec3 lutColor = applyLUT(baseColor);
+        baseColor = mix(baseColor, lutColor, u_GradeStrength);
+    }
 
     vec3 finalColor = baseColor;
 

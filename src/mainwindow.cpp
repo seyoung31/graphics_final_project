@@ -185,6 +185,10 @@ void MainWindow::initialize() {
     ec4->setText(QStringLiteral("Let it snow!!!"));
     ec4->setChecked(false);
 
+    colorGradeCB = new QCheckBox();
+    colorGradeCB->setText(QStringLiteral("Color Grading"));
+    colorGradeCB->setChecked(false);
+
     vLayout->addWidget(uploadFile);
     vLayout->addWidget(saveImage);
     vLayout->addWidget(tesselation_label);
@@ -212,6 +216,7 @@ void MainWindow::initialize() {
     vLayout->addWidget(ec2);
     vLayout->addWidget(ec3);
     vLayout->addWidget(ec4);
+    vLayout->addWidget(colorGradeCB);
 
     connectUIElements();
 
@@ -297,6 +302,8 @@ void MainWindow::connectExtraCredit() {
     connect(ec2, &QCheckBox::clicked, this, &MainWindow::onScreenSpaceDOF);
     connect(ec3, &QCheckBox::clicked, this, &MainWindow::onExtraCredit3);
     connect(ec4, &QCheckBox::clicked, this, &MainWindow::onExtraCredit4);
+    connect(colorGradeCB, &QCheckBox::clicked, this, &MainWindow::onColorGrading);
+
 }
 
 // From old Project 6
@@ -427,5 +434,10 @@ void MainWindow::onExtraCredit3() {
 
 void MainWindow::onExtraCredit4() {
     settings.extraCredit4 = !settings.extraCredit4;
+    realtime->settingsChanged();
+}
+
+void MainWindow::onColorGrading() {
+    settings.colorGrading = !settings.colorGrading;
     realtime->settingsChanged();
 }
