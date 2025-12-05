@@ -766,10 +766,11 @@ glm::mat4 Realtime::getLightVP(const SceneLightData& light) {
 
         glm::mat4 V = glm::lookAt(pos, target, up); //view mat
 
-        float nearL = settings.nearPlane;
-        float farL  = settings.farPlane;
+        // float nearL = settings.nearPlane;
+        // float farL  = settings.farPlane;
 
-        glm::mat4 P = glm::ortho(-B, B, -B, B, nearL, farL); //proj mat
+        // glm::mat4 P = glm::ortho(-B, B, -B, B, nearL, farL); //proj mat
+        glm::mat4 P = glm::ortho(-B, B, -B, B, 0.f, 15.f); //proj mat
 
         return P * V;
     }
@@ -792,6 +793,8 @@ glm::mat4 Realtime::getLightVP(const SceneLightData& light) {
         float farL  = settings.farPlane;
 
         glm::mat4 P = glm::perspective(fov, aspect, nearL, farL); //proj mat
+
+        // glm::mat4 P = glm::perspective(fov, aspect, 0.f, 15.f); //proj mat
 
         return P * V;
     }
