@@ -110,10 +110,8 @@ void main() {
     float zView = linearizeDepth(depth);
 
     // LUT first
-    if (!(length(baseColor) < 0.001 || !u_EnableColorGrading)) {
-        vec3 lutColor = applyLUT(baseColor);
-        baseColor = mix(baseColor, lutColor, u_GradeStrength);
-    }
+    vec3 lutColor = applyLUT(baseColor);
+    baseColor = mix(baseColor, lutColor, u_GradeStrength);
 
     vec3 finalColor = baseColor;
 
