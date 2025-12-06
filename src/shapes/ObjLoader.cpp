@@ -4,6 +4,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cmath>
+#include <vector>
 
 ObjLoader::ObjLoader() {
 }
@@ -137,6 +138,9 @@ bool ObjLoader::parseMtlFile(const std::string& filepath) {
         return false;
     }
     
+    // Extract MTL file directory for resolving relative paths
+    std::string mtlDirectory = extractDirectory(filepath);
+    
     ObjMaterial currentMaterial;
     bool hasMaterial = false;
     
@@ -197,13 +201,27 @@ bool ObjLoader::parseMtlFile(const std::string& filepath) {
             std::string texPath;
             std::getline(iss, texPath);
             texPath = trim(texPath);
-            currentMaterial.diffuseTexture = texPath;
+            // Resolve relative paths relative to MTL file directory
+            if (!texPath.empty() && texPath[0] != '/') {
+                // Relative path - resolve relative to MTL file directory
+                currentMaterial.diffuseTexture = normalizePath(mtlDirectory, texPath);
+            } else {
+                // Absolute path - use as-is
+                currentMaterial.diffuseTexture = texPath;
+            }
         }
         else if (prefix == "map_Bump" || prefix == "bump") {
             std::string texPath;
             std::getline(iss, texPath);
             texPath = trim(texPath);
-            currentMaterial.normalMap = texPath;
+            // Resolve relative paths relative to MTL file directory
+            if (!texPath.empty() && texPath[0] != '/') {
+                // Relative path - resolve relative to MTL file directory
+                currentMaterial.normalMap = normalizePath(mtlDirectory, texPath);
+            } else {
+                // Absolute path - use as-is
+                currentMaterial.normalMap = texPath;
+            }
         }
     }
     
@@ -418,6 +436,73 @@ std::string ObjLoader::extractDirectory(const std::string& filepath) {
         return ".";
     }
     return filepath.substr(0, lastSlash);
+}
+
+std::string ObjLoader::normalizePath(const std::string& baseDir, const std::string& relativePath) {
+    // Check if base directory is absolute
+    bool isAbsolute = !baseDir.empty() && (baseDir[0] == '/' || (baseDir.length() > 1 && baseDir[1] == ':'));
+    
+    // Split both paths into components
+    std::vector<std::string> baseParts;
+    std::vector<std::string> relParts;
+    
+    // Split base directory
+    std::string base = baseDir;
+    size_t pos = 0;
+    while ((pos = base.find_first_of("/\\")) != std::string::npos) {
+        if (pos > 0) {
+            baseParts.push_back(base.substr(0, pos));
+        }
+        base = base.substr(pos + 1);
+    }
+    if (!base.empty()) {
+        baseParts.push_back(base);
+    }
+    
+    // Split relative path
+    std::string rel = relativePath;
+    pos = 0;
+    while ((pos = rel.find_first_of("/\\")) != std::string::npos) {
+        if (pos > 0) {
+            relParts.push_back(rel.substr(0, pos));
+        }
+        rel = rel.substr(pos + 1);
+    }
+    if (!rel.empty()) {
+        relParts.push_back(rel);
+    }
+    
+    // Process relative path components
+    for (const std::string& part : relParts) {
+        if (part == "..") {
+            // Go up one directory
+            if (!baseParts.empty()) {
+                baseParts.pop_back();
+            }
+        } else if (part != "." && !part.empty()) {
+            // Add directory/file component
+            baseParts.push_back(part);
+        }
+        // "." means current directory, so we ignore it
+    }
+    
+    // Reconstruct path
+    if (baseParts.empty()) {
+        return isAbsolute ? "/" : ".";
+    }
+    
+    std::string result;
+    if (isAbsolute) {
+        result = "/";
+    }
+    for (size_t i = 0; i < baseParts.size(); ++i) {
+        if (i > 0 || !isAbsolute) {
+            result += "/";
+        }
+        result += baseParts[i];
+    }
+    
+    return result;
 }
 
 std::string ObjLoader::trim(const std::string& str) {

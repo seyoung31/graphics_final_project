@@ -102,6 +102,9 @@ private:
     // Helper to extract directory from filepath
     std::string extractDirectory(const std::string& filepath);
     
+    // Helper to normalize path (resolve .. and .)
+    std::string normalizePath(const std::string& baseDir, const std::string& relativePath);
+    
     // Helper to trim whitespace
     std::string trim(const std::string& str);
 
