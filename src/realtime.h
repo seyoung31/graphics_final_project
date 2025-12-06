@@ -24,6 +24,7 @@
 #include "shapes/Sphere.h"
 #include "shapes/Cone.h"
 #include "shapes/Cylinder.h"
+#include "shapes/ObjLoader.h"
 
 #include "particles/particles.h"
 
@@ -47,8 +48,27 @@ public:
         PRIM_SPHERE,
         PRIM_CONE,
         PRIM_CYLINDER,
-        PRIM_COUNT
+        PRIM_COUNT  // Count of built-in primitives (not including meshes)
     };
+
+    // OBJ mesh loading
+    void loadMesh(const std::string& filepath);
+    void uploadMesh(const std::string& filepath, const std::vector<float>& data);
+    
+    // Per-group rendering info
+    struct MeshGroupInfo {
+        int startVertex;
+        int vertexCount;
+        std::string materialName;
+    };
+    
+    // Mesh VAO/VBO storage (keyed by filepath)
+    std::unordered_map<std::string, GLuint> m_meshVAOs;
+    std::unordered_map<std::string, GLuint> m_meshVBOs;
+    std::unordered_map<std::string, GLuint> m_meshInstanceVBOs;
+    std::unordered_map<std::string, int> m_meshVertexCounts;
+    std::unordered_map<std::string, ObjLoader> m_meshLoaders;
+    std::unordered_map<std::string, std::vector<MeshGroupInfo>> m_meshGroupInfos;
 
     void rebuildGeometryFromSettings();
     void uploadPrimitive(PrimitiveIndex idx, const std::vector<float> &data);
@@ -144,4 +164,30 @@ private:
 public:
     // Public texture loading function (needed by ShaderUtils)
     GLuint loadTexture(const std::string& filename);
+    
+    // Mesh access for ShaderUtils
+    bool hasMesh(const std::string& filepath) const { return m_meshVAOs.find(filepath) != m_meshVAOs.end(); }
+    GLuint getMeshVAO(const std::string& filepath) const { 
+        auto it = m_meshVAOs.find(filepath); 
+        return it != m_meshVAOs.end() ? it->second : 0; 
+    }
+    GLuint getMeshInstanceVBO(const std::string& filepath) const { 
+        auto it = m_meshInstanceVBOs.find(filepath); 
+        return it != m_meshInstanceVBOs.end() ? it->second : 0; 
+    }
+    int getMeshVertexCount(const std::string& filepath) const { 
+        auto it = m_meshVertexCounts.find(filepath); 
+        return it != m_meshVertexCounts.end() ? it->second : 0; 
+    }
+    const ObjLoader* getMeshLoader(const std::string& filepath) const {
+        auto it = m_meshLoaders.find(filepath);
+        return it != m_meshLoaders.end() ? &it->second : nullptr;
+    }
+    const std::vector<MeshGroupInfo>* getMeshGroupInfos(const std::string& filepath) const {
+        auto it = m_meshGroupInfos.find(filepath);
+        return it != m_meshGroupInfos.end() ? &it->second : nullptr;
+    }
+    
+private:
+    void cleanupMeshes();
 };

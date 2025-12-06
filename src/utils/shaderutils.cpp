@@ -1,8 +1,10 @@
 #include "src/utils/shaderutils.h"
 #include <glm/gtc/type_ptr.hpp>
 #include <random>
+#include <iostream>
 #include "realtime.h"
 #include "settings.h"
+#include "shapes/ObjLoader.h"
 
 using namespace glm;
 
@@ -126,8 +128,31 @@ namespace ShaderUtils {
         SceneMaterial batchMaterial[Realtime::PRIM_COUNT];
         bool hasMaterial[Realtime::PRIM_COUNT] = {false, false, false, false};
 
+        // Store mesh instances separately (keyed by filepath)
+        std::unordered_map<std::string, std::vector<mat4>> meshInstances;
+        std::unordered_map<std::string, SceneMaterial> meshMaterials;
+        
         for (const RenderShapeData &shapeData : m_renderData.shapes) {
             const ScenePrimitive &prim = shapeData.primitive;
+
+            // Handle mesh primitives separately
+            if (prim.type == PrimitiveType::PRIMITIVE_MESH) {
+                if (realtime != nullptr && !prim.meshfile.empty()) {
+                    // Load mesh if not already loaded
+                    if (!realtime->hasMesh(prim.meshfile)) {
+                        std::cout << "[ShaderUtils] Loading mesh: " << prim.meshfile << std::endl;
+                        const_cast<Realtime*>(realtime)->loadMesh(prim.meshfile);
+                    }
+                    
+                    if (realtime->hasMesh(prim.meshfile)) {
+                        meshInstances[prim.meshfile].push_back(shapeData.ctm);
+                        if (meshMaterials.find(prim.meshfile) == meshMaterials.end()) {
+                            meshMaterials[prim.meshfile] = prim.material;
+                        }
+                    }
+                }
+                continue;
+            }
 
             // Check if shape has textures (normal map or diffuse texture with normal mapping enabled)
             bool hasTexture = prim.material.bumpMap.isUsed || prim.material.textureMap.isUsed;
@@ -290,6 +315,130 @@ namespace ShaderUtils {
             glBindTexture(GL_TEXTURE_2D, 0);
             glActiveTexture(GL_TEXTURE1);
             glBindTexture(GL_TEXTURE_2D, 0);
+        }
+
+        // 3) Draw mesh primitives - render each group with its own material
+        if (realtime != nullptr) {
+            for (const auto& meshPair : meshInstances) {
+                const std::string& meshPath = meshPair.first;
+                const std::vector<mat4>& models = meshPair.second;
+                
+                if (models.empty() || !realtime->hasMesh(meshPath)) {
+                    continue;
+                }
+                
+                GLuint meshVAO = realtime->getMeshVAO(meshPath);
+                GLuint meshInstanceVBO = realtime->getMeshInstanceVBO(meshPath);
+                
+                if (meshVAO == 0) {
+                    continue;
+                }
+                
+                // Get loader and group info for per-group rendering
+                const ObjLoader* loader = realtime->getMeshLoader(meshPath);
+                const auto* groupInfos = realtime->getMeshGroupInfos(meshPath);
+                
+                if (loader == nullptr || groupInfos == nullptr || groupInfos->empty()) {
+                    // Fallback: render entire mesh with default material
+                    int meshVertCount = realtime->getMeshVertexCount(meshPath);
+                    if (meshVertCount == 0) continue;
+                    
+                    glm::vec3 k_a = global.ka * glm::vec3(0.3f);
+                    glm::vec3 k_d = global.kd * glm::vec3(0.7f);
+                    glm::vec3 k_s = global.ks * glm::vec3(0.3f);
+                    
+                    glUniform3fv(k_a_loc, 1, glm::value_ptr(k_a));
+                    glUniform3fv(k_d_loc, 1, glm::value_ptr(k_d));
+                    glUniform3fv(k_s_loc, 1, glm::value_ptr(k_s));
+                    glUniform1f(shininess_loc, 32.f);
+                    glUniform1i(useTextureMapLoc, 0);
+                    glUniform1i(useNormalMappingLoc, 0);
+                    
+                    glBindVertexArray(meshVAO);
+                    glBindBuffer(GL_ARRAY_BUFFER, meshInstanceVBO);
+                    glBufferData(GL_ARRAY_BUFFER, models.size() * sizeof(glm::mat4), models.data(), GL_DYNAMIC_DRAW);
+                    glDrawArraysInstanced(GL_TRIANGLES, 0, meshVertCount, static_cast<GLsizei>(models.size()));
+                    glBindVertexArray(0);
+                    continue;
+                }
+                
+                const auto& materials = loader->getMaterials();
+                
+                // Bind VAO once for all groups
+                glBindVertexArray(meshVAO);
+                glBindBuffer(GL_ARRAY_BUFFER, meshInstanceVBO);
+                glBufferData(GL_ARRAY_BUFFER, models.size() * sizeof(glm::mat4), models.data(), GL_DYNAMIC_DRAW);
+                
+                // Render each group with its own material
+                for (const auto& groupInfo : *groupInfos) {
+                    if (groupInfo.vertexCount == 0) continue;
+                    
+                    // Find material for this group
+                    ObjMaterial objMat;
+                    auto matIt = materials.find(groupInfo.materialName);
+                    if (matIt != materials.end()) {
+                        objMat = matIt->second;
+                    } else {
+                        // Default material if not found
+                        objMat.ambient = glm::vec3(0.3f);
+                        objMat.diffuse = glm::vec3(0.7f);
+                        objMat.specular = glm::vec3(0.3f);
+                        objMat.shininess = 32.0f;
+                    }
+                    
+                    // Check if this material has a texture
+                    bool hasValidDiffuseTexture = false;
+                    GLuint diffuseTexture = 0;
+                    if (!objMat.diffuseTexture.empty()) {
+                        diffuseTexture = realtime->loadTexture(objMat.diffuseTexture);
+                        hasValidDiffuseTexture = (diffuseTexture != 0);
+                    }
+                    
+                    // When texture is used, use lower ambient to avoid washing out
+                    glm::vec3 k_a, k_d, k_s;
+                    if (hasValidDiffuseTexture) {
+                        // Use texture for color, minimal ambient
+                        k_a = glm::vec3(0.05f);  // Very low ambient so texture shows properly
+                        k_d = glm::vec3(1.0f);   // Full diffuse - texture provides the color
+                        k_s = global.ks * objMat.specular * 0.3f;  // Reduced specular
+                    } else {
+                        k_a = global.ka * objMat.ambient;
+                        k_d = global.kd * objMat.diffuse;
+                        k_s = global.ks * objMat.specular;
+                    }
+                    
+                    float shininess = objMat.shininess;
+                    if (shininess <= 0.f) shininess = 32.f;
+                    
+                    glUniform3fv(k_a_loc, 1, glm::value_ptr(k_a));
+                    glUniform3fv(k_d_loc, 1, glm::value_ptr(k_d));
+                    glUniform3fv(k_s_loc, 1, glm::value_ptr(k_s));
+                    glUniform1f(shininess_loc, shininess);
+                    
+                    // Handle diffuse texture from material
+                    if (hasValidDiffuseTexture) {
+                        glActiveTexture(GL_TEXTURE0);
+                        glBindTexture(GL_TEXTURE_2D, diffuseTexture);
+                        glUniform1i(diffuseTextureLoc, 0);
+                        glUniform1f(textureRepeatULoc, 1.0f);
+                        glUniform1f(textureRepeatVLoc, 1.0f);
+                    }
+                    glUniform1i(useTextureMapLoc, hasValidDiffuseTexture ? 1 : 0);
+                    glUniform1i(useNormalMappingLoc, 0);
+                    
+                    // Draw this group's vertices
+                    glDrawArraysInstanced(GL_TRIANGLES, groupInfo.startVertex, groupInfo.vertexCount, 
+                                          static_cast<GLsizei>(models.size()));
+                    
+                    // Unbind texture after each group
+                    if (hasValidDiffuseTexture) {
+                        glActiveTexture(GL_TEXTURE0);
+                        glBindTexture(GL_TEXTURE_2D, 0);
+                    }
+                }
+                
+                glBindVertexArray(0);
+            }
         }
 
         // Reset texture state

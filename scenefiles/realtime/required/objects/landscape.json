@@ -1,0 +1,44 @@
+{
+  "name": "landscape_scene",
+  "globalData": {
+    "ambientCoeff": 0.1,
+    "diffuseCoeff": 1.0,
+    "specularCoeff": 0.2,
+    "transparentCoeff": 0
+  },
+  "cameraData": {
+    "position": [0, 30, 40],
+    "up": [0.0, 1.0, 0.0],
+    "heightAngle": 45.0,
+    "focus": [0.0, 0.0, -10.0]
+  },
+  "groups": [
+    {
+      "lights": [
+        {
+          "type": "directional",
+          "direction": [-0.3, -1.0, -0.5],
+          "color": [1.0, 0.95, 0.9]
+        }
+      ]
+    },
+    {
+      "groups": [
+        {
+          "translate": [0, 0, 0],
+          "primitives": [
+            {
+              "type": "mesh",
+              "ambient": [0.4, 0.4, 0.4],
+              "meshFile": "meshes/landscape2.obj",
+              "diffuse": [0.8, 0.8, 0.8],
+              "specular": [0.3, 0.3, 0.3],
+              "shininess": 20.0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+

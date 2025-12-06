@@ -37,6 +37,7 @@ add_executable(${PROJECT_NAME}
     src/shapes/Cube.cpp
     src/shapes/Sphere.cpp
     src/shapes/Cylinder.cpp
+    src/shapes/ObjLoader.cpp
     src/utils/shaderutils.cpp
     src/particles/particles.cpp
 
@@ -54,6 +55,7 @@ add_executable(${PROJECT_NAME}
     src/shapes/Cube.h
     src/shapes/Sphere.h 
     src/shapes/Cylinder.h
+    src/shapes/ObjLoader.h
     src/shaderloader.h
     src/utils/shaderutils.h
     src/postprocess.h src/postprocess.cpp

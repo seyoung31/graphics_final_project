@@ -55,6 +55,9 @@ void Realtime::finish() {
 
     // Clean up texture cache
     cleanupTextures();
+    
+    // Clean up mesh resources
+    cleanupMeshes();
 
     //clean up shadow fbos
     for (int i = 0; i < 8; i++) {
@@ -65,6 +68,136 @@ void Realtime::finish() {
     }
 
     this->doneCurrent();
+}
+
+void Realtime::cleanupMeshes() {
+    for (auto& pair : m_meshVAOs) {
+        if (pair.second != 0) {
+            glDeleteVertexArrays(1, &pair.second);
+        }
+    }
+    for (auto& pair : m_meshVBOs) {
+        if (pair.second != 0) {
+            glDeleteBuffers(1, &pair.second);
+        }
+    }
+    for (auto& pair : m_meshInstanceVBOs) {
+        if (pair.second != 0) {
+            glDeleteBuffers(1, &pair.second);
+        }
+    }
+    m_meshVAOs.clear();
+    m_meshVBOs.clear();
+    m_meshInstanceVBOs.clear();
+    m_meshVertexCounts.clear();
+    m_meshLoaders.clear();
+    m_meshGroupInfos.clear();
+}
+
+void Realtime::loadMesh(const std::string& filepath) {
+    // Check if already loaded
+    if (m_meshVAOs.find(filepath) != m_meshVAOs.end()) {
+        return;
+    }
+    
+    // Load the OBJ file
+    ObjLoader loader;
+    if (!loader.loadFromFile(filepath)) {
+        std::cerr << "Failed to load mesh: " << filepath << std::endl;
+        return;
+    }
+    
+    // Get vertex data and upload
+    std::vector<float> vertexData = loader.generateShape();
+    if (vertexData.empty()) {
+        std::cerr << "Mesh has no vertex data: " << filepath << std::endl;
+        return;
+    }
+    
+    uploadMesh(filepath, vertexData);
+    
+    // Store per-group rendering info
+    std::vector<MeshGroupInfo> groupInfos;
+    int currentVertex = 0;
+    for (const ObjMeshGroup& group : loader.getMeshGroups()) {
+        MeshGroupInfo info;
+        info.startVertex = currentVertex;
+        info.vertexCount = static_cast<int>(group.vertices.size());
+        info.materialName = group.materialName;
+        groupInfos.push_back(info);
+        currentVertex += info.vertexCount;
+        
+        std::cout << "[Mesh] Group '" << group.name << "' material='" << info.materialName 
+                  << "' vertices=" << info.vertexCount << std::endl;
+    }
+    m_meshGroupInfos[filepath] = groupInfos;
+    
+    // Store the loader for material access
+    m_meshLoaders[filepath] = std::move(loader);
+}
+
+void Realtime::uploadMesh(const std::string& filepath, const std::vector<float>& data) {
+    // 14 floats per vertex: position(3) + normal(3) + uv(2) + tangent(3) + bitangent(3)
+    m_meshVertexCounts[filepath] = static_cast<int>(data.size() / 14);
+    
+    // Create VAO
+    GLuint vao;
+    glGenVertexArrays(1, &vao);
+    m_meshVAOs[filepath] = vao;
+    
+    // Create VBO
+    GLuint vbo;
+    glGenBuffers(1, &vbo);
+    m_meshVBOs[filepath] = vbo;
+    
+    // Bind and upload data
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), data.data(), GL_STATIC_DRAW);
+    
+    // Position (location 0)
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 14*sizeof(GLfloat), reinterpret_cast<void*>(0));
+    glEnableVertexAttribArray(0);
+
+    // Normal (location 1)
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 14*sizeof(GLfloat), reinterpret_cast<void*>(3*sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
+
+    // UV (location 2)
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 14*sizeof(GLfloat), reinterpret_cast<void*>(6*sizeof(GLfloat)));
+    glEnableVertexAttribArray(2);
+
+    // Tangent (location 3)
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 14*sizeof(GLfloat), reinterpret_cast<void*>(8*sizeof(GLfloat)));
+    glEnableVertexAttribArray(3);
+
+    // Bitangent (location 4)
+    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 14*sizeof(GLfloat), reinterpret_cast<void*>(11*sizeof(GLfloat)));
+    glEnableVertexAttribArray(4);
+    
+    // Create instance VBO for model matrices
+    GLuint instanceVBO;
+    glGenBuffers(1, &instanceVBO);
+    m_meshInstanceVBOs[filepath] = instanceVBO;
+    
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+    glBufferData(GL_ARRAY_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
+    
+    std::size_t vec4Size = sizeof(glm::vec4);
+    GLsizei stride = sizeof(glm::mat4);
+    
+    // Instance model matrix starts at location 5 (after pos, normal, uv, tangent, bitangent)
+    for (int col = 0; col < 4; ++col) {
+        GLuint attribIndex = 5 + col;
+        glEnableVertexAttribArray(attribIndex);
+        glVertexAttribPointer(attribIndex, 4, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(col * vec4Size));
+        glVertexAttribDivisor(attribIndex, 1);
+    }
+    
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    std::cout << "Uploaded mesh: " << filepath << " with " << m_meshVertexCounts[filepath] << " vertices" << std::endl;
 }
 
 void Realtime::initializeGL() {
@@ -724,15 +857,38 @@ void Realtime::paintLightView(const SceneLightData &light, const glm::mat4 &ligh
                        1, GL_FALSE, glm::value_ptr(lightVP));
 
     for (const RenderShapeData &shape : m_renderData.shapes) {
-        GLuint vao;
-        int vertCount;
+        GLuint vao = 0;
+        int vertCount = 0;
+        
         switch(shape.primitive.type) {
-        case PrimitiveType::PRIMITIVE_SPHERE: vao = m_vaos[PRIM_SPHERE]; vertCount = m_vertexCounts[PRIM_SPHERE]; break;
-        case PrimitiveType::PRIMITIVE_CUBE:   vao = m_vaos[PRIM_CUBE];   vertCount = m_vertexCounts[PRIM_CUBE];   break;
-        case PrimitiveType::PRIMITIVE_CONE:   vao = m_vaos[PRIM_CONE];   vertCount = m_vertexCounts[PRIM_CONE];   break;
-        case PrimitiveType::PRIMITIVE_CYLINDER: vao = m_vaos[PRIM_CYLINDER]; vertCount = m_vertexCounts[PRIM_CYLINDER]; break;
-        default: continue;
+        case PrimitiveType::PRIMITIVE_SPHERE: 
+            vao = m_vaos[PRIM_SPHERE]; 
+            vertCount = m_vertexCounts[PRIM_SPHERE]; 
+            break;
+        case PrimitiveType::PRIMITIVE_CUBE:   
+            vao = m_vaos[PRIM_CUBE];   
+            vertCount = m_vertexCounts[PRIM_CUBE];   
+            break;
+        case PrimitiveType::PRIMITIVE_CONE:   
+            vao = m_vaos[PRIM_CONE];   
+            vertCount = m_vertexCounts[PRIM_CONE];   
+            break;
+        case PrimitiveType::PRIMITIVE_CYLINDER: 
+            vao = m_vaos[PRIM_CYLINDER]; 
+            vertCount = m_vertexCounts[PRIM_CYLINDER]; 
+            break;
+        case PrimitiveType::PRIMITIVE_MESH:
+            // Handle mesh primitives
+            if (!shape.primitive.meshfile.empty() && hasMesh(shape.primitive.meshfile)) {
+                vao = getMeshVAO(shape.primitive.meshfile);
+                vertCount = getMeshVertexCount(shape.primitive.meshfile);
+            }
+            break;
+        default: 
+            continue;
         }
+
+        if (vao == 0 || vertCount == 0) continue;
 
         glBindVertexArray(vao);
         glUniformMatrix4fv(glGetUniformLocation(m_shadow_shader, "model_matrix"),
