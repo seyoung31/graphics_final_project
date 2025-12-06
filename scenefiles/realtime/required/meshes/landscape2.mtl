@@ -10,7 +10,7 @@ Ni 1.500000
 d 1.000000
 illum 2
 map_Kd ../normal_mapping/textures/cliff_diffuse.jpg
-map_Bump /Users/sueanpark/Desktop/cs1230/graphics_final_project/scenefiles/realtime/required/normal_mapping/textures/cliff_normal.jpg
+map_Bump ../normal_mapping/textures/cliff_normal.jpg
 
 newmtl Material.003
 Ns 250.000000
@@ -41,4 +41,4 @@ Ni 1.500000
 d 1.000000
 illum 2
 map_Kd ../normal_mapping/textures/ground_diffuse.jpg
-map_Bump /Users/sueanpark/Desktop/cs1230/graphics_final_project/scenefiles/realtime/required/normal_mapping/textures/ground_normal.jpg
+map_Bump ../normal_mapping/textures/ground_normal.jpg
