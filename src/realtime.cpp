@@ -625,7 +625,7 @@ void Realtime::timerEvent(QTimerEvent *event) {
     glm::vec3 lookDir = glm::normalize(center - pos);
     glm::vec3 right = glm::normalize(glm::cross(lookDir, up));
 
-    float speed = 5.0f * deltaTime;
+    float speed = 5.0f * deltaTime * settings.moveSpeed;
     glm::vec3 move(0.f);
 
     // W/S: forward/back along look direction
@@ -770,7 +770,7 @@ GLuint Realtime::loadTexture(const std::string& filename) {
         std::cerr << "Failed to load texture: " << filename << std::endl;
         return 0;
     }
-    
+
     // Convert to RGBA format
     QImage convertedImage = image.convertToFormat(QImage::Format_RGBA8888);
     

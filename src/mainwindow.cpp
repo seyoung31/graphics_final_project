@@ -52,6 +52,10 @@ void MainWindow::initialize() {
     QLabel *focus_label = new QLabel(); // Focus plane label
     focus_label->setText("Focus Plane:");
 
+    //speed
+    QLabel *speed_label = new QLabel(); // speedlabel
+    speed_label->setText("Move Speed:");
+
     // From old Project 6
     // // Create checkbox for per-pixel filter
     // filter1 = new QCheckBox();
@@ -117,6 +121,9 @@ void MainWindow::initialize() {
     //new for focus
     QGroupBox *focusLayout = new QGroupBox(); // horizonal focus slider alignment
     QHBoxLayout *lfocus = new QHBoxLayout();
+    //new for speed
+    QGroupBox *speedLayout = new QGroupBox(); // horizonal speed slider alignment
+    QHBoxLayout *lspeed = new QHBoxLayout();
 
     // Create slider controls to control near/far planes
     nearSlider = new QSlider(Qt::Orientation::Horizontal); // Near plane slider
@@ -155,6 +162,18 @@ void MainWindow::initialize() {
     focusBox->setSingleStep(0.1f);
     focusBox->setValue(100.f);
 
+    speedSlider = new QSlider(Qt::Orientation::Horizontal); // speed slider
+    speedSlider->setTickInterval(.2f);
+    speedSlider->setMinimum(0.1f);
+    speedSlider->setMaximum(100.f);
+    speedSlider->setValue(1.f);
+
+    speedBox = new QDoubleSpinBox();
+    speedBox->setMinimum(0.1f);
+    speedBox->setMaximum(10.f);
+    speedBox->setSingleStep(0.2f);
+    speedBox->setValue(1.f);
+
     // Adds the slider and number box to the parameter layouts
     lnear->addWidget(nearSlider);
     lnear->addWidget(nearBox);
@@ -167,6 +186,10 @@ void MainWindow::initialize() {
     lfocus->addWidget(focusSlider);
     lfocus->addWidget(focusBox);
     focusLayout->setLayout(lfocus);
+
+    lspeed->addWidget(speedSlider);
+    lspeed->addWidget(speedBox);
+    speedLayout->setLayout(lspeed);
 
     // Extra Credit:
     ec1 = new QCheckBox();
@@ -204,6 +227,9 @@ void MainWindow::initialize() {
     //focus
     vLayout->addWidget(focus_label);
     vLayout->addWidget(focusLayout);
+    //speed
+    vLayout->addWidget(speed_label);
+    vLayout->addWidget(speedLayout);
 
     // From old Project 6
     // vLayout->addWidget(filters_label);
@@ -229,6 +255,8 @@ void MainWindow::initialize() {
     onValChangeFarBox(10.f);
     //default focus
     onValChangeFocusBox(5.f);
+    //defaul Speed
+    onValChangeSpeedBox(1.f);
 }
 
 void MainWindow::finish() {
@@ -247,6 +275,7 @@ void MainWindow::connectUIElements() {
     connectNear();
     connectFar();
     connectFocus();
+    connectSpeed();
     connectExtraCredit();
 }
 
@@ -295,6 +324,12 @@ void MainWindow::connectFocus() {
     connect(focusSlider, &QSlider::valueChanged, this, &MainWindow::onValChangeFocusSlider);
     connect(focusBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
             this, &MainWindow::onValChangeFocusBox);
+}
+
+void MainWindow::connectSpeed() {
+    connect(speedSlider, &QSlider::valueChanged, this, &MainWindow::onValChangeSpeedSlider);
+    connect(speedBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+            this, &MainWindow::onValChangeSpeedBox);
 }
 
 void MainWindow::connectExtraCredit() {
@@ -394,6 +429,13 @@ void MainWindow::onValChangeFocusSlider(int newValue) {
     realtime->settingsChanged();
 }
 
+void MainWindow::onValChangeSpeedSlider(int newValue) {
+    //farSlider->setValue(newValue);
+    speedBox->setValue(newValue/10.f);
+    settings.moveSpeed = speedBox->value();
+    realtime->settingsChanged();
+}
+
 void MainWindow::onValChangeNearBox(double newValue) {
     nearSlider->setValue(int(newValue*100.f));
     //nearBox->setValue(newValue);
@@ -412,6 +454,13 @@ void MainWindow::onValChangeFocusBox(double newValue) {
     focusSlider->setValue(int(newValue*100.f));
     //farBox->setValue(newValue);
     settings.focusPlane = focusBox->value();
+    realtime->settingsChanged();
+}
+
+void MainWindow::onValChangeSpeedBox(double newValue) {
+    speedSlider->setValue(int(newValue*10.f));
+    //farBox->setValue(newValue);
+    settings.moveSpeed = speedBox->value();
     realtime->settingsChanged();
 }
 

@@ -10,6 +10,7 @@ struct Settings {
     float nearPlane = 1;
     float farPlane = 1;
     float focusPlane = 1;
+    float moveSpeed = 1;
     bool perPixelFilter = false;
     bool kernelBasedFilter = false;
     bool shadowMapping = false;
