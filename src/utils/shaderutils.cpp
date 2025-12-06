@@ -386,12 +386,20 @@ namespace ShaderUtils {
                         objMat.shininess = 32.0f;
                     }
                     
-                    // Check if this material has a texture
+                    // Check if this material has a diffuse texture
                     bool hasValidDiffuseTexture = false;
                     GLuint diffuseTexture = 0;
                     if (!objMat.diffuseTexture.empty()) {
                         diffuseTexture = realtime->loadTexture(objMat.diffuseTexture);
                         hasValidDiffuseTexture = (diffuseTexture != 0);
+                    }
+                    
+                    // Check if this material has a normal map
+                    bool hasValidNormalTexture = false;
+                    GLuint normalTexture = 0;
+                    if (!objMat.normalMap.empty() && settings.normalMapping) {
+                        normalTexture = realtime->loadTexture(objMat.normalMap);
+                        hasValidNormalTexture = (normalTexture != 0);
                     }
                     
                     // When texture is used, use lower ambient to avoid washing out
@@ -424,15 +432,26 @@ namespace ShaderUtils {
                         glUniform1f(textureRepeatVLoc, 1.0f);
                     }
                     glUniform1i(useTextureMapLoc, hasValidDiffuseTexture ? 1 : 0);
-                    glUniform1i(useNormalMappingLoc, 0);
+                    
+                    // Handle normal map texture from material
+                    if (hasValidNormalTexture) {
+                        glActiveTexture(GL_TEXTURE1);
+                        glBindTexture(GL_TEXTURE_2D, normalTexture);
+                        glUniform1i(normalTextureLoc, 1);
+                    }
+                    glUniform1i(useNormalMappingLoc, hasValidNormalTexture ? 1 : 0);
                     
                     // Draw this group's vertices
                     glDrawArraysInstanced(GL_TRIANGLES, groupInfo.startVertex, groupInfo.vertexCount, 
                                           static_cast<GLsizei>(models.size()));
                     
-                    // Unbind texture after each group
+                    // Unbind textures after each group
                     if (hasValidDiffuseTexture) {
                         glActiveTexture(GL_TEXTURE0);
+                        glBindTexture(GL_TEXTURE_2D, 0);
+                    }
+                    if (hasValidNormalTexture) {
+                        glActiveTexture(GL_TEXTURE1);
                         glBindTexture(GL_TEXTURE_2D, 0);
                     }
                 }
