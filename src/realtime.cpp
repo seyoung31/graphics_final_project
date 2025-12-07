@@ -18,6 +18,8 @@
 #include "utils/shaderutils.h"
 #include "postprocess.h"
 
+
+
 static glm::vec3 rotateAroundAxis(const glm::vec3 &v, const glm::vec3 &axis, float angle) {
     glm::vec3 a = glm::normalize(axis);
     float c = std::cos(angle);
@@ -467,6 +469,7 @@ void Realtime::sceneChanged() {
         updateProjectionMatrix();
 
     }
+    setupCameraPath();
 
     update(); // asks for a PaintGL() call to occur
 }
@@ -620,9 +623,17 @@ void Realtime::rotateCameraPitch(float rad) {
 }
 
 void Realtime::timerEvent(QTimerEvent *event) {
+
+
     int elapsedms   = m_elapsedTimer.elapsed();
     float deltaTime = elapsedms * 0.001f;
     m_elapsedTimer.restart();
+
+    m_camera_path.setEnabled(settings.cameraPath);
+    m_camera_path.update(deltaTime);
+    m_camera_path.applyToCamera(m_camera.pos, m_camera.look, m_camera.up);
+    std::cout<<"camera look: "<< m_camera.look.x<< " " << m_camera.look.y << " "<<  m_camera.look.z <<std::endl;
+    std::cout<<"camera up: "<< m_camera.up.x<< " " << m_camera.up.y << " "<<  m_camera.up.z <<std::endl;
 
     // Use deltaTime and m_keyMap here to move around
 
@@ -661,6 +672,8 @@ void Realtime::timerEvent(QTimerEvent *event) {
 
         updateViewMatrix();
     }
+    updateViewMatrix();  // This will use the updated camera values
+
 
     if (settings.extraCredit4) updateParticleSystem(deltaTime);
 
@@ -698,6 +711,44 @@ void Realtime::updateParticleSystem(float deltaTime){
 
     m_particles.update(deltaTime, camPos);
 }
+
+// Example: Set up a simple circular camera path
+void Realtime::setupCameraPath() {
+    m_camera_path.clear();
+
+    glm::vec3 centerPoint(0.0f, 0.0f, 0.0f);  // Sphere center
+
+    float radius = 5.0f;
+    float height = 3.0f;
+    int numKeyframes = 8;  // CRITICAL: Need multiple keyframes for circle
+
+    for (int i = 0; i < numKeyframes; ++i) {
+        float t = i / float(numKeyframes);  // 0.0, 0.125, 0.25, ... 0.875
+        float angle = t * 2.0f * M_PI;      // Full 360° rotation
+
+        glm::vec3 pos(
+            centerPoint.x + radius * cos(angle),
+            height,
+            centerPoint.z + radius * sin(angle)
+            );
+
+        glm::vec3 lookAt = centerPoint;  // Always look at sphere
+        glm::vec3 up(0.0f, 1.0f, 0.0f);
+
+        m_camera_path.addKeyframe(pos, lookAt, up, t);
+    }
+
+    std::cout << "Camera path keyframes:" << std::endl;
+    for (size_t i = 0; i < m_camera_path.getKeyframeCount(); ++i) {
+        // You'll need to add a getter or make keyframes public temporarily
+        std::cout << "Keyframe " << i << ": check your setup" << std::endl;
+    }
+    m_camera_path.setSpeed(0.1f);
+    m_camera_path.setLooping(true);
+
+
+}
+
 void Realtime::tick(QTimerEvent *event) {
     Q_UNUSED(event);
 }

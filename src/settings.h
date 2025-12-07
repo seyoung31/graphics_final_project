@@ -18,6 +18,7 @@ struct Settings {
     bool normalMapping = false;
     bool extraCredit3 = false;
     bool extraCredit4 = false;
+    bool cameraPath = false;
     bool colorGrading = false;
     bool watercolor = false;
     bool pixelated = false;
