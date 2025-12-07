@@ -101,24 +101,27 @@ float shadowFactorPCF(int i) {
     }
 
     float current = proj.z;
-    float alpha = 0.002; // bias
+    float alpha = 0.02; // bias
 
     // texel size in UV space
     vec2 texelSize = 1.0 / vec2(textureSize(shadowMaps[i], 0));
 
     // kernel radius in texels (tune 1–3)
-    int radius = 2;
+    int radius = 3;
 
     float sum = 0.0;
     float count = 0.0;
 
-    float softness = 2;
+    float softness = 1;
 
     //softening
     for (int x = -radius; x <= radius; x++) {
         for (int y = -radius; y <= radius; y++) {
             vec2 offset = vec2(x, y) * texelSize * softness;
-            float closest = texture(shadowMaps[i], proj.xy + offset).r;
+            vec2 uvTap = clamp(proj.xy + offset, vec2(0.0), vec2(1.0));
+            float closest = texture(shadowMaps[i], uvTap).r;
+            // float closest = texture(shadowMaps[i], proj.xy + offset).r;
+
             sum += (current - alpha > closest) ? 0.0 : 1.0;
             count += 1.0;
         }

@@ -919,8 +919,8 @@ void Realtime::paintLightView(const SceneLightData &light, const glm::mat4 &ligh
 glm::mat4 Realtime::getLightVP(const SceneLightData& light) {
 
     if (light.type == LightType::LIGHT_DIRECTIONAL) {
-        float backDist = 5.f;   // have to put the light somewhere, as dir doesnt have a position
-        float B = 5.f;          // orthogonal vals so we can use half-width/height
+        float backDist = 40.f;   // have to put the light somewhere, as dir doesnt have a position
+        float B = 40.f;          // orthogonal vals so we can use half-width/height
 
         glm::vec3 dir = glm::normalize(glm::vec3(light.dir));
 
@@ -941,7 +941,7 @@ glm::mat4 Realtime::getLightVP(const SceneLightData& light) {
         // float farL  = settings.farPlane;
 
         // glm::mat4 P = glm::ortho(-B, B, -B, B, nearL, farL); //proj mat
-        glm::mat4 P = glm::ortho(-B, B, -B, B, 0.f, 15.f); //proj mat
+        glm::mat4 P = glm::ortho(-B, B, -B, B, 0.f, 80.f); //proj mat
 
         return P * V;
     }
