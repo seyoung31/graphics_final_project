@@ -9,7 +9,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd /Users/sueanpark/Downloads/cliff_texture.jpg
+map_Kd ../normal_mapping/textures/cliff_diffuse.jpg
 
 newmtl Material
 Ns 3.953172
@@ -19,7 +19,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd /Users/sueanpark/Downloads/root_texture.jpg
+map_Kd ../normal_mapping/textures/root_diffuse.jpg
 
 newmtl Material.001
 Ns 250.000000
@@ -29,7 +29,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd /Users/sueanpark/Downloads/brick.jpg
+map_Kd ../normal_mapping/textures/brick_diffuse.jpg
 
 newmtl Material.002
 Ns 3.953172
@@ -39,7 +39,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd /Users/sueanpark/Downloads/root_texture.jpg
+map_Kd ../normal_mapping/textures/root_diffuse.jpg
 
 newmtl Material.003
 Ns 250.000000
@@ -49,7 +49,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd /Users/sueanpark/Downloads/brick.jpg
+map_Kd ../normal_mapping/textures/brick_diffuse.jpg
 
 newmtl Material.004
 Ns 3.953172
@@ -59,7 +59,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd /Users/sueanpark/Downloads/root_texture.jpg
+map_Kd ../normal_mapping/textures/root_diffuse.jpg
 
 newmtl Material.005
 Ns 3.953172
@@ -69,7 +69,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd /Users/sueanpark/Downloads/root_texture.jpg
+map_Kd ../normal_mapping/textures/root_diffuse.jpg
 
 newmtl Material.006
 Ns 250.000000
@@ -79,7 +79,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd /Users/sueanpark/Downloads/brick.jpg
+map_Kd ../normal_mapping/textures/brick_diffuse.jpg
 
 newmtl Material.007
 Ns 250.000000
@@ -89,7 +89,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd /Users/sueanpark/Downloads/brick.jpg
+map_Kd ../normal_mapping/textures/brick_diffuse.jpg
 
 newmtl Material.010
 Ns 250.000000
@@ -99,7 +99,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd /Users/sueanpark/Downloads/water_texture.jpg
+map_Kd ../normal_mapping/textures/water_diffuse.jpg
 
 newmtl cliff.002
 Ns 250.000000
@@ -109,7 +109,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd /Users/sueanpark/Downloads/cliff_texture.jpg
+map_Kd ../normal_mapping/textures/cliff_diffuse.jpg
 
 newmtl ground.002
 Ns 250.000000
@@ -119,7 +119,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd /Users/sueanpark/Downloads/ground_texture.jpg
+map_Kd ../normal_mapping/textures/ground_diffuse.jpg
 
 newmtl m_default_mat.001
 Ns 0.000000
@@ -129,7 +129,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd /Users/sueanpark/Downloads/StreetLamp/fobj_lamp.png
+map_Kd ../meshes/StreetLamp/fobj_lamp.png
 
 newmtl tree
 Ns 250.000000
@@ -139,7 +139,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd /Users/sueanpark/Downloads/tree_texture.jpg
+map_Kd ../normal_mapping/textures/leaf_diffuse.jpg
 
 newmtl tree.001
 Ns 250.000000
@@ -149,7 +149,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd /Users/sueanpark/Downloads/tree_texture.jpg
+map_Kd ../normal_mapping/textures/leaf_diffuse.jpg
 
 newmtl tree.002
 Ns 250.000000
@@ -159,7 +159,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd /Users/sueanpark/Downloads/tree_texture.jpg
+map_Kd ../normal_mapping/textures/leaf_diffuse.jpg
 
 newmtl tree.003
 Ns 250.000000
@@ -169,4 +169,4 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd /Users/sueanpark/Downloads/tree_texture.jpg
+map_Kd ../normal_mapping/textures/leaf_diffuse.jpg
