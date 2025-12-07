@@ -78,8 +78,10 @@ bool ObjLoader::parseObjFile(const std::string& filepath) {
         }
         else if (prefix == "vt") {
             // Texture coordinate
+            // Flip V coordinate because OpenGL has V=0 at bottom, but many image formats have V=0 at top
             glm::vec2 tex;
             iss >> tex.x >> tex.y;
+            tex.y = 1.0f - tex.y; // Flip V coordinate
             texCoords.push_back(tex);
         }
         else if (prefix == "vn") {

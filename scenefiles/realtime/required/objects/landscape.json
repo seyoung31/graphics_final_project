@@ -30,7 +30,7 @@
             {
               "type": "mesh",
               "ambient": [0.4, 0.4, 0.4],
-              "meshFile": "meshes/landscape2.obj",
+              "meshFile": "objects/landscape1.obj",
               "diffuse": [0.8, 0.8, 0.8],
               "specular": [0.3, 0.3, 0.3],
               "shininess": 20.0

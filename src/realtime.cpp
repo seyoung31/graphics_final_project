@@ -634,7 +634,7 @@ void Realtime::timerEvent(QTimerEvent *event) {
     glm::vec3 up = glm::normalize(glm::vec3(m_camera.up));
 
     glm::vec3 lookDir = glm::normalize(center - pos);
-    glm::vec3 right = glm::normalize(glm::cross(lookDir, up));
+    glm::vec3 right = -glm::normalize(glm::cross(up, lookDir));
 
     float speed = 5.0f * deltaTime * settings.moveSpeed;
     glm::vec3 move(0.f);
@@ -644,6 +644,7 @@ void Realtime::timerEvent(QTimerEvent *event) {
     if (m_keyMap[Qt::Key_S]) move -= lookDir;
 
     // A/D: left/right along perpendicular axis to look & up
+    // A moves left (-right), D moves right (+right)
     if (m_keyMap[Qt::Key_A]) move -= right;
     if (m_keyMap[Qt::Key_D]) move += right;
 
