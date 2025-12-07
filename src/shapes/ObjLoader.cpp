@@ -363,7 +363,7 @@ void ObjLoader::computeTangentBitangent(Vertex& v0, Vertex& v1, Vertex& v2) {
         bitangent = (deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x) * r;
     }
     
-    // Normalize and orthogonalize
+    // Normalize and orthogonalize tangent
     auto orthoTangent = [](const glm::vec3& n, const glm::vec3& t) -> glm::vec3 {
         if (glm::length(t) > 1e-6f) {
             glm::vec3 tn = glm::normalize(t);
@@ -378,9 +378,20 @@ void ObjLoader::computeTangentBitangent(Vertex& v0, Vertex& v1, Vertex& v2) {
     v1.tangent = orthoTangent(v1.normal, tangent);
     v2.tangent = orthoTangent(v2.normal, tangent);
     
-    v0.bitangent = glm::normalize(glm::cross(v0.normal, v0.tangent));
-    v1.bitangent = glm::normalize(glm::cross(v1.normal, v1.tangent));
-    v2.bitangent = glm::normalize(glm::cross(v2.normal, v2.tangent));
+    // Calculate bitangent using cross product, preserving handedness from UVs
+    // Standard OpenGL convention: bitangent = cross(normal, tangent)
+    // But we need to check if this matches the UV-based calculation
+    glm::vec3 computedBitangent = glm::cross(v0.normal, v0.tangent);
+    
+    // If the computed bitangent doesn't align with the UV-based one, flip it
+    // This handles mirrored UVs correctly
+    if (glm::dot(computedBitangent, bitangent) < 0.0f) {
+        computedBitangent = -computedBitangent;
+    }
+    
+    v0.bitangent = glm::normalize(computedBitangent);
+    v1.bitangent = glm::normalize(computedBitangent);
+    v2.bitangent = glm::normalize(computedBitangent);
 }
 
 void ObjLoader::flattenMeshGroup(ObjMeshGroup& group) {

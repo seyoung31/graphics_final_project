@@ -10,7 +10,6 @@ Ni 1.500000
 d 1.000000
 illum 2
 map_Kd ../normal_mapping/textures/cliff_diffuse.jpg
-map_Bump ../normal_mapping/textures/cliff_normal.jpg
 
 newmtl Material.003
 Ns 250.000000
@@ -21,6 +20,7 @@ Ni 1.500000
 d 1.000000
 illum 2
 map_Kd ../normal_mapping/textures/brick_diffuse.jpg
+map_Bump ../normal_mapping/textures/brick_normal.jpg
 
 newmtl cliff.002
 Ns 250.000000

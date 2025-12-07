@@ -203,8 +203,9 @@ void main() {
             // Transform eye direction to tangent space
             vec3 E_tangentspace = TBN * normalize(View3x3 * V);
             
-            // Get normal in tangent space (from the normal map)
-            vec3 n = normalize(texture(NormalTextureSampler, fragUV).rgb * 2.0 - 1.0);
+            // Get normal in tangent space (from the normal map) - use same UV scaling as diffuse
+            vec2 normalUV = fragUV * vec2(textureRepeatU, textureRepeatV);
+            vec3 n = normalize(texture(NormalTextureSampler, normalUV).rgb * 2.0 - 1.0);
             
             // Diffuse lighting: clamp(dot(n,l), 0, 1) with n and l in tangent space
             diff = clamp(dot(n, l_tangentspace), 0.0, 1.0);
