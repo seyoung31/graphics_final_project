@@ -19,6 +19,7 @@ struct Settings {
     bool extraCredit3 = false;
     bool extraCredit4 = false;
     bool colorGrading = false;
+    bool watercolor = false;
 };
 
 

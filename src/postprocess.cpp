@@ -194,7 +194,8 @@ void PostProcess::drawToScreen(float gradeStrength,
                                float nearPlane,
                                float farPlane,
                                float focusPlane,
-                               bool settingsCG) {
+                               bool settingsCG,
+                               bool watercolorEnabled) {
     glUseProgram(m_postprocessShader);
 
     // Scene color texture (the one attached to our FBO) -> unit 0
@@ -249,6 +250,12 @@ void PostProcess::drawToScreen(float gradeStrength,
         glUniform2f(locInvScreen,
                     1.0f / float(m_fboWidth),
                     1.0f / float(m_fboHeight));
+    }
+
+    // Watercolor effect
+    GLint locWatercolor = glGetUniformLocation(m_postprocessShader, "watercolor");
+    if (locWatercolor >= 0) {
+        glUniform1i(locWatercolor, watercolorEnabled ? 1 : 0);
     }
 
     glBindVertexArray(m_fullscreen_vao);

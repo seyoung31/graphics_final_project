@@ -212,6 +212,10 @@ void MainWindow::initialize() {
     colorGradeCB->setText(QStringLiteral("Color Grading"));
     colorGradeCB->setChecked(false);
 
+    watercolorCB = new QCheckBox();
+    watercolorCB->setText(QStringLiteral("Line Art Style"));
+    watercolorCB->setChecked(false);
+
     vLayout->addWidget(uploadFile);
     vLayout->addWidget(saveImage);
     vLayout->addWidget(tesselation_label);
@@ -243,6 +247,7 @@ void MainWindow::initialize() {
     vLayout->addWidget(ec3);
     vLayout->addWidget(ec4);
     vLayout->addWidget(colorGradeCB);
+    vLayout->addWidget(watercolorCB);
 
     connectUIElements();
 
@@ -338,6 +343,7 @@ void MainWindow::connectExtraCredit() {
     connect(ec3, &QCheckBox::clicked, this, &MainWindow::onExtraCredit3);
     connect(ec4, &QCheckBox::clicked, this, &MainWindow::onExtraCredit4);
     connect(colorGradeCB, &QCheckBox::clicked, this, &MainWindow::onColorGrading);
+    connect(watercolorCB, &QCheckBox::clicked, this, &MainWindow::onWatercolor);
 
 }
 
@@ -488,5 +494,10 @@ void MainWindow::onExtraCredit4() {
 
 void MainWindow::onColorGrading() {
     settings.colorGrading = !settings.colorGrading;
+    realtime->settingsChanged();
+}
+
+void MainWindow::onWatercolor() {
+    settings.watercolor = !settings.watercolor;
     realtime->settingsChanged();
 }

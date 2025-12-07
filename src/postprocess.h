@@ -20,7 +20,8 @@ public:
                   float nearPlane,
                   float farPlane,
                   float focusPlane,
-                      bool settingsCG);
+                  bool settingsCG,
+                  bool watercolorEnabled);
 
     // Access the offscreen FBO so Realtime can render into it
     GLuint fbo() const { return m_fbo; };
