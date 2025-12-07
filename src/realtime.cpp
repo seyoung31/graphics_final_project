@@ -273,8 +273,15 @@ void Realtime::initializeGL() {
     m_post.init(m_screen_width, m_screen_height,
                 QString(":/resources/images/noir_lut_4x4.png"));
     m_glInitialized = true;
+
     // Initialize particle system (Particles will create VAO/VBO/texture)
     m_particles.init(m_particles_shader);
+
+    // Load water color + displacement textures
+    GLuint waterColor = loadTexture(":/resources/images/water_color.png");
+    GLuint waterDisp = loadTexture(":/resources/images/water_displacement.png");
+
+    m_water.init(waterColor, waterDisp);
 
     //prep shadow fbos for shadows if we use them :)
     makeShadowFBO();
@@ -349,13 +356,13 @@ void Realtime::renderScene() {
     // Clear screen color and depth before painting
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Activate the ishader program
     glUseProgram(m_shader);
 
     ShaderUtils::uploadCamera(m_shader, m_view, m_proj);
     ShaderUtils::uploadGlobals(m_shader, m_renderData);
     ShaderUtils::uploadLights(m_shader, m_renderData);
 
+    m_water.apply(m_shader);
     renderShadows();
 
     ShaderUtils::drawShapes(m_shader, m_renderData, m_vaos, m_vertexCounts, m_instanceVBOs, this);
@@ -616,6 +623,8 @@ void Realtime::timerEvent(QTimerEvent *event) {
     m_elapsedTimer.restart();
 
     // Use deltaTime and m_keyMap here to move around
+
+    m_water.update(deltaTime);
 
     // Camera basis from current m_camera
     glm::vec3 pos = glm::vec3(m_camera.pos);

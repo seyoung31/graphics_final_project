@@ -147,6 +147,7 @@ struct ScenePrimitive {
     PrimitiveType type;
     SceneMaterial material;
     std::string meshfile; // Used for triangle meshes
+    bool useScrollingTex = false;
 };
 
 // Struct which contains data for a transformation.

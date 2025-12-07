@@ -41,10 +41,27 @@ uniform bool useTextureMap;
 uniform float textureRepeatU;
 uniform float textureRepeatV;
 
-//SHADOW MAPPING VARS
+// SHADOW MAPPING VARS
 in vec4 lightSpacePos[8]; //for shadow mapping
 uniform sampler2D shadowMaps[8];  // 2D maps for dir/spot
 uniform int use_shadow_mapping; //boolean for shadow mapping
+
+// SCROLLING TEXTURE FOR WATER VARS
+uniform sampler2D u_waterTex;
+uniform sampler2D u_dispTex;
+
+uniform float u_time;
+uniform int u_enableWater;
+
+uniform vec2  u_waterTexScale;
+uniform vec2  u_dispTexScale;
+uniform vec2  u_dispScrollDir;
+uniform float u_dispScrollSpeed;
+uniform float u_dispStrength;
+uniform float u_dispContrast;
+
+uniform float u_waterPlaneY;
+uniform float u_waterPlaneThickness;
 
 float shadowFactor(int i) { //check how in shadow things are
     vec3 proj = lightSpacePos[i].xyz / lightSpacePos[i].w; //get perspective
