@@ -61,16 +61,25 @@ vec3 gradeColor(vec3 c) {
 }
 
 vec3 dofBlur(vec2 uv, float zView) {
-    const float FOCUS_RANGE = 3.5;
-    const float DEAD_ZONE   = 0.4;
-    const float MAX_BLUR_PX = 14.0;
+    const float DEAD_ZONE_M   = 0.4;
+    const float MAX_BLUR_PX   = 14.0;
 
-    float defocus = max(abs(zView - uFocus) - DEAD_ZONE, 0.0);
-    float coc = pow(smoothstep(0.0, FOCUS_RANGE, defocus), 1.6);
-    float radiusPx = coc * MAX_BLUR_PX;
+    float depthRange = max(uFar - uNear, 1e-3);
+
+    // normalize defocus to [0,1-ish]
+    float defocusN = abs(zView - uFocus) / depthRange;
+    float deadN    = DEAD_ZONE_M / depthRange;
+
+    float defocus = max(defocusN - deadN, 0.0);
+
+    // focus band is now a fraction of depth range
+    const float FOCUS_RANGE_N = 0.12;  // tune 0.06..0.2
+    float coc = smoothstep(0.0, FOCUS_RANGE_N, defocus);
+
+    // gentler radius growth
+    float radiusPx = MAX_BLUR_PX * coc; // or * (1.0 - exp(-3.0*coc))
 
     if (radiusPx < 0.5) {
-        // DOF second => return graded center pixel
         vec3 c = texture(tOrig, uv).rgb;
         return useColorGrade ? gradeColor(c) : c;
     }
