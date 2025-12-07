@@ -285,6 +285,7 @@ void Realtime::initializeGL() {
 
     //prep shadow fbos for shadows if we use them :)
     makeShadowFBO();
+    glClearColor(145.f/255.f, 182.f/255.f, 201.f/255.f, 1.0f);  // dark bluish-gray
 }
 
 void Realtime::rebuildGeometryFromSettings() {
