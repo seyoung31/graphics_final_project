@@ -25,6 +25,7 @@ private:
     void connectFar();
     void connectFocus();
     void connectSpeed();
+    void connectPixelSize();
 
     // From old Project 6
     // void connectPerPixelFilter();
@@ -51,10 +52,12 @@ private:
     QSlider *farSlider;
     QSlider *focusSlider;    //new
     QSlider *speedSlider;    //new
+    QSlider *pixelSizeSlider; //new
     QDoubleSpinBox *nearBox;
     QDoubleSpinBox *farBox;
     QDoubleSpinBox *focusBox; //new
     QDoubleSpinBox *speedBox; //new
+    QDoubleSpinBox *pixelSizeBox; //new
 
     // Extra Credit:
     QCheckBox *ec1;
@@ -82,6 +85,8 @@ private slots:
     void onValChangeFarBox(double newValue);
     void onValChangeFocusBox(double newValue);//new
     void onValChangeSpeedBox(double newValue);
+    void onValChangePixelSizeSlider(int newValue);
+    void onValChangePixelSizeBox(double newValue);
 
     // Extra Credit:
     void onShadowMapping();

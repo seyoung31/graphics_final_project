@@ -16,6 +16,8 @@ void MainWindow::initialize() {
     QHBoxLayout *hLayout = new QHBoxLayout; // horizontal alignment
     QVBoxLayout *vLayout = new QVBoxLayout(); // vertical alignment
     vLayout->setAlignment(Qt::AlignTop);
+    vLayout->setSpacing(5); // Reduce spacing between widgets
+    vLayout->setContentsMargins(5, 5, 5, 5); // Reduce margins
     hLayout->addLayout(vLayout);
     hLayout->addWidget(aspectRatioWidget, 1);
     this->setLayout(hLayout);
@@ -55,6 +57,10 @@ void MainWindow::initialize() {
     //speed
     QLabel *speed_label = new QLabel(); // speedlabel
     speed_label->setText("Move Speed:");
+
+    //pixel size
+    QLabel *pixelSize_label = new QLabel(); // pixel size label
+    pixelSize_label->setText("Pixel Size:");
 
     // From old Project 6
     // // Create checkbox for per-pixel filter
@@ -124,6 +130,9 @@ void MainWindow::initialize() {
     //new for speed
     QGroupBox *speedLayout = new QGroupBox(); // horizonal speed slider alignment
     QHBoxLayout *lspeed = new QHBoxLayout();
+    //new for pixel size
+    QGroupBox *pixelSizeLayout = new QGroupBox(); // horizonal pixel size slider alignment
+    QHBoxLayout *lpixelSize = new QHBoxLayout();
 
     // Create slider controls to control near/far planes
     nearSlider = new QSlider(Qt::Orientation::Horizontal); // Near plane slider
@@ -174,6 +183,18 @@ void MainWindow::initialize() {
     speedBox->setSingleStep(0.2f);
     speedBox->setValue(1.f);
 
+    pixelSizeSlider = new QSlider(Qt::Orientation::Horizontal); // pixel size slider
+    pixelSizeSlider->setTickInterval(1);
+    pixelSizeSlider->setMinimum(1);
+    pixelSizeSlider->setMaximum(100);
+    pixelSizeSlider->setValue(12);
+
+    pixelSizeBox = new QDoubleSpinBox();
+    pixelSizeBox->setMinimum(1.0f);
+    pixelSizeBox->setMaximum(100.0f);
+    pixelSizeBox->setSingleStep(1.0f);
+    pixelSizeBox->setValue(12.0f);
+
     // Adds the slider and number box to the parameter layouts
     lnear->addWidget(nearSlider);
     lnear->addWidget(nearBox);
@@ -190,6 +211,10 @@ void MainWindow::initialize() {
     lspeed->addWidget(speedSlider);
     lspeed->addWidget(speedBox);
     speedLayout->setLayout(lspeed);
+
+    lpixelSize->addWidget(pixelSizeSlider);
+    lpixelSize->addWidget(pixelSizeBox);
+    pixelSizeLayout->setLayout(lpixelSize);
 
     // Extra Credit:
     ec1 = new QCheckBox();
@@ -253,6 +278,9 @@ void MainWindow::initialize() {
     vLayout->addWidget(colorGradeCB);
     vLayout->addWidget(watercolorCB);
     vLayout->addWidget(pixelatedCB);
+    //pixel size
+    vLayout->addWidget(pixelSize_label);
+    vLayout->addWidget(pixelSizeLayout);
 
     connectUIElements();
 
@@ -267,6 +295,8 @@ void MainWindow::initialize() {
     onValChangeFocusBox(5.f);
     //defaul Speed
     onValChangeSpeedBox(1.f);
+    //default Pixel Size
+    onValChangePixelSizeBox(12.0f);
 }
 
 void MainWindow::finish() {
@@ -286,6 +316,7 @@ void MainWindow::connectUIElements() {
     connectFar();
     connectFocus();
     connectSpeed();
+    connectPixelSize();
     connectExtraCredit();
 }
 
@@ -340,6 +371,12 @@ void MainWindow::connectSpeed() {
     connect(speedSlider, &QSlider::valueChanged, this, &MainWindow::onValChangeSpeedSlider);
     connect(speedBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
             this, &MainWindow::onValChangeSpeedBox);
+}
+
+void MainWindow::connectPixelSize() {
+    connect(pixelSizeSlider, &QSlider::valueChanged, this, &MainWindow::onValChangePixelSizeSlider);
+    connect(pixelSizeBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+            this, &MainWindow::onValChangePixelSizeBox);
 }
 
 void MainWindow::connectExtraCredit() {
@@ -510,5 +547,17 @@ void MainWindow::onWatercolor() {
 
 void MainWindow::onPixelated() {
     settings.pixelated = !settings.pixelated;
+    realtime->settingsChanged();
+}
+
+void MainWindow::onValChangePixelSizeSlider(int newValue) {
+    pixelSizeBox->setValue(newValue);
+    settings.pixelSize = pixelSizeBox->value();
+    realtime->settingsChanged();
+}
+
+void MainWindow::onValChangePixelSizeBox(double newValue) {
+    pixelSizeSlider->setValue(int(newValue));
+    settings.pixelSize = pixelSizeBox->value();
     realtime->settingsChanged();
 }

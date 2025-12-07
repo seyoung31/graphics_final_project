@@ -22,7 +22,8 @@ public:
                   float focusPlane,
                   bool settingsCG,
                   bool watercolorEnabled,
-                  bool pixelatedEnabled);
+                  bool pixelatedEnabled,
+                  float pixelSize);
 
     // Access the offscreen FBO so Realtime can render into it
     GLuint fbo() const { return m_fbo; };
