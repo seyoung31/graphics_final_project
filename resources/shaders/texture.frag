@@ -21,6 +21,7 @@ uniform sampler2D sceneDepthTex; //stores depth
 uniform vec2 uInvScreenSize;
 uniform bool watercolor;
 uniform bool pixelated;
+uniform float uPixelSize;
 
 float linearizeDepth(float depth) {
     float z_ndc = depth * 2.0 - 1.0;
@@ -242,7 +243,7 @@ vec3 applyLineArt(vec3 baseColor, vec2 uv) {
 // Pixelated effect
 vec3 applyPixelated(vec3 baseColor, vec2 uv) {
     // Pixelation size (adjustable - smaller = more pixelated)
-    float pixelSize = 12.0; // Number of pixels to combine
+    float pixelSize = uPixelSize; // Number of pixels to combine
     
     // Calculate the pixel grid using inverse screen size
     vec2 screenSize = 1.0 / uInvScreenSize;

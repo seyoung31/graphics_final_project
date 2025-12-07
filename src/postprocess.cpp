@@ -196,7 +196,8 @@ void PostProcess::drawToScreen(float gradeStrength,
                                float focusPlane,
                                bool settingsCG,
                                bool watercolorEnabled,
-                               bool pixelatedEnabled) {
+                               bool pixelatedEnabled,
+                               float pixelSize) {
     glUseProgram(m_postprocessShader);
 
     // Scene color texture (the one attached to our FBO) -> unit 0
@@ -263,6 +264,12 @@ void PostProcess::drawToScreen(float gradeStrength,
     GLint locPixelated = glGetUniformLocation(m_postprocessShader, "pixelated");
     if (locPixelated >= 0) {
         glUniform1i(locPixelated, pixelatedEnabled ? 1 : 0);
+    }
+
+    // Pixel size uniform
+    GLint locPixelSize = glGetUniformLocation(m_postprocessShader, "uPixelSize");
+    if (locPixelSize >= 0) {
+        glUniform1f(locPixelSize, pixelSize);
     }
 
     glBindVertexArray(m_fullscreen_vao);
