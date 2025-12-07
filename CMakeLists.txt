@@ -60,6 +60,7 @@ add_executable(${PROJECT_NAME}
     src/utils/shaderutils.h
     src/postprocess.h src/postprocess.cpp
     src/utils/watereffect.h src/utils/watereffect.cpp
+    src/camera_path/camerapath.h src/camera_path/camerapath.cpp
 
 )
 
