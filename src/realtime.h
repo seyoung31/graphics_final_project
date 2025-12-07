@@ -27,6 +27,7 @@
 #include "shapes/ObjLoader.h"
 
 #include "particles/particles.h"
+#include "utils/watereffect.h"
 
 class Realtime : public QOpenGLWidget {
     Q_OBJECT
@@ -141,6 +142,8 @@ private:
     PostProcess m_post;
     int m_screen_width, m_screen_height;
 
+    WaterEffect m_water;
+
     // Post-processing controls
     float m_gradeStrength = 0.4f; // how strong LUT is
     bool m_enableColorGrading = true;
@@ -160,6 +163,10 @@ private:
     // Texture loading for normal mapping
     std::unordered_map<std::string, GLuint> m_textureCache;
     void cleanupTextures();
+
+    float m_time = 0.0f;
+    GLuint m_waterColorTex = 0;
+    GLuint m_waterDispTex = 0;
 
 public:
     // Public texture loading function (needed by ShaderUtils)

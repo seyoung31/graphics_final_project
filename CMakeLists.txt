@@ -59,6 +59,7 @@ add_executable(${PROJECT_NAME}
     src/shaderloader.h
     src/utils/shaderutils.h
     src/postprocess.h src/postprocess.cpp
+    src/utils/watereffect.h src/utils/watereffect.cpp
 
 )
 
@@ -67,7 +68,6 @@ add_subdirectory(glm)
 
 # GLEW: this creates its library and allows you to `#include "GL/glew.h"`
 add_library(StaticGLEW STATIC glew/src/glew.c
-    src/shadows.h src/shadows.cpp
     .gitignore
 )
 include_directories(${PROJECT_NAME} PRIVATE glew/include)
@@ -95,13 +95,12 @@ qt6_add_resources(${PROJECT_NAME} "Resources"
         resources/shaders/shadow.vert
         resources/shaders/particles/particles.frag
         resources/shaders/particles/particles.vert
-	resources/images/ac_day_lut_4x4.png
-	resources/images/ac_night_lut_4x4.png
-	resources/images/identity_lut_4x4.png
 	resources/images/teal_orange_lut_4x4.png
 	resources/images/noir_lut_4x4.png
 	resources/images/vaporwave_lut_4x4.png
         resources/images/snowflake_only.png
+        resources/images/water_color.png
+        resources/images/water_displacement.png
 )
 
 # GLEW: this provides support for Windows (including 64-bit)
