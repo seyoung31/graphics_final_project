@@ -278,7 +278,7 @@ void Realtime::initializeGL() {
     m_particles.init(m_particles_shader);
 
     // Load water color + displacement textures
-    GLuint waterColor = loadTexture(":/resources/images/water_color.png");
+    GLuint waterColor = loadTexture(":/scenefiles/normal_mapping/textures/water_diffuse.jpg");
     GLuint waterDisp = loadTexture(":/resources/images/water_displacement.png");
 
     m_water.init(waterColor, waterDisp);
