@@ -20,6 +20,7 @@ uniform float uFocus;
 uniform sampler2D sceneDepthTex; //stores depth
 uniform vec2 uInvScreenSize;
 uniform bool watercolor;
+uniform bool pixelated;
 
 float linearizeDepth(float depth) {
     float z_ndc = depth * 2.0 - 1.0;
@@ -238,6 +239,32 @@ vec3 applyLineArt(vec3 baseColor, vec2 uv) {
     return clamp(lineArt, 0.0, 1.0);
 }
 
+// Pixelated effect
+vec3 applyPixelated(vec3 baseColor, vec2 uv) {
+    // Pixelation size (adjustable - smaller = more pixelated)
+    float pixelSize = 12.0; // Number of pixels to combine
+    
+    // Calculate the pixel grid using inverse screen size
+    vec2 screenSize = 1.0 / uInvScreenSize;
+    vec2 pixelGrid = screenSize / pixelSize;
+    
+    // Quantize UV coordinates to create pixel blocks
+    vec2 quantizedUV = floor(uv * pixelGrid) / pixelGrid;
+    
+    // Sample the color at the quantized UV (nearest neighbor)
+    // Add half pixel offset to sample from center of pixel block
+    vec2 pixelCenter = quantizedUV + vec2(0.5) / pixelGrid;
+    pixelCenter = clamp(pixelCenter, vec2(0.0), vec2(1.0));
+    
+    vec3 pixelatedColor = texture(tOrig, pixelCenter).rgb;
+    
+    // Optional: Color quantization for retro look (reduce color palette)
+    float colorLevels = 8.0; // Number of color levels per channel
+    pixelatedColor = floor(pixelatedColor * colorLevels) / colorLevels;
+    
+    return pixelatedColor;
+}
+
 void main() {
     vec3 baseColor = texture(tOrig, v_uv).rgb;
 
@@ -260,6 +287,11 @@ void main() {
     // Line art effect (applied after DOF)
     if (watercolor) {
         finalColor = applyLineArt(finalColor, v_uv);
+    }
+
+    // Pixelated effect (applied after line art)
+    if (pixelated) {
+        finalColor = applyPixelated(finalColor, v_uv);
     }
 
     fragColor = vec4(finalColor, 1.0);

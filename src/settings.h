@@ -20,6 +20,7 @@ struct Settings {
     bool extraCredit4 = false;
     bool colorGrading = false;
     bool watercolor = false;
+    bool pixelated = false;
 };
 
 

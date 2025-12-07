@@ -63,6 +63,7 @@ private:
     QCheckBox *ec4;
     QCheckBox *colorGradeCB;
     QCheckBox *watercolorCB;
+    QCheckBox *pixelatedCB;
 
 private slots:
     // From old Project 6
@@ -89,4 +90,5 @@ private slots:
     void onExtraCredit4();
     void onColorGrading();
     void onWatercolor();
+    void onPixelated();
 };

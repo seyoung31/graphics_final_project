@@ -216,6 +216,10 @@ void MainWindow::initialize() {
     watercolorCB->setText(QStringLiteral("Line Art Style"));
     watercolorCB->setChecked(false);
 
+    pixelatedCB = new QCheckBox();
+    pixelatedCB->setText(QStringLiteral("Pixelated Style"));
+    pixelatedCB->setChecked(false);
+
     vLayout->addWidget(uploadFile);
     vLayout->addWidget(saveImage);
     vLayout->addWidget(tesselation_label);
@@ -248,6 +252,7 @@ void MainWindow::initialize() {
     vLayout->addWidget(ec4);
     vLayout->addWidget(colorGradeCB);
     vLayout->addWidget(watercolorCB);
+    vLayout->addWidget(pixelatedCB);
 
     connectUIElements();
 
@@ -344,6 +349,7 @@ void MainWindow::connectExtraCredit() {
     connect(ec4, &QCheckBox::clicked, this, &MainWindow::onExtraCredit4);
     connect(colorGradeCB, &QCheckBox::clicked, this, &MainWindow::onColorGrading);
     connect(watercolorCB, &QCheckBox::clicked, this, &MainWindow::onWatercolor);
+    connect(pixelatedCB, &QCheckBox::clicked, this, &MainWindow::onPixelated);
 
 }
 
@@ -499,5 +505,10 @@ void MainWindow::onColorGrading() {
 
 void MainWindow::onWatercolor() {
     settings.watercolor = !settings.watercolor;
+    realtime->settingsChanged();
+}
+
+void MainWindow::onPixelated() {
+    settings.pixelated = !settings.pixelated;
     realtime->settingsChanged();
 }

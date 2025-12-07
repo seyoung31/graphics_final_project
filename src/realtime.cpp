@@ -430,7 +430,8 @@ void Realtime::paintGL() {
                         settings.farPlane,
                         settings.focusPlane,
                         settings.colorGrading,
-                        settings.watercolor);
+                        settings.watercolor,
+                        settings.pixelated);
 
 
 }
