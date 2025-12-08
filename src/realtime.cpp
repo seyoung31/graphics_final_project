@@ -647,7 +647,10 @@ void Realtime::timerEvent(QTimerEvent *event) {
 
     // Use deltaTime and m_keyMap here to move around
 
-    m_water.update(deltaTime);
+    if (settings.scrollWater){
+        m_water.update(deltaTime);
+    }
+
 
     // Camera basis from current m_camera
     glm::vec3 pos = glm::vec3(m_camera.pos);

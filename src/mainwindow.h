@@ -69,6 +69,7 @@ private:
     QCheckBox *watercolorCB;
     QCheckBox *pixelatedCB;
     QCheckBox *isNightCB;
+    QCheckBox *scrollWaterCB;
 
 private slots:
     // From old Project 6
@@ -100,4 +101,5 @@ private slots:
     void onWatercolor();
     void onPixelated();
     void onNight();
+    void onScrollWater();
 };

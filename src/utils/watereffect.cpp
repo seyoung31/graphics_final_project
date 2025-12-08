@@ -10,7 +10,7 @@ WaterEffect::WaterEffect()
     , m_waterTexScale(4.0f, 4.0f)
     , m_dispTexScale(1.5f, 1.5f)
     , m_dispScrollDir(0.7f, 0.3f)
-    , m_dispScrollSpeed(0.15f)
+    , m_dispScrollSpeed(0.015f)
     , m_dispStrength(0.05f)
     , m_dispContrast(1.5f)
 {}
