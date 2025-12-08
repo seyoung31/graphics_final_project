@@ -278,11 +278,12 @@ void MainWindow::initialize() {
     // Extra Credit:
     vLayout->addWidget(ec_label);
 
+    //CHANGED THESE TO BE SIDE BY SIDE
     QWidget *ecWidget = new QWidget();
     QGridLayout *ecLayout = new QGridLayout();
     ecLayout->setSpacing(10); // optional, spacing between checkboxes
+    //below line creates more space in side by side
     ecLayout->setColumnMinimumWidth(0, 150); // forces left column to be at least 150px wide
-
 
     // Add checkboxes to the grid layout in 2 columns
     ecLayout->addWidget(ec1, 0, 0);
