@@ -435,7 +435,8 @@ void Realtime::paintGL() {
                         settings.colorGrading,
                         settings.watercolor,
                         settings.pixelated,
-                        settings.pixelSize);
+                        settings.pixelSize,
+                        settings.isNight);
 
 
 }

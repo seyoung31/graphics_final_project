@@ -22,6 +22,7 @@ uniform vec2 uInvScreenSize;
 uniform bool watercolor;
 uniform bool pixelated;
 uniform float uPixelSize;
+uniform bool isNight;
 
 float linearizeDepth(float depth) {
     float z_ndc = depth * 2.0 - 1.0;
@@ -75,6 +76,13 @@ vec3 samplePixelated(vec2 uv) {
     // optional palette quantization
     float levels = 8.0;
     c = floor(c * levels) / levels;
+
+    if (isNight) {
+        float lum = dot(c, vec3(0.299, 0.587, 0.114)); // perceptual brightness
+        if (lum > 1e-4) {
+            c = clamp(c + vec3(0.05), 0.0, 1.0);
+        }
+    }
 
     return c;
 }
@@ -288,6 +296,13 @@ vec3 applyPixelated(vec3 baseColor, vec2 uv) {
     float colorLevels = 8.0; // Number of color levels per channel
     pixelatedColor = floor(pixelatedColor * colorLevels) / colorLevels;
     
+    if (isNight) {
+        float lum = dot(pixelatedColor, vec3(0.299, 0.587, 0.114)); // perceptual brightness
+        if (lum > 1e-4) {
+            pixelatedColor = clamp(pixelatedColor + vec3(0.05), 0.0, 1.0);
+        }
+    }
+
     return pixelatedColor;
 }
 
