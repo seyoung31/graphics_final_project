@@ -253,6 +253,10 @@ void MainWindow::initialize() {
     pixelatedCB->setText(QStringLiteral("Pixelated Style"));
     pixelatedCB->setChecked(false);
 
+    isNightCB = new QCheckBox();
+    isNightCB->setText(QStringLiteral("Night Time"));
+    isNightCB->setChecked(false);
+
 
     vLayout->addWidget(uploadFile);
     vLayout->addWidget(saveImage);
@@ -304,6 +308,8 @@ void MainWindow::initialize() {
     ecLayout->addWidget(colorGradeCB, 1, 1);
     ecLayout->addWidget(watercolorCB, 2, 1);
     ecLayout->addWidget(pixelatedCB, 3, 1);
+    ecLayout->addWidget(isNightCB, 3, 2);
+
 
     ecWidget->setLayout(ecLayout);
     vLayout->addWidget(ecWidget);
@@ -416,6 +422,7 @@ void MainWindow::connectExtraCredit() {
     connect(colorGradeCB, &QCheckBox::clicked, this, &MainWindow::onColorGrading);
     connect(watercolorCB, &QCheckBox::clicked, this, &MainWindow::onWatercolor);
     connect(pixelatedCB, &QCheckBox::clicked, this, &MainWindow::onPixelated);
+    connect(isNightCB, &QCheckBox::clicked, this, &MainWindow::onNight);
 
 }
 
@@ -586,6 +593,11 @@ void MainWindow::onWatercolor() {
 
 void MainWindow::onPixelated() {
     settings.pixelated = !settings.pixelated;
+    realtime->settingsChanged();
+}
+
+void MainWindow::onNight() {
+    settings.isNight = !settings.isNight;
     realtime->settingsChanged();
 }
 
