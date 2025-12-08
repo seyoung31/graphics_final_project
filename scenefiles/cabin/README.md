@@ -18,7 +18,7 @@ Preview: ![Text](previews/cabin_tiny_woods.png)
 
 File format: `.fbx`
 
-Citation: 
+Citation:
 "Cabin In The Woods for Tiny Cabin Challenge" (https://skfb.ly/6Rn6S) by Karthik Naidu is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
 
 ## cabin_winter_wonderland
