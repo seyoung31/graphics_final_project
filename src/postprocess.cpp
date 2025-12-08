@@ -197,7 +197,8 @@ void PostProcess::drawToScreen(float gradeStrength,
                                bool settingsCG,
                                bool watercolorEnabled,
                                bool pixelatedEnabled,
-                               float pixelSize) {
+                               float pixelSize,
+                               bool isNight) {
     glUseProgram(m_postprocessShader);
 
     // Scene color texture (the one attached to our FBO) -> unit 0
@@ -270,6 +271,12 @@ void PostProcess::drawToScreen(float gradeStrength,
     GLint locPixelSize = glGetUniformLocation(m_postprocessShader, "uPixelSize");
     if (locPixelSize >= 0) {
         glUniform1f(locPixelSize, pixelSize);
+    }
+
+    // Night time uniform
+    GLint locNightTime = glGetUniformLocation(m_postprocessShader, "isNight");
+    if (locNightTime >= 0) {
+        glUniform1i(locNightTime, isNight ? 1 : 0);
     }
 
     glBindVertexArray(m_fullscreen_vao);

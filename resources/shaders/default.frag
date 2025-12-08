@@ -104,14 +104,17 @@ float shadowFactorPCF(int i) {
     vec2 texelSize = 1.0 / vec2(textureSize(shadowMaps[i], 0));
 
     // kernel radius in texels (tune 1–3)
-    int radius = 3;
+    int radius = 2;
 
     float sum = 0.0;
     float count = 0.0;
 
     // float softness = 1;
     float distSoft = mix(1.5, 3.0, proj.z); // proj.z in [0,1]
-    float softness = (lightType[i] == 2) ? distSoft : 2.0;
+    float softness = (lightType[i] == 1) ? distSoft : 2.0;
+    softness = 2.5;
+    // softness = (lightType[i] == 2) ? distSoft : 3.0;
+
 
 
     //softening

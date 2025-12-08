@@ -23,7 +23,8 @@ public:
                   bool settingsCG,
                   bool watercolorEnabled,
                   bool pixelatedEnabled,
-                  float pixelSize);
+                  float pixelSize,
+                      bool isNight);
 
     // Access the offscreen FBO so Realtime can render into it
     GLuint fbo() const { return m_fbo; };

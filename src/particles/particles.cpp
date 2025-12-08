@@ -3,7 +3,6 @@
 #include <QDebug>
 #include <algorithm>
 #include <cstdlib>
-
 // --- ctor/dtor
 Particles::Particles() {}
 Particles::~Particles() { cleanup(); }
@@ -26,18 +25,8 @@ int Particles::FindUnusedParticle() {
     return 0;
 }
 
+// --- spawn new particles inside a fixed axis-aligned box centered at m_spawnCenter
 void Particles::spawnNewParticles(int newCount) {
-    // margin to slightly overcover edges (avoid popping at boundaries)
-    const float edgeMargin = 1.15f; // 15% extra width
-
-    // world-space frustum half-size at spawn distance
-    float halfH = m_spawnDistance * tanf(m_camFov * 0.5f) * edgeMargin;
-    float halfW = halfH * m_camAspect * edgeMargin;
-
-    // top center in world space (top of the frustum at spawn distance)
-    glm::vec3 topCenter = m_camPos + m_camForward * m_spawnDistance + m_camUp * halfH ;
-    // offset each particle downward a tiny bit below the exact top to avoid popping.
-
     for (int i = 0; i < newCount; ++i) {
         int idx = FindUnusedParticle();
         Particle &p = m_particlesContainer[idx];
@@ -45,36 +34,32 @@ void Particles::spawnNewParticles(int newCount) {
         // Life
         p.life = 4.0f + (static_cast<float>(rand())/RAND_MAX) * 6.0f; // 4-10s
 
-        // sample across the horizontal frustum width at spawn distance
-        float rx = (static_cast<float>(rand())/RAND_MAX - 0.5f) * 2.0f * halfW;
-        // small negative offset so they start slightly inside view
-        float ry = - (static_cast<float>(rand())/RAND_MAX) * 0.08f * halfH;
-        // depth jitter is proportional to spawnDistance to keep spread consistent
-        float rz = (static_cast<float>(rand())/RAND_MAX - 0.5f) * 0.5f * m_spawnDistance * 0.15f;
+        // Sample position uniformly inside AABB defined by spawn center +/- extents
+        float rx = (static_cast<float>(rand())/RAND_MAX * 2.0f - 1.0f) * m_spawnExtents.x;
+        float ry = (static_cast<float>(rand())/RAND_MAX * 2.0f - 1.0f) * m_spawnExtents.y;
+        float rz = (static_cast<float>(rand())/RAND_MAX * 2.0f - 1.0f) * m_spawnExtents.z;
+        p.pos = m_spawnCenter + glm::vec3(rx, ry, rz);
 
-        // world spawn pos: topCenter + right*rx + up*ry + forward*rz
-        p.pos = topCenter + m_camRight * rx*2.f + m_camUp * ry*2.f + m_camForward * 4.f*rz;
-
-        // velocity: mostly downward in world-space relative to camera up
+        // velocity: mostly downward in world-space Y, with small drift
         float downSpeed = 0.15f + (static_cast<float>(rand())/RAND_MAX) * 0.35f;
-        float horiz = (static_cast<float>(rand())/RAND_MAX - 0.5f) * 0.2f; // small sideways drift in camera right
-        float forwardDrift = (static_cast<float>(rand())/RAND_MAX - 0.5f) * 0.08f; // small forward/back jitter
+        float horizX = (static_cast<float>(rand())/RAND_MAX - 0.5f) * 0.3f; // sideways drift X
+        float horizZ = (static_cast<float>(rand())/RAND_MAX - 0.5f) * 0.3f; // sideways drift Z
 
-        // Compose velocity in world-space using camera basis:
-        p.speed = (-m_camUp * downSpeed) + (m_camRight * horiz) + (m_camForward * forwardDrift);
+        p.speed = glm::vec3(horizX, -downSpeed, horizZ);
 
         // visual attributes
         unsigned char alpha = static_cast<unsigned char>(200 + (rand() % 56));
         p.r = 255; p.g = 255; p.b = 255; p.a = alpha;
-        p.size = 0.15f + (static_cast<float>(rand())/RAND_MAX) * 0.06f; // a bit smaller for distance realism
+        p.size = 0.15f + (static_cast<float>(rand())/RAND_MAX) * 0.06f;
 
-        p.cameradistance = glm::length2(p.pos - m_camPos);
+        // we will compute cameradistance later in render() so leave it for now
+        p.cameradistance = -1.0f;
     }
     std::cout<< "particles spawn"<<std::endl;
 }
 
 
-// --- init: create CPU containers, VBOs, VAO, and load texture
+// --- init: create CPU containers, VBOs, VAO, and load texture (unchanged)
 void Particles::init(GLuint shaderProgram) {
     m_shader = shaderProgram;
 
@@ -155,7 +140,7 @@ void Particles::initInstancedBuffers() {
 
 }
 
-// --- texture loader from lab
+// --- texture loader (unchanged)
 void Particles::loadTextureFromResource(const char* resourcePath) {
     QImage img(resourcePath);
     if (img.isNull()) {
@@ -177,8 +162,8 @@ void Particles::loadTextureFromResource(const char* resourcePath) {
 
 }
 
-// --- update: spawn, simulate, fill CPU arrays, upload to GPU
-void Particles::update(float dt, const glm::vec3& cameraPos) {
+// --- update: spawn & simulate, no camera position required
+void Particles::update(float dt) {
     if (dt <= 0.0f) return;
 
     // spawn rate (flakes per second) can be tweaked
@@ -192,30 +177,50 @@ void Particles::update(float dt, const glm::vec3& cameraPos) {
     timeAccum += dt;
     ParticlesCount = 0;
 
-    // update physics for all particles first
+    // update physics for all particles
     for (int i = 0; i < MaxParticles; ++i) {
         Particle &p = m_particlesContainer[i];
         if (p.life > 0.0f) {
             p.life -= dt;
             if (p.life > 0.0f) {
-                // physics (same as you had)
+                // physics (gravity + some sway)
                 p.speed.y += snow_gravity * dt;
-                float sway = 0.25f * sinf(timeAccum * driftFreq + float(i) * 0.13f);
-                p.pos.x += (p.speed.x + snow_wind.x * 0.15f + sway) * dt;
+                float swayX = 0.25f * sinf(timeAccum * driftFreq + float(i) * 0.13f);
+                float swayZ = 0.25f * cosf(timeAccum * driftFreq + float(i) * 0.11f);
+                p.pos.x += (p.speed.x + snow_wind.x * 0.15f + swayX) * dt;
                 p.pos.y += p.speed.y * dt;
-                p.pos.z += (p.speed.z + snow_wind.z * 0.15f) * dt;
-
-                // update camera distance for sorting (use squared distance)
-                p.cameradistance = glm::length2(p.pos - cameraPos);
+                p.pos.z += (p.speed.z + snow_wind.z * 0.15f + swayZ) * dt;
+                // leave cameradistance calculation for render()
             } else {
                 // mark dead for reuse
-                p.life = -1.0f;           // <<-- important: mark as unused (< 0)
+                p.life = -1.0f;
                 p.cameradistance = -1.0f;
             }
         }
     }
 
-    // --- sort AFTER simulation so ordering is correct for this frame ---
+    // don't sort or upload here — render will compute distances, sort, and upload
+    std::cout<< "updating"<<std::endl;
+}
+
+// --- render: compute camera distances, sort, fill GPU arrays and draw
+void Particles::render(const glm::mat4 &view, const glm::mat4 &proj, const glm::vec3 &cameraPos) {
+    if (m_shader == 0u) return;
+
+    // update last camera pos
+    m_lastCameraPos = cameraPos;
+
+    // compute camera distances for alive particles (squared)
+    for (int i = 0; i < MaxParticles; ++i) {
+        Particle &p = m_particlesContainer[i];
+        if (p.life > 0.0f) {
+            p.cameradistance = glm::length2(p.pos - cameraPos);
+        } else {
+            p.cameradistance = -1.0f;
+        }
+    }
+
+    // --- sort AFTER computing distances so ordering is correct for this frame ---
     std::stable_sort(m_particlesContainer.begin(), m_particlesContainer.end());
 
     // --- fill the GPU-side arrays using sorted list (far -> near) ---
@@ -234,35 +239,11 @@ void Particles::update(float dt, const glm::vec3& cameraPos) {
             g_particule_color_data[4 * ParticlesCount + 3] = p.a;
 
             ++ParticlesCount;
-        } else {
-            // since sorted, once you hit first dead (life < 0) you could break early,
-            // but doing full loop is fine and predictable
         }
     }
 
-    // --- upload streaming buffers (orphan + subdata) ---
-    glBindBuffer(GL_ARRAY_BUFFER, m_positions_vbo);
-    glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
-    if (ParticlesCount > 0)
-        glBufferSubData(GL_ARRAY_BUFFER, 0, ParticlesCount * 4 * sizeof(GLfloat), g_particule_position_size_data.data());
-
-    glBindBuffer(GL_ARRAY_BUFFER, m_colors_vbo);
-    glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW);
-    if (ParticlesCount > 0)
-        glBufferSubData(GL_ARRAY_BUFFER, 0, ParticlesCount * 4 * sizeof(GLubyte), g_particule_color_data.data());
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    std::cout<< "updating"<<std::endl;
-
-
-}
-
-// --- render: single instanced draw
-void Particles::render(const glm::mat4 &view, const glm::mat4 &proj, const glm::vec3 &cameraPos) {
-    if (m_shader == 0u) return;
     if (ParticlesCount == 0) return;
-
-    m_lastCameraPos = cameraPos;
+    if (m_shader == 0u) return;
 
     glUseProgram(m_shader);
 
@@ -284,11 +265,22 @@ void Particles::render(const glm::mat4 &view, const glm::mat4 &proj, const glm::
     GLint locTint = glGetUniformLocation(m_shader, "uTint");
     if (locTint >= 0) glUniform4f(locTint, 1.0f, 1.0f, 1.0f, 1.0f);
     GLint locAlphaCut = glGetUniformLocation(m_shader, "uAlphaCutoff");
-    if (locAlphaCut >= 0) glUniform1f(locAlphaCut, 0.001f);
+    if (locAlphaCut >= 0) glUniform1f(locAlphaCut, 0.1f);
 
     // bind texture
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_tex);
+
+    // --- upload streaming buffers (orphan + subdata) ---
+    glBindBuffer(GL_ARRAY_BUFFER, m_positions_vbo);
+    glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
+    if (ParticlesCount > 0)
+        glBufferSubData(GL_ARRAY_BUFFER, 0, ParticlesCount * 4 * sizeof(GLfloat), g_particule_position_size_data.data());
+
+    glBindBuffer(GL_ARRAY_BUFFER, m_colors_vbo);
+    glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW);
+    if (ParticlesCount > 0)
+        glBufferSubData(GL_ARRAY_BUFFER, 0, ParticlesCount * 4 * sizeof(GLubyte), g_particule_color_data.data());
 
     // render state
     glEnable(GL_BLEND);
@@ -308,8 +300,7 @@ void Particles::render(const glm::mat4 &view, const glm::mat4 &proj, const glm::
     std::cout<<"rendering"<<std::endl;
 }
 
-
-// --- cleanup
+// --- cleanup (unchanged)
 void Particles::cleanup() {
     if (m_billboard_vbo) { glDeleteBuffers(1, &m_billboard_vbo); m_billboard_vbo = 0; }
     if (m_positions_vbo) { glDeleteBuffers(1, &m_positions_vbo); m_positions_vbo = 0; }
@@ -317,6 +308,4 @@ void Particles::cleanup() {
     if (m_vao) { glDeleteVertexArrays(1, &m_vao); m_vao = 0; }
     if (m_tex) { glDeleteTextures(1, &m_tex); m_tex = 0; }
     std::cout<< "cleaning up"<<std::endl;
-
 }
-
