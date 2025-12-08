@@ -53,7 +53,8 @@
               "meshFile": "objects/landscape1.obj",
               "diffuse": [0.8, 0.8, 0.8],
               "specular": [0.3, 0.3, 0.3],
-              "shininess": 20.0
+              "shininess": 20.0,
+              "useScrollingTex": true
             }
           ]
         }

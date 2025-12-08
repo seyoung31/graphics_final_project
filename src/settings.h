@@ -24,6 +24,7 @@ struct Settings {
     bool pixelated = false;
     bool isNight = false;
     float pixelSize = 12.0;
+    bool scrollWater = false;
 };
 
 

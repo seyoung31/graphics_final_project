@@ -47,12 +47,9 @@ uniform sampler2D shadowMaps[8];  // 2D maps for dir/spot
 uniform int use_shadow_mapping; //boolean for shadow mapping
 
 // SCROLLING TEXTURE FOR WATER VARS
-uniform sampler2D u_waterTex;
 uniform sampler2D u_dispTex;
 
 uniform float u_time;
-uniform int u_enableWater;
-
 uniform vec2  u_waterTexScale;
 uniform vec2  u_dispTexScale;
 uniform vec2  u_dispScrollDir;
@@ -60,8 +57,8 @@ uniform float u_dispScrollSpeed;
 uniform float u_dispStrength;
 uniform float u_dispContrast;
 
-uniform float u_waterPlaneY;
-uniform float u_waterPlaneThickness;
+// Per object toggle set from JSON
+uniform bool u_useScrollingTex;
 
 float shadowFactor(int i) { //check how in shadow things are
     vec3 proj = lightSpacePos[i].xyz / lightSpacePos[i].w; //get perspective
@@ -143,11 +140,36 @@ void main() {
     
     // Sample diffuse texture if available
     vec3 diffuseColor = k_d;
+
+    // Base UV from the mesh
+    vec2 baseUV = fragUV;
+
     if (useTextureMap) {
-        vec2 scaledUV = fragUV * vec2(textureRepeatU, textureRepeatV);
-        vec4 diffuseTexSample = texture(DiffuseTextureSampler, scaledUV);
-        diffuseColor = diffuseTexSample.rgb;
-    }
+            // Base UVs from the mesh (map_Kd) with repeat controls
+            vec2 baseUV = fragUV * vec2(textureRepeatU, textureRepeatV);
+
+            // If this material is marked as scrolling water, distort UVs using the displacement map
+            if (u_useScrollingTex) {
+                // Scroll displacement map over time
+                vec2 dispUV = fragUV * u_dispTexScale
+                            + u_dispScrollDir * (u_dispScrollSpeed * u_time);
+
+                // Sample displacement (use RG as a 2D offset, high contrast optional)
+                vec2 dispSample = texture(u_dispTex, dispUV).rg;
+
+                // Map [0,1] -> [-1,1] and scale by strength
+                vec2 offset = (dispSample * 2.0 - 1.0) * u_dispStrength;
+
+                // Scale base water texture and apply offset
+                vec2 waterUV = baseUV * u_waterTexScale + offset;
+
+                // Use map_Kd (DiffuseTextureSampler) as the base water color
+                diffuseColor = texture(DiffuseTextureSampler, waterUV).rgb;
+            } else {
+                // Regular static texture lookup
+                diffuseColor = texture(DiffuseTextureSampler, baseUV).rgb;
+            }
+        }
 
     vec3 color = k_a * vec3(1.0);
 

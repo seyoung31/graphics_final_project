@@ -6,25 +6,19 @@
 
 WaterEffect::WaterEffect()
     : m_time(0.0f)
-    , m_waterColorTex(0)
     , m_waterDispTex(0)
     , m_waterTexScale(4.0f, 4.0f)
     , m_dispTexScale(1.5f, 1.5f)
     , m_dispScrollDir(0.7f, 0.3f)
-    , m_dispScrollSpeed(0.15f)
+    , m_dispScrollSpeed(0.015f)
     , m_dispStrength(0.05f)
     , m_dispContrast(1.5f)
-    , m_planeY(-0.55f)         // top of your platform cube in world space
-    , m_planeThickness(0.03f)  // tolerance band around that height
-    , m_enabled(true)
 {}
 
-void WaterEffect::init(GLuint waterColorTex, GLuint waterDispTex) {
-
-    m_waterColorTex = waterColorTex;
+void WaterEffect::init(GLuint waterDispTex) {
     m_waterDispTex = waterDispTex;
 
-    if (!m_waterColorTex || !m_waterDispTex) {
+    if (!m_waterDispTex) {
         std::cerr << "[WaterEffect] failed to load water/displacement texture map";
     }
 }
@@ -37,7 +31,7 @@ void WaterEffect::apply(GLuint shaderProgram) {
 
     // If disabled or texture not loaded, tell shader to turn it off
     GLint enableLoc = glGetUniformLocation(shaderProgram, "u_enableWater");
-    if (!m_enabled || !m_waterColorTex || !m_waterDispTex) {
+    if (!m_waterDispTex) {
         if (enableLoc >= 0) {
             glUniform1i(enableLoc, 0);
         }
@@ -51,12 +45,6 @@ void WaterEffect::apply(GLuint shaderProgram) {
     // Time
     GLuint timeLoc = glGetUniformLocation(shaderProgram, "u_time");
     if (timeLoc >= 0) glUniform1f(timeLoc, m_time);
-
-    // Plane location
-    GLint planeYLoc = glGetUniformLocation(shaderProgram, "u_waterPlaneY");
-    GLint thickLoc = glGetUniformLocation(shaderProgram, "u_waterPlaneThickness");
-    if (planeYLoc >= 0) glUniform1f(planeYLoc, m_planeY);
-    if (thickLoc >= 0) glUniform1f(thickLoc, m_planeThickness);
 
     // Water & displacement parameters
     GLint waterScaleLoc = glGetUniformLocation(shaderProgram, "u_waterTexScale");
@@ -74,11 +62,6 @@ void WaterEffect::apply(GLuint shaderProgram) {
     glUniform1f(dispContrastLoc, m_dispContrast);
 
     // Bind textures
-    glActiveTexture(GL_TEXTURE0 + 10);
-    glBindTexture(GL_TEXTURE_2D, m_waterColorTex);
-    GLint waterTexLoc = glGetUniformLocation(shaderProgram, "u_waterTex");
-    glUniform1i(waterTexLoc, 10);
-
     glActiveTexture(GL_TEXTURE0 + 11);
     glBindTexture(GL_TEXTURE_2D, m_waterDispTex);
     GLint waterDispTexLoc = glGetUniformLocation(shaderProgram, "u_dispTex");
@@ -88,10 +71,6 @@ void WaterEffect::apply(GLuint shaderProgram) {
 
 void WaterEffect::cleanup()
 {
-    if (m_waterColorTex) {
-        glDeleteTextures(1, &m_waterColorTex);
-        m_waterColorTex = 0;
-    }
     if (m_waterDispTex) {
         glDeleteTextures(1, &m_waterDispTex);
         m_waterDispTex = 0;

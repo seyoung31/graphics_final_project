@@ -304,11 +304,9 @@ void Realtime::initializeGL() {
     // Initialize particle system (Particles will create VAO/VBO/texture)
     m_particles.init(m_particles_shader);
 
-    // Load water color + displacement textures
-    GLuint waterColor = loadTexture(":/scenefiles/normal_mapping/textures/water_diffuse.jpg");
+    // Load displacement textures
     GLuint waterDisp = loadTexture(":/resources/images/water_displacement.png");
-
-    m_water.init(waterColor, waterDisp);
+    m_water.init(waterDisp);
 
     //prep shadow fbos for shadows if we use them :)
     makeShadowFBO();
@@ -493,7 +491,8 @@ void Realtime::paintGL() {
                         settings.colorGrading,
                         settings.watercolor,
                         settings.pixelated,
-                        settings.pixelSize);
+                        settings.pixelSize,
+                        settings.isNight);
 
 
 }
@@ -711,7 +710,10 @@ void Realtime::timerEvent(QTimerEvent *event) {
 
     // Use deltaTime and m_keyMap here to move around
 
-    m_water.update(deltaTime);
+    if (settings.scrollWater){
+        m_water.update(deltaTime);
+    }
+
 
     // Camera basis from current m_camera
     glm::vec3 pos = glm::vec3(m_camera.pos);
@@ -784,7 +786,7 @@ void Realtime::updateParticleSystem(float deltaTime){
     // Also set camera world position for sorting/distance uses
     m_particles.setCameraPos(camPos);
 
-    m_particles.update(deltaTime, camPos);
+    m_particles.update(deltaTime);
 }
 
 // Example: Set up a simple circular camera path

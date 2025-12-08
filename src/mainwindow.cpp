@@ -253,6 +253,9 @@ void MainWindow::initialize() {
     isNightCB->setText(QStringLiteral("Night Time"));
     isNightCB->setChecked(false);
 
+    scrollWaterCB = new QCheckBox();
+    scrollWaterCB->setText(QStringLiteral("Scroll Water Texture"));
+    scrollWaterCB->setChecked(false);
 
     vLayout->addWidget(uploadFile);
     vLayout->addWidget(saveImage);
@@ -303,7 +306,8 @@ void MainWindow::initialize() {
     ecLayout->addWidget(colorGradeCB, 1, 1);
     ecLayout->addWidget(watercolorCB, 2, 1);
     ecLayout->addWidget(pixelatedCB, 3, 1);
-    ecLayout->addWidget(isNightCB, 3, 2);
+    ecLayout->addWidget(isNightCB, 4, 0);
+    ecLayout->addWidget(scrollWaterCB, 4, 1);
 
 
     ecWidget->setLayout(ecLayout);
@@ -417,6 +421,7 @@ void MainWindow::connectExtraCredit() {
     connect(watercolorCB, &QCheckBox::clicked, this, &MainWindow::onWatercolor);
     connect(pixelatedCB, &QCheckBox::clicked, this, &MainWindow::onPixelated);
     connect(isNightCB, &QCheckBox::clicked, this, &MainWindow::onNight);
+    connect(scrollWaterCB, &QCheckBox::clicked, this, &MainWindow::onScrollWater);
 
 }
 
@@ -587,6 +592,11 @@ void MainWindow::onPixelated() {
 
 void MainWindow::onNight() {
     settings.isNight = !settings.isNight;
+    realtime->settingsChanged();
+}
+
+void MainWindow::onScrollWater() {
+    settings.scrollWater = !settings.scrollWater;
     realtime->settingsChanged();
 }
 
