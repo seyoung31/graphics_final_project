@@ -120,7 +120,6 @@ namespace ShaderUtils {
         GLint textureRepeatULoc = glGetUniformLocation(m_shader, "textureRepeatU");
         GLint textureRepeatVLoc = glGetUniformLocation(m_shader, "textureRepeatV");
         GLint diffuseTextureLoc = glGetUniformLocation(m_shader, "DiffuseTextureSampler");
-        GLint normalTextureLoc = glGetUniformLocation(m_shader, "NormalTextureSampler");
 
         // Separate shapes into textured and non-textured groups
         std::vector<const RenderShapeData*> texturedShapes;
@@ -157,7 +156,7 @@ namespace ShaderUtils {
             // Check if shape has textures (normal map or diffuse texture with normal mapping enabled)
             bool hasTexture = prim.material.bumpMap.isUsed || prim.material.textureMap.isUsed;
 
-            if (hasTexture && realtime != nullptr && settings.normalMapping) {
+            if (hasTexture && realtime != nullptr) {
                 // Shapes with textures drawn individually
                 texturedShapes.push_back(&shapeData);
             } else {
@@ -288,18 +287,8 @@ namespace ShaderUtils {
                 glUniform1f(textureRepeatVLoc, 1.0f);
             }
 
-            // Handle normal map texture
-            bool hasValidNormalTexture = false;
-            if (mat.bumpMap.isUsed && realtime != nullptr) {
-                GLuint normalTexture = realtime->loadTexture(mat.bumpMap.filename);
-                if (normalTexture != 0) {
-                    hasValidNormalTexture = true;
-                    glActiveTexture(GL_TEXTURE1);
-                    glBindTexture(GL_TEXTURE_2D, normalTexture);
-                    glUniform1i(normalTextureLoc, 1);
-                }
-            }
-            glUniform1i(useNormalMappingLoc, hasValidNormalTexture ? 1 : 0);
+            // Normal mapping disabled
+            glUniform1i(useNormalMappingLoc, 0);
 
             // Upload single instance model matrix
             glBindVertexArray(vaos[idx]);
@@ -394,13 +383,8 @@ namespace ShaderUtils {
                         hasValidDiffuseTexture = (diffuseTexture != 0);
                     }
                     
-                    // Check if this material has a normal map
+                    // Normal mapping disabled
                     bool hasValidNormalTexture = false;
-                    GLuint normalTexture = 0;
-                    if (!objMat.normalMap.empty() && settings.normalMapping) {
-                        normalTexture = realtime->loadTexture(objMat.normalMap);
-                        hasValidNormalTexture = (normalTexture != 0);
-                    }
                     
                     // When texture is used, use lower ambient to avoid washing out
                     glm::vec3 k_a, k_d, k_s;
@@ -433,13 +417,8 @@ namespace ShaderUtils {
                     }
                     glUniform1i(useTextureMapLoc, hasValidDiffuseTexture ? 1 : 0);
                     
-                    // Handle normal map texture from material
-                    if (hasValidNormalTexture) {
-                        glActiveTexture(GL_TEXTURE1);
-                        glBindTexture(GL_TEXTURE_2D, normalTexture);
-                        glUniform1i(normalTextureLoc, 1);
-                    }
-                    glUniform1i(useNormalMappingLoc, hasValidNormalTexture ? 1 : 0);
+                    // Normal mapping disabled
+                    glUniform1i(useNormalMappingLoc, 0);
                     
                     // Draw this group's vertices
                     glDrawArraysInstanced(GL_TRIANGLES, groupInfo.startVertex, groupInfo.vertexCount, 
@@ -448,10 +427,6 @@ namespace ShaderUtils {
                     // Unbind textures after each group
                     if (hasValidDiffuseTexture) {
                         glActiveTexture(GL_TEXTURE0);
-                        glBindTexture(GL_TEXTURE_2D, 0);
-                    }
-                    if (hasValidNormalTexture) {
-                        glActiveTexture(GL_TEXTURE1);
                         glBindTexture(GL_TEXTURE_2D, 0);
                     }
                 }

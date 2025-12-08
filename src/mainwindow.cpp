@@ -226,12 +226,8 @@ void MainWindow::initialize() {
     ec2->setChecked(false);
 
     ec3 = new QCheckBox();
-    ec3->setText(QStringLiteral("Normal Mapping"));
+    ec3->setText(QStringLiteral("Bump Mapping"));
     ec3->setChecked(false);
-
-    ec3_bump = new QCheckBox();
-    ec3_bump->setText(QStringLiteral("Bump Mapping"));
-    ec3_bump->setChecked(false);
 
     ec4 = new QCheckBox();
     ec4->setText(QStringLiteral("Let it snow!!!"));
@@ -301,8 +297,7 @@ void MainWindow::initialize() {
     ecLayout->addWidget(ec1, 0, 0);
     ecLayout->addWidget(ec2, 1, 0);
     ecLayout->addWidget(ec3, 2, 0);
-    ecLayout->addWidget(ec3_bump, 3, 0);
-    ecLayout->addWidget(ec4, 4, 0);
+    ecLayout->addWidget(ec4, 3, 0);
 
     ecLayout->addWidget(cameraPathCB, 0, 1);
     ecLayout->addWidget(colorGradeCB, 1, 1);
@@ -415,8 +410,7 @@ void MainWindow::connectPixelSize() {
 void MainWindow::connectExtraCredit() {
     connect(ec1, &QCheckBox::clicked, this, &MainWindow::onShadowMapping);
     connect(ec2, &QCheckBox::clicked, this, &MainWindow::onScreenSpaceDOF);
-    connect(ec3, &QCheckBox::clicked, this, &MainWindow::onExtraCredit3);
-    connect(ec3_bump, &QCheckBox::clicked, this, &MainWindow::onBumpMapping);
+    connect(ec3, &QCheckBox::clicked, this, &MainWindow::onBumpMapping);
     connect(ec4, &QCheckBox::clicked, this, &MainWindow::onExtraCredit4);
     connect(cameraPathCB, &QCheckBox::clicked, this, &MainWindow::onCameraPath);
     connect(colorGradeCB, &QCheckBox::clicked, this, &MainWindow::onColorGrading);
@@ -558,11 +552,6 @@ void MainWindow::onShadowMapping() {
 
 void MainWindow::onScreenSpaceDOF() {
     settings.screenSpaceDOF = !settings.screenSpaceDOF;
-    realtime->settingsChanged();
-}
-
-void MainWindow::onExtraCredit3() {
-    settings.normalMapping = !settings.normalMapping;
     realtime->settingsChanged();
 }
 
