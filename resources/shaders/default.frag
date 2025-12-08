@@ -112,7 +112,10 @@ float shadowFactorPCF(int i) {
     float sum = 0.0;
     float count = 0.0;
 
-    float softness = 1;
+    // float softness = 1;
+    float distSoft = mix(1.5, 3.0, proj.z); // proj.z in [0,1]
+    float softness = (lightType[i] == 2) ? distSoft : 2.0;
+
 
     //softening
     for (int x = -radius; x <= radius; x++) {

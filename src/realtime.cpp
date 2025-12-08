@@ -831,7 +831,7 @@ void Realtime::makeShadowFBO(){
         m_shadow_fbos[i] = 0;
     }
 
-    m_shadow_res = 16384;
+    m_shadow_res = 16384; //16384 old
 
     for (int i = 0; i < 8; i++) {
 

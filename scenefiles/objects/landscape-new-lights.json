@@ -27,6 +27,15 @@
       ]
     },
     {
+      "lights": [
+        {
+          "type": "directional",
+          "direction": [0.0, -1.0, 0.0],
+          "color": [0.02, 0.02, 0.035]
+        }
+      ]
+    },
+    {
       "groups": [
         {
           "translate": [0, 0, 0],
