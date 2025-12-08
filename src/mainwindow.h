@@ -63,6 +63,7 @@ private:
     QCheckBox *ec1;
     QCheckBox *ec2;
     QCheckBox *ec3;
+    QCheckBox *ec3_bump;
     QCheckBox *ec4;
     QCheckBox *cameraPathCB;
     QCheckBox *colorGradeCB;
@@ -93,6 +94,7 @@ private slots:
     void onShadowMapping();
     void onScreenSpaceDOF();
     void onExtraCredit3();
+    void onBumpMapping();
     void onExtraCredit4();
     void onCameraPath();
     void onColorGrading();

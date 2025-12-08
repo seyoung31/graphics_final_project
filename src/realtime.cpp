@@ -68,6 +68,28 @@ void Realtime::finish() {
         m_shadow_depth_texs[i] = 0;
         m_shadow_fbos[i] = 0;
     }
+    
+    // Clean up bump mapping resources
+    if (m_bumpFBO != 0) {
+        glDeleteFramebuffers(1, &m_bumpFBO);
+        m_bumpFBO = 0;
+    }
+    if (m_bumpTexture1 != 0) {
+        glDeleteTextures(1, &m_bumpTexture1);
+        m_bumpTexture1 = 0;
+    }
+    if (m_bumpTexture2 != 0) {
+        glDeleteTextures(1, &m_bumpTexture2);
+        m_bumpTexture2 = 0;
+    }
+    if (m_bumpDepthRBO != 0) {
+        glDeleteRenderbuffers(1, &m_bumpDepthRBO);
+        m_bumpDepthRBO = 0;
+    }
+    if (m_bumpShader != 0) {
+        glDeleteProgram(m_bumpShader);
+        m_bumpShader = 0;
+    }
 
     this->doneCurrent();
 }
@@ -238,8 +260,11 @@ void Realtime::initializeGL() {
 
     m_shadow_shader = ShaderLoader::createShaderProgram(":/resources/shaders/shadow.vert",
                                                  ":/resources/shaders/shadow.frag");
+    m_bumpShader = ShaderLoader::createShaderProgram(":/resources/shaders/bump.vert",
+                                                     ":/resources/shaders/bump.frag");
     std::cout<<"particles shader: " <<m_particles_shader<<std::endl;
     std::cout<<"shadow shader: " <<m_shadow_shader<<std::endl;
+    std::cout<<"bump shader: " <<m_bumpShader<<std::endl;
 
     // Create VAOs and VBOs for all primitive type
     glGenVertexArrays(PRIM_COUNT, m_vaos);
@@ -287,6 +312,10 @@ void Realtime::initializeGL() {
 
     //prep shadow fbos for shadows if we use them :)
     makeShadowFBO();
+    
+    // Initialize bump mapping FBO
+    setupBumpMapping();
+    
     glClearColor(145.f/255.f, 182.f/255.f, 201.f/255.f, 1.0f);  // dark bluish-gray
 }
 
@@ -355,6 +384,35 @@ void Realtime::uploadPrimitive(PrimitiveIndex idx, const std::vector<float> &dat
 }
 
 void Realtime::renderScene() {
+    // Check if any shape uses bump mapping (primitive shapes or OBJ meshes)
+    bool hasBumpMappedShapes = false;
+    for (const auto& shape : m_renderData.shapes) {
+        // Check primitive shapes
+        if (shape.primitive.material.bumpMap.isUsed) {
+            hasBumpMappedShapes = true;
+            break;
+        }
+        // Check OBJ meshes - look for normalMap in mesh materials
+        if (shape.primitive.type == PrimitiveType::PRIMITIVE_MESH && !shape.primitive.meshfile.empty()) {
+            auto it = m_meshLoaders.find(shape.primitive.meshfile);
+            if (it != m_meshLoaders.end()) {
+                const auto& materials = it->second.getMaterials();
+                for (const auto& matPair : materials) {
+                    if (!matPair.second.normalMap.empty()) {
+                        hasBumpMappedShapes = true;
+                        break;
+                    }
+                }
+            }
+            if (hasBumpMappedShapes) break;
+        }
+    }
+    
+    // Use bump mapping render path if enabled and shapes have bump maps
+    if (settings.bumpMapping && hasBumpMappedShapes) {
+        redrawbump();
+        return;
+    }
 
     // Clear screen color and depth before painting
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -449,6 +507,11 @@ void Realtime::resizeGL(int w, int h) {
 
     // Match FBO to new window size
     m_post.resize(m_screen_width, m_screen_height);
+    
+    // Recreate bump mapping FBO with new size
+    if (m_bumpFBO != 0) {
+        setupBumpMapping();
+    }
 
     updateProjectionMatrix();
 }
@@ -1058,4 +1121,328 @@ void Realtime::renderShadows(){
             glUniformMatrix4fv(vpLoc, 1, GL_FALSE, glm::value_ptr(m_lightVPs[i]));
         }
     }
+}
+
+// ================== Bump Mapping (Render-Shift-Subtract) ==================
+
+void Realtime::setupBumpMapping() {
+    int width = m_screen_width;
+    int height = m_screen_height;
+    
+    // Clean up existing resources if any
+    if (m_bumpFBO != 0) {
+        glDeleteFramebuffers(1, &m_bumpFBO);
+        m_bumpFBO = 0;
+    }
+    if (m_bumpTexture1 != 0) {
+        glDeleteTextures(1, &m_bumpTexture1);
+        m_bumpTexture1 = 0;
+    }
+    if (m_bumpTexture2 != 0) {
+        glDeleteTextures(1, &m_bumpTexture2);
+        m_bumpTexture2 = 0;
+    }
+    if (m_bumpDepthRBO != 0) {
+        glDeleteRenderbuffers(1, &m_bumpDepthRBO);
+        m_bumpDepthRBO = 0;
+    }
+    
+    // Generate framebuffer
+    glGenFramebuffers(1, &m_bumpFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, m_bumpFBO);
+    
+    // Create texture for first pass (original UV)
+    glGenTextures(1, &m_bumpTexture1);
+    glBindTexture(GL_TEXTURE_2D, m_bumpTexture1);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    
+    // Create texture for second pass (shifted UV)
+    glGenTextures(1, &m_bumpTexture2);
+    glBindTexture(GL_TEXTURE_2D, m_bumpTexture2);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    
+    // Create depth renderbuffer
+    glGenRenderbuffers(1, &m_bumpDepthRBO);
+    glBindRenderbuffer(GL_RENDERBUFFER, m_bumpDepthRBO);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_bumpDepthRBO);
+    
+    // Unbind
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+glm::vec2 Realtime::shiftcoords(const glm::vec3& lightDir, const glm::vec3& tangent,
+                                 const glm::vec3& bitangent, const glm::vec3& normal, float delta) {
+    // Normalize the input vectors
+    glm::vec3 T = glm::normalize(tangent);
+    glm::vec3 B = glm::normalize(bitangent);
+    glm::vec3 N = glm::normalize(normal);
+    glm::vec3 L = glm::normalize(lightDir);
+    
+    // Construct TBN matrix
+    glm::mat3 TBN = glm::transpose(glm::mat3(T, B, N));
+    
+    // Transform light direction to tangent space
+    glm::vec3 L_tangent = TBN * L;
+    
+    glm::vec2 shift;
+    shift.x = L_tangent.x * delta;  // Shift in U direction
+    shift.y = L_tangent.y * delta;  // Shift in V direction
+    
+    return shift;
+}
+
+void Realtime::redrawbump() {
+    // Delta value for texture coordinate shift (adjust bump strength)
+    const float delta = 0.005f;
+    
+    GLint modelLoc = glGetUniformLocation(m_bumpShader, "m_model");
+    GLint viewLoc = glGetUniformLocation(m_bumpShader, "view");
+    GLint projLoc = glGetUniformLocation(m_bumpShader, "proj");
+    GLint uvShiftLoc = glGetUniformLocation(m_bumpShader, "uvShift");
+    GLint passModeLoc = glGetUniformLocation(m_bumpShader, "bumpPassMode");
+    GLint bumpTexLoc = glGetUniformLocation(m_bumpShader, "BumpTextureSampler");
+    GLint modelView3x3Loc = glGetUniformLocation(m_bumpShader, "MV3x3");
+    
+    // Get material uniform locations (using current project's naming)
+    GLint k_a_loc = glGetUniformLocation(m_bumpShader, "k_a");
+    GLint k_d_loc = glGetUniformLocation(m_bumpShader, "k_d");
+    GLint k_s_loc = glGetUniformLocation(m_bumpShader, "k_s");
+    GLint shininess_loc = glGetUniformLocation(m_bumpShader, "shininess");
+    
+    // Texture uniform locations
+    GLint diffuseTextureLoc = glGetUniformLocation(m_bumpShader, "DiffuseTextureSampler");
+    GLint useTextureMapLoc = glGetUniformLocation(m_bumpShader, "useTextureMap");
+    GLint textureRepeatULoc = glGetUniformLocation(m_bumpShader, "textureRepeatU");
+    GLint textureRepeatVLoc = glGetUniformLocation(m_bumpShader, "textureRepeatV");
+    
+    glUseProgram(m_bumpShader);
+    
+    // Upload camera, globals, and lights using ShaderUtils
+    ShaderUtils::uploadCamera(m_bumpShader, m_view, m_proj);
+    ShaderUtils::uploadGlobals(m_bumpShader, m_renderData);
+    ShaderUtils::uploadLights(m_bumpShader, m_renderData);
+    
+    // Set view matrix for TBN calculations
+    GLint viewMatLoc = glGetUniformLocation(m_bumpShader, "view");
+    if (viewMatLoc != -1) {
+        glUniformMatrix4fv(viewMatLoc, 1, GL_FALSE, glm::value_ptr(m_view));
+    }
+    
+    // Clear the screen
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    for (const auto& shape : m_renderData.shapes) {
+        // Only process shapes with bump maps
+        if (!shape.primitive.material.bumpMap.isUsed) {
+            continue;
+        }
+        
+        const auto& material = shape.primitive.material;
+        const auto& global = m_renderData.globalData;
+        
+        // Set model matrix
+        glm::mat4 model = shape.ctm;
+        if (modelLoc != -1) {
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        }
+        
+        // Set material properties (combine global and material)
+        glm::vec3 k_a = global.ka * glm::vec3(material.cAmbient);
+        glm::vec3 k_d = global.kd * glm::vec3(material.cDiffuse);
+        glm::vec3 k_s = global.ks * glm::vec3(material.cSpecular);
+        float shininess = material.shininess;
+        if (shininess <= 0.f) shininess = 32.f;
+        
+        if (k_a_loc != -1) glUniform3fv(k_a_loc, 1, glm::value_ptr(k_a));
+        if (k_d_loc != -1) glUniform3fv(k_d_loc, 1, glm::value_ptr(k_d));
+        if (k_s_loc != -1) glUniform3fv(k_s_loc, 1, glm::value_ptr(k_s));
+        if (shininess_loc != -1) glUniform1f(shininess_loc, shininess);
+        
+        // Compute ModelView 3x3 matrix
+        glm::mat4 modelViewMatrix = m_view * model;
+        glm::mat3 modelView3x3Matrix = glm::mat3(modelViewMatrix);
+        if (modelView3x3Loc != -1) {
+            glUniformMatrix3fv(modelView3x3Loc, 1, GL_FALSE, glm::value_ptr(modelView3x3Matrix));
+        }
+        
+        // Load bump texture (height map)
+        GLuint bumpTexture = loadTexture(material.bumpMap.filename);
+        if (bumpTexture != 0 && bumpTexLoc != -1) {
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, bumpTexture);
+            glUniform1i(bumpTexLoc, 1);
+        }
+        
+        // Load and bind diffuse texture if available
+        bool hasValidTexture = false;
+        if (material.textureMap.isUsed) {
+            GLuint diffuseTexture = loadTexture(material.textureMap.filename);
+            if (diffuseTexture != 0 && diffuseTextureLoc != -1) {
+                hasValidTexture = true;
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, diffuseTexture);
+                glUniform1i(diffuseTextureLoc, 0);
+                if (textureRepeatULoc != -1) glUniform1f(textureRepeatULoc, material.textureMap.repeatU);
+                if (textureRepeatVLoc != -1) glUniform1f(textureRepeatVLoc, material.textureMap.repeatV);
+            }
+        }
+        if (useTextureMapLoc != -1) glUniform1i(useTextureMapLoc, hasValidTexture ? 1 : 0);
+        if (!hasValidTexture) {
+            if (textureRepeatULoc != -1) glUniform1f(textureRepeatULoc, 1.0f);
+            if (textureRepeatVLoc != -1) glUniform1f(textureRepeatVLoc, 1.0f);
+        }
+        
+        // Get VAO for this shape
+        GLuint vao = 0;
+        int vertexCount = 0;
+        switch (shape.primitive.type) {
+            case PrimitiveType::PRIMITIVE_CONE:
+                vao = m_vaos[PRIM_CONE];
+                vertexCount = m_vertexCounts[PRIM_CONE];
+                break;
+            case PrimitiveType::PRIMITIVE_CYLINDER:
+                vao = m_vaos[PRIM_CYLINDER];
+                vertexCount = m_vertexCounts[PRIM_CYLINDER];
+                break;
+            case PrimitiveType::PRIMITIVE_CUBE:
+                vao = m_vaos[PRIM_CUBE];
+                vertexCount = m_vertexCounts[PRIM_CUBE];
+                break;
+            case PrimitiveType::PRIMITIVE_SPHERE:
+                vao = m_vaos[PRIM_SPHERE];
+                vertexCount = m_vertexCounts[PRIM_SPHERE];
+                break;
+            case PrimitiveType::PRIMITIVE_MESH:
+                // Handle mesh primitives - skip for now, can be added later
+                continue;
+            default:
+                continue;
+        }
+        
+        if (vao == 0 || vertexCount == 0) continue;
+        
+        glBindVertexArray(vao);
+        
+        // Single-pass bump mapping - shader computes bump effect from height gradient
+        glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+        
+        glBindVertexArray(0);
+    }
+    
+    // Now render OBJ meshes with bump mapping
+    for (const auto& shape : m_renderData.shapes) {
+        if (shape.primitive.type != PrimitiveType::PRIMITIVE_MESH) continue;
+        if (shape.primitive.meshfile.empty()) continue;
+        
+        auto loaderIt = m_meshLoaders.find(shape.primitive.meshfile);
+        if (loaderIt == m_meshLoaders.end()) continue;
+        
+        const ObjLoader& loader = loaderIt->second;
+        const auto& materials = loader.getMaterials();
+        
+        // Check if this mesh has any bump maps
+        bool hasBumpMaps = false;
+        for (const auto& matPair : materials) {
+            if (!matPair.second.normalMap.empty()) {
+                hasBumpMaps = true;
+                break;
+            }
+        }
+        if (!hasBumpMaps) continue;
+        
+        GLuint meshVAO = getMeshVAO(shape.primitive.meshfile);
+        if (meshVAO == 0) continue;
+        
+        const auto* groupInfos = getMeshGroupInfos(shape.primitive.meshfile);
+        if (groupInfos == nullptr || groupInfos->empty()) continue;
+        
+        glm::mat4 model = shape.ctm;
+        
+        // Set model matrix
+        if (modelLoc != -1) {
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        }
+        
+        // Compute ModelView 3x3 matrix
+        glm::mat4 modelViewMatrix = m_view * model;
+        glm::mat3 modelView3x3Matrix = glm::mat3(modelViewMatrix);
+        if (modelView3x3Loc != -1) {
+            glUniformMatrix3fv(modelView3x3Loc, 1, GL_FALSE, glm::value_ptr(modelView3x3Matrix));
+        }
+        
+        glBindVertexArray(meshVAO);
+        
+        // Render each material group that has a bump map
+        for (const auto& groupInfo : *groupInfos) {
+            if (groupInfo.vertexCount == 0) continue;
+            
+            // Find material for this group
+            auto matIt = materials.find(groupInfo.materialName);
+            if (matIt == materials.end()) continue;
+            
+            const ObjMaterial& objMat = matIt->second;
+            
+            // Skip groups without bump maps
+            if (objMat.normalMap.empty()) continue;
+            
+            // Set material properties
+            const auto& global = m_renderData.globalData;
+            glm::vec3 k_a = global.ka * objMat.ambient;
+            glm::vec3 k_d = global.kd * objMat.diffuse;
+            glm::vec3 k_s = global.ks * objMat.specular;
+            float shiny = objMat.shininess > 0.f ? objMat.shininess : 32.f;
+            
+            if (k_a_loc != -1) glUniform3fv(k_a_loc, 1, glm::value_ptr(k_a));
+            if (k_d_loc != -1) glUniform3fv(k_d_loc, 1, glm::value_ptr(k_d));
+            if (k_s_loc != -1) glUniform3fv(k_s_loc, 1, glm::value_ptr(k_s));
+            if (shininess_loc != -1) glUniform1f(shininess_loc, shiny);
+            
+            // Load bump texture (height map) - normalMap contains bump map path
+            GLuint bumpTexture = loadTexture(objMat.normalMap);
+            if (bumpTexture != 0 && bumpTexLoc != -1) {
+                glActiveTexture(GL_TEXTURE1);
+                glBindTexture(GL_TEXTURE_2D, bumpTexture);
+                glUniform1i(bumpTexLoc, 1);
+            }
+            
+            // Load diffuse texture if available
+            bool hasValidTexture = false;
+            if (!objMat.diffuseTexture.empty()) {
+                GLuint diffuseTexture = loadTexture(objMat.diffuseTexture);
+                if (diffuseTexture != 0 && diffuseTextureLoc != -1) {
+                    hasValidTexture = true;
+                    glActiveTexture(GL_TEXTURE0);
+                    glBindTexture(GL_TEXTURE_2D, diffuseTexture);
+                    glUniform1i(diffuseTextureLoc, 0);
+                    if (textureRepeatULoc != -1) glUniform1f(textureRepeatULoc, 1.0f);
+                    if (textureRepeatVLoc != -1) glUniform1f(textureRepeatVLoc, 1.0f);
+                }
+            }
+            if (useTextureMapLoc != -1) glUniform1i(useTextureMapLoc, hasValidTexture ? 1 : 0);
+            
+            // Single-pass bump mapping - shader computes bump effect from height gradient
+            glDrawArrays(GL_TRIANGLES, groupInfo.startVertex, groupInfo.vertexCount);
+        }
+        
+        glBindVertexArray(0);
+    }
+    
+    // Now render shapes without bump maps using the regular shader
+    glUseProgram(m_shader);
+    ShaderUtils::uploadCamera(m_shader, m_view, m_proj);
+    ShaderUtils::uploadGlobals(m_shader, m_renderData);
+    ShaderUtils::uploadLights(m_shader, m_renderData);
+    
+    m_water.apply(m_shader);
+    renderShadows();
+    
+    // Render non-bump-mapped shapes using ShaderUtils
+    // For meshes, ShaderUtils will render groups without bump maps
+    ShaderUtils::drawShapes(m_shader, m_renderData, m_vaos, m_vertexCounts, m_instanceVBOs, this);
 }

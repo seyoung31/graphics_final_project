@@ -94,6 +94,8 @@ qt6_add_resources(${PROJECT_NAME} "Resources"
     	resources/shaders/texture.vert
         resources/shaders/shadow.frag
         resources/shaders/shadow.vert
+        resources/shaders/bump.frag
+        resources/shaders/bump.vert
         resources/shaders/particles/particles.frag
         resources/shaders/particles/particles.vert
 	resources/images/teal_orange_lut_4x4.png

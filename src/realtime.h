@@ -122,6 +122,7 @@ private:
 
     // Shader program for rendering
     GLuint m_shader = 0;
+    GLuint m_bumpShader = 0; // Shader for bump mapping passes
 
     GLuint m_particles_shader;    //particle shader
     Particles m_particles;        //particle object
@@ -167,6 +168,18 @@ private:
     // Texture loading for normal mapping
     std::unordered_map<std::string, GLuint> m_textureCache;
     void cleanupTextures();
+
+    // Bump mapping (Render-Shift-Subtract) resources
+    GLuint m_bumpFBO = 0;           // Framebuffer for bump mapping passes
+    GLuint m_bumpTexture1 = 0;      // Texture for first pass (original UV)
+    GLuint m_bumpTexture2 = 0;      // Texture for second pass (shifted UV)
+    GLuint m_bumpDepthRBO = 0;      // Depth renderbuffer for bump FBO
+    
+    // Bump mapping functions
+    void setupBumpMapping();        // Initialize FBOs and shaders for bump mapping
+    glm::vec2 shiftcoords(const glm::vec3& lightDir, const glm::vec3& tangent,
+                          const glm::vec3& bitangent, const glm::vec3& normal, float delta);
+    void redrawbump();              // Render using accumulation buffering for bump mapping
 
     float m_time = 0.0f;
     GLuint m_waterColorTex = 0;

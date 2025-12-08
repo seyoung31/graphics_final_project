@@ -16,6 +16,7 @@ struct Settings {
     bool shadowMapping = false;
     bool screenSpaceDOF = false;
     bool normalMapping = false;
+    bool bumpMapping = false;
     bool extraCredit3 = false;
     bool extraCredit4 = false;
     bool cameraPath = false;
