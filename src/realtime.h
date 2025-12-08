@@ -169,7 +169,6 @@ private:
     void cleanupTextures();
 
     float m_time = 0.0f;
-    GLuint m_waterColorTex = 0;
     GLuint m_waterDispTex = 0;
 
 public:

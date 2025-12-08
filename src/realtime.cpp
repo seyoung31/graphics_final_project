@@ -279,11 +279,9 @@ void Realtime::initializeGL() {
     // Initialize particle system (Particles will create VAO/VBO/texture)
     m_particles.init(m_particles_shader);
 
-    // Load water color + displacement textures
-    GLuint waterColor = loadTexture(":/scenefiles/normal_mapping/textures/water_diffuse.jpg");
+    // Load displacement textures
     GLuint waterDisp = loadTexture(":/resources/images/water_displacement.png");
-
-    m_water.init(waterColor, waterDisp);
+    m_water.init(waterDisp);
 
     //prep shadow fbos for shadows if we use them :)
     makeShadowFBO();
@@ -634,8 +632,8 @@ void Realtime::timerEvent(QTimerEvent *event) {
     m_camera_path.setEnabled(settings.cameraPath);
     m_camera_path.update(deltaTime);
     m_camera_path.applyToCamera(m_camera.pos, m_camera.look, m_camera.up);
-    std::cout<<"camera look: "<< m_camera.look.x<< " " << m_camera.look.y << " "<<  m_camera.look.z <<std::endl;
-    std::cout<<"camera up: "<< m_camera.up.x<< " " << m_camera.up.y << " "<<  m_camera.up.z <<std::endl;
+    // std::cout<<"camera look: "<< m_camera.look.x<< " " << m_camera.look.y << " "<<  m_camera.look.z <<std::endl;
+    // std::cout<<"camera up: "<< m_camera.up.x<< " " << m_camera.up.y << " "<<  m_camera.up.z <<std::endl;
 
     // Use deltaTime and m_keyMap here to move around
 

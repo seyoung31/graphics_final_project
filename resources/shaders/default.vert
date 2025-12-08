@@ -21,7 +21,7 @@ out mat3 TBN;
 uniform mat4 view;
 uniform mat4 proj;
 
-//for shadow mapping!
+// Shadow mapping
 out vec4 lightSpacePos[8]; //light pos in space
 uniform int numLights; //num lights we have
 uniform mat4 lightVP[8]; //light VP matrix

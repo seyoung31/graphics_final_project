@@ -17,7 +17,7 @@ public:
     WaterEffect();
 
     // Call once after OpenGL context is ready
-    void init(GLuint waterColorTex, GLuint waterDispTex);
+    void init(GLuint waterDispTex);
 
     // Call once per frame with delta time (seconds)
     void update(float deltaSeconds);
@@ -28,8 +28,6 @@ public:
 
 private:
     float m_time;
-
-    GLuint m_waterColorTex;
     GLuint m_waterDispTex;
 
     // Config params
@@ -40,9 +38,6 @@ private:
     float     m_dispStrength;
     float     m_dispContrast;
 
-    float     m_planeY;
-    float     m_planeThickness;
-    bool      m_enabled;
 };
 
 #endif // WATEREFFECT_H

@@ -131,6 +131,7 @@ namespace ShaderUtils {
         // Store mesh instances separately (keyed by filepath)
         std::unordered_map<std::string, std::vector<mat4>> meshInstances;
         std::unordered_map<std::string, SceneMaterial> meshMaterials;
+        std::unordered_map<std::string, bool> meshUseScrollingTex;
         
         for (const RenderShapeData &shapeData : m_renderData.shapes) {
             const ScenePrimitive &prim = shapeData.primitive;
@@ -149,6 +150,8 @@ namespace ShaderUtils {
                         if (meshMaterials.find(prim.meshfile) == meshMaterials.end()) {
                             meshMaterials[prim.meshfile] = prim.material;
                         }
+
+                        meshUseScrollingTex[prim.meshfile] = prim.useScrollingTex;
                     }
                 }
                 continue;
@@ -333,6 +336,17 @@ namespace ShaderUtils {
                 if (meshVAO == 0) {
                     continue;
                 }
+
+                bool useScrollingTex = false;
+                auto scrollIt = meshUseScrollingTex.find(meshPath);
+                if (scrollIt != meshUseScrollingTex.end()) {
+                    useScrollingTex = scrollIt->second;
+                }
+
+                GLuint useScrollingTexLoc = glGetUniformLocation(m_shader, "u_useScrollingTex");
+                if (useScrollingTexLoc >= 0) glUniform1i(useScrollingTexLoc, useScrollingTex ? 1 : 0);
+
+                GLuint diffuseTextureLoc = glGetUniformLocation(m_shader, "DiffuseTexutreSampler");
                 
                 // Get loader and group info for per-group rendering
                 const ObjLoader* loader = realtime->getMeshLoader(meshPath);
@@ -432,6 +446,12 @@ namespace ShaderUtils {
                         glUniform1f(textureRepeatVLoc, 1.0f);
                     }
                     glUniform1i(useTextureMapLoc, hasValidDiffuseTexture ? 1 : 0);
+
+                    bool isWaterMaterial = false;
+                    if (objMat.diffuseTexture.find("water_diffuse") != std::string::npos) {
+                        isWaterMaterial = true;
+                    }
+                    glUniform1i(useScrollingTexLoc, isWaterMaterial ? 1 : 0);
                     
                     // Handle normal map texture from material
                     if (hasValidNormalTexture) {
@@ -453,6 +473,11 @@ namespace ShaderUtils {
                     if (hasValidNormalTexture) {
                         glActiveTexture(GL_TEXTURE1);
                         glBindTexture(GL_TEXTURE_2D, 0);
+                        glUniform1i(normalTextureLoc, 1);
+                    }
+
+                    if (isWaterMaterial) {
+                        glUniform1i(useScrollingTexLoc, 0);
                     }
                 }
                 
