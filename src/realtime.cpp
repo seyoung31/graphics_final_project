@@ -718,9 +718,9 @@ void Realtime::setupCameraPath() {
 
     glm::vec3 centerPoint(0.0f, 0.0f, 0.0f);  // Sphere center
 
-    float radius = 5.0f;
-    float height = 3.0f;
-    int numKeyframes = 8;  // CRITICAL: Need multiple keyframes for circle
+    float radius = 35.0f;
+    float height = 20.0f;
+    int numKeyframes = 64;  // CRITICAL: Need multiple keyframes for circle
 
     for (int i = 0; i < numKeyframes; ++i) {
         float t = i / float(numKeyframes);  // 0.0, 0.125, 0.25, ... 0.875
