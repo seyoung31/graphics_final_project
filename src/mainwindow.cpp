@@ -269,6 +269,10 @@ void MainWindow::initialize() {
     vLayout->addWidget(speed_label);
     vLayout->addWidget(speedLayout);
 
+
+    vLayout->addWidget(pixelSize_label);
+    vLayout->addWidget(pixelSizeLayout);
+
     // From old Project 6
     // vLayout->addWidget(filters_label);
     // vLayout->addWidget(filter1);

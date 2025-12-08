@@ -634,8 +634,8 @@ void Realtime::timerEvent(QTimerEvent *event) {
     m_camera_path.setEnabled(settings.cameraPath);
     m_camera_path.update(deltaTime);
     m_camera_path.applyToCamera(m_camera.pos, m_camera.look, m_camera.up);
-    std::cout<<"camera look: "<< m_camera.look.x<< " " << m_camera.look.y << " "<<  m_camera.look.z <<std::endl;
-    std::cout<<"camera up: "<< m_camera.up.x<< " " << m_camera.up.y << " "<<  m_camera.up.z <<std::endl;
+    // std::cout<<"camera look: "<< m_camera.look.x<< " " << m_camera.look.y << " "<<  m_camera.look.z <<std::endl;
+    // std::cout<<"camera up: "<< m_camera.up.x<< " " << m_camera.up.y << " "<<  m_camera.up.z <<std::endl;
 
     // Use deltaTime and m_keyMap here to move around
 
