@@ -64,6 +64,7 @@ private:
     QCheckBox *ec2;
     QCheckBox *ec3;
     QCheckBox *ec4;
+    QCheckBox *cameraPathCB;
     QCheckBox *colorGradeCB;
     QCheckBox *watercolorCB;
     QCheckBox *pixelatedCB;
@@ -93,6 +94,7 @@ private slots:
     void onScreenSpaceDOF();
     void onExtraCredit3();
     void onExtraCredit4();
+    void onCameraPath();
     void onColorGrading();
     void onWatercolor();
     void onPixelated();

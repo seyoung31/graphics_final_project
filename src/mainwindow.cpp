@@ -233,6 +233,10 @@ void MainWindow::initialize() {
     ec4->setText(QStringLiteral("Let it snow!!!"));
     ec4->setChecked(false);
 
+    cameraPathCB = new QCheckBox();
+    cameraPathCB->setText(QStringLiteral("Camera Path"));
+    cameraPathCB->setChecked(false);
+
     colorGradeCB = new QCheckBox();
     colorGradeCB->setText(QStringLiteral("Color Grading"));
     colorGradeCB->setChecked(false);
@@ -244,6 +248,7 @@ void MainWindow::initialize() {
     pixelatedCB = new QCheckBox();
     pixelatedCB->setText(QStringLiteral("Pixelated Style"));
     pixelatedCB->setChecked(false);
+
 
     vLayout->addWidget(uploadFile);
     vLayout->addWidget(saveImage);
@@ -275,6 +280,7 @@ void MainWindow::initialize() {
     vLayout->addWidget(ec2);
     vLayout->addWidget(ec3);
     vLayout->addWidget(ec4);
+    vLayout->addWidget(cameraPathCB);
     vLayout->addWidget(colorGradeCB);
     vLayout->addWidget(watercolorCB);
     vLayout->addWidget(pixelatedCB);
@@ -384,6 +390,7 @@ void MainWindow::connectExtraCredit() {
     connect(ec2, &QCheckBox::clicked, this, &MainWindow::onScreenSpaceDOF);
     connect(ec3, &QCheckBox::clicked, this, &MainWindow::onExtraCredit3);
     connect(ec4, &QCheckBox::clicked, this, &MainWindow::onExtraCredit4);
+    connect(cameraPathCB, &QCheckBox::clicked, this, &MainWindow::onCameraPath);
     connect(colorGradeCB, &QCheckBox::clicked, this, &MainWindow::onColorGrading);
     connect(watercolorCB, &QCheckBox::clicked, this, &MainWindow::onWatercolor);
     connect(pixelatedCB, &QCheckBox::clicked, this, &MainWindow::onPixelated);
@@ -532,6 +539,11 @@ void MainWindow::onExtraCredit3() {
 
 void MainWindow::onExtraCredit4() {
     settings.extraCredit4 = !settings.extraCredit4;
+    realtime->settingsChanged();
+}
+
+void MainWindow::onCameraPath() {
+    settings.cameraPath = !settings.cameraPath;
     realtime->settingsChanged();
 }
 
