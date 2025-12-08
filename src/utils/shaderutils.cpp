@@ -115,7 +115,6 @@ namespace ShaderUtils {
         GLint k_d_loc = glGetUniformLocation(m_shader, "k_d");
         GLint k_s_loc = glGetUniformLocation(m_shader, "k_s");
         GLint shininess_loc = glGetUniformLocation(m_shader, "shininess");
-        GLint useNormalMappingLoc = glGetUniformLocation(m_shader, "useNormalMapping");
         GLint useTextureMapLoc = glGetUniformLocation(m_shader, "useTextureMap");
         GLint textureRepeatULoc = glGetUniformLocation(m_shader, "textureRepeatU");
         GLint textureRepeatVLoc = glGetUniformLocation(m_shader, "textureRepeatV");
@@ -193,7 +192,6 @@ namespace ShaderUtils {
         }
 
         // Set default texture state (no textures)
-        glUniform1i(useNormalMappingLoc, 0);
         glUniform1i(useTextureMapLoc, 0);
         glUniform1f(textureRepeatULoc, 1.0f);
         glUniform1f(textureRepeatVLoc, 1.0f);
@@ -291,8 +289,6 @@ namespace ShaderUtils {
             }
 
             // Normal mapping disabled
-            glUniform1i(useNormalMappingLoc, 0);
-
             // Upload single instance model matrix
             glBindVertexArray(vaos[idx]);
             glBindBuffer(GL_ARRAY_BUFFER, instanceVBOs[idx]);
@@ -355,7 +351,6 @@ namespace ShaderUtils {
                     glUniform3fv(k_s_loc, 1, glm::value_ptr(k_s));
                     glUniform1f(shininess_loc, 32.f);
                     glUniform1i(useTextureMapLoc, 0);
-                    glUniform1i(useNormalMappingLoc, 0);
                     
                     glBindVertexArray(meshVAO);
                     glBindBuffer(GL_ARRAY_BUFFER, meshInstanceVBO);
@@ -431,13 +426,16 @@ namespace ShaderUtils {
                     }
                     glUniform1i(useTextureMapLoc, hasValidDiffuseTexture ? 1 : 0);
                     
-                    // Handle normal map texture from material
-                    if (hasValidNormalTexture) {
-                        glActiveTexture(GL_TEXTURE1);
-                        glBindTexture(GL_TEXTURE_2D, normalTexture);
-                        glUniform1i(normalTextureLoc, 1);
+                    // Check if this is a water material for scrolling texture
+                    // Check both material name and texture path for "water"
+                    bool isWaterMaterial = (groupInfo.materialName.find("water") != std::string::npos ||
+                                           groupInfo.materialName.find("Water") != std::string::npos ||
+                                           objMat.diffuseTexture.find("water") != std::string::npos ||
+                                           objMat.diffuseTexture.find("Water") != std::string::npos);
+                    GLint useScrollingTexLoc = glGetUniformLocation(m_shader, "u_useScrollingTex");
+                    if (isWaterMaterial && useScrollingTexLoc >= 0) {
+                        glUniform1i(useScrollingTexLoc, 1);
                     }
-                    glUniform1i(useNormalMappingLoc, hasValidNormalTexture ? 1 : 0);
                     
                     // Draw this group's vertices
                     glDrawArraysInstanced(GL_TRIANGLES, groupInfo.startVertex, groupInfo.vertexCount, 
@@ -448,13 +446,9 @@ namespace ShaderUtils {
                         glActiveTexture(GL_TEXTURE0);
                         glBindTexture(GL_TEXTURE_2D, 0);
                     }
-                    if (hasValidNormalTexture) {
-                        glActiveTexture(GL_TEXTURE1);
-                        glBindTexture(GL_TEXTURE_2D, 0);
-                        glUniform1i(normalTextureLoc, 1);
-                    }
 
-                    if (isWaterMaterial) {
+                    // Reset water scrolling state
+                    if (isWaterMaterial && useScrollingTexLoc >= 0) {
                         glUniform1i(useScrollingTexLoc, 0);
                     }
                 }
@@ -464,7 +458,6 @@ namespace ShaderUtils {
         }
 
         // Reset texture state
-        glUniform1i(useNormalMappingLoc, 0);
         glUniform1i(useTextureMapLoc, 0);
     }
 }
