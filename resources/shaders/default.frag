@@ -171,15 +171,15 @@ void main() {
             attenuation = 1.0 / max(func.x + func.y * d + func.z * d * d, 0.0001);
 
             if (t == 2) {
-                // Spot light: extra angular falloff
                 vec3 spotDir = normalize(lightDir[i]);
                 float cosTheta = dot(spotDir, -L);
 
-                // Convert angles to radians
-                float x = acos(clamp(cosTheta, -1.0, 1.0));
+                // x in DEGREES
+                float x = degrees(acos(clamp(cosTheta, -1.0, 1.0)));
 
-                float outer = lightAngle[i];
-                float inner = max(lightAngle[i] - lightPenumbra[i], 0.0f);
+                // lightAngle / lightPenumbra currently arriving in RADIANS -> convert to DEGREES
+                float outer = degrees(lightAngle[i]);
+                float inner = degrees(max(lightAngle[i] - lightPenumbra[i], 0.0));
                 inner = min(inner, outer - 1e-4);
 
                 if (x <= inner) {
@@ -191,7 +191,6 @@ void main() {
                     float fall = -2.0 * pow(u, 3.0) + 3.0 * pow(u, 2.0);
                     spotFactor = 1.0 - fall;
                 }
-
             }
         }
 

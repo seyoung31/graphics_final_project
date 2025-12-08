@@ -296,7 +296,7 @@ void MainWindow::initialize() {
     //defaul Speed
     onValChangeSpeedBox(1.f);
     //default Pixel Size
-    onValChangePixelSizeBox(12.0f);
+    onValChangePixelSizeBox(3.0f);
 }
 
 void MainWindow::finish() {

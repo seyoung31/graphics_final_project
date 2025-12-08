@@ -831,7 +831,7 @@ void Realtime::makeShadowFBO(){
         m_shadow_fbos[i] = 0;
     }
 
-    m_shadow_res = 2048;
+    m_shadow_res = 16384;
 
     for (int i = 0; i < 8; i++) {
 
@@ -951,22 +951,26 @@ glm::mat4 Realtime::getLightVP(const SceneLightData& light) {
         glm::vec3 dir = glm::normalize(glm::vec3(light.dir));
         glm::vec3 target = pos + dir;
 
-        glm::vec3 up = glm::vec3(0,1,0);
+        glm::vec3 up(0,1,0);
         if (std::abs(glm::dot(up, dir)) > 0.95f) {
             up = glm::vec3(1,0,0);
         }
 
-        glm::mat4 V = glm::lookAt(pos, target, up); //view mat
+        glm::mat4 V = glm::lookAt(pos, target, up);
 
-        float fov = 2.f * light.angle; // angle already radians
-        float aspect = 1.f;            // shadow map is square
+        // IMPORTANT: keep angle in the SAME units the shader is currently using.
+        // Shader is using lightAngle[] directly against acos() result.
+        // So we mirror that here: treat light.angle as already in "shader units".
+        float fov = 2.f * light.angle;
+
+        // Safety clamp to avoid invalid perspective FOVs
+        fov = glm::clamp(fov, 0.01f, glm::radians(179.0f));
+
+        float aspect = 1.f;
         float nearL = settings.nearPlane;
         float farL  = settings.farPlane;
 
-        glm::mat4 P = glm::perspective(fov, aspect, nearL, farL); //proj mat
-
-        // glm::mat4 P = glm::perspective(fov, aspect, 0.f, 15.f); //proj mat
-
+        glm::mat4 P = glm::perspective(fov, aspect, nearL, farL);
         return P * V;
     }
 
