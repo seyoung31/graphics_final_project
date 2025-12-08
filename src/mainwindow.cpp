@@ -275,18 +275,29 @@ void MainWindow::initialize() {
     // vLayout->addWidget(filter2);
 
     // Extra Credit:
+    // Extra Credit:
     vLayout->addWidget(ec_label);
-    vLayout->addWidget(ec1);
-    vLayout->addWidget(ec2);
-    vLayout->addWidget(ec3);
-    vLayout->addWidget(ec4);
-    vLayout->addWidget(cameraPathCB);
-    vLayout->addWidget(colorGradeCB);
-    vLayout->addWidget(watercolorCB);
-    vLayout->addWidget(pixelatedCB);
-    //pixel size
-    vLayout->addWidget(pixelSize_label);
-    vLayout->addWidget(pixelSizeLayout);
+
+    QWidget *ecWidget = new QWidget();
+    QGridLayout *ecLayout = new QGridLayout();
+    ecLayout->setSpacing(10); // optional, spacing between checkboxes
+    ecLayout->setColumnMinimumWidth(0, 150); // forces left column to be at least 150px wide
+
+
+    // Add checkboxes to the grid layout in 2 columns
+    ecLayout->addWidget(ec1, 0, 0);
+    ecLayout->addWidget(ec2, 1, 0);
+    ecLayout->addWidget(ec3, 2, 0);
+    ecLayout->addWidget(ec4, 3, 0);
+
+    ecLayout->addWidget(cameraPathCB, 0, 1);
+    ecLayout->addWidget(colorGradeCB, 1, 1);
+    ecLayout->addWidget(watercolorCB, 2, 1);
+    ecLayout->addWidget(pixelatedCB, 3, 1);
+
+    ecWidget->setLayout(ecLayout);
+    vLayout->addWidget(ecWidget);
+
 
     connectUIElements();
 
