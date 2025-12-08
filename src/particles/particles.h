@@ -12,8 +12,21 @@ public:
     ~Particles();
 
     void init(GLuint shaderProgram);
-    void update(float dt, const glm::vec3& cameraPos); // simulate & stream to GPU
+    // --- new in particles.h (add to class definition) ---
+    // spawn area configuration (world-space box)
+    glm::vec3 m_spawnCenter = glm::vec3(0.0f, 10.0f, 0.0f); // default center
+    glm::vec3 m_spawnExtents = glm::vec3(40.0f, 5.0f, 40.0f); // default half-size extents
+
+    // setters to configure spawn area
+    void setSpawnCenter(const glm::vec3& center) { m_spawnCenter = center; }
+    void setSpawnExtents(const glm::vec3& extents) { m_spawnExtents = extents; }
+
+    // update no longer takes camera position
+    void update(float dt);
+
+    // (render signature stays the same — render needs cameraPos for sorting & billboards)
     void render(const glm::mat4 &view, const glm::mat4 &proj, const glm::vec3 &cameraPos);
+
     void cleanup();
 
     void setCameraPos(const glm::vec3 &pos) { m_lastCameraPos = pos; }
@@ -54,7 +67,7 @@ private:
     };
 
     // configuration
-    static const int MaxParticles = 100;
+    static const int MaxParticles = 10000;
 
     // CPU containers
     std::vector<Particle> m_particlesContainer;
@@ -68,6 +81,8 @@ private:
     GLuint m_positions_vbo = 0u;  // per-instance vec4 (x,y,z,size)
     GLuint m_colors_vbo = 0u;     // per-instance ubyte4 (r,g,b,a)
     GLuint m_tex = 0u;
+
+
 
     // runtime counters / state
     int LastUsedParticle = 0;
@@ -96,6 +111,8 @@ private:
     float m_camFov = glm::radians(45.0f); // vertical FOV in radians (height angle)
     float m_camAspect = 1.3333f;          // width / height
     float m_spawnDistance = 8.0f;         // how far in front of camera to spawn flakes (world units)
+
+
 
 
 

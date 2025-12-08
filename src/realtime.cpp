@@ -722,7 +722,7 @@ void Realtime::updateParticleSystem(float deltaTime){
     // Also set camera world position for sorting/distance uses
     m_particles.setCameraPos(camPos);
 
-    m_particles.update(deltaTime, camPos);
+    m_particles.update(deltaTime);
 }
 
 // Example: Set up a simple circular camera path
