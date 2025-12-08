@@ -18,6 +18,8 @@
 #include "utils/shaderutils.h"
 #include "postprocess.h"
 
+
+
 static glm::vec3 rotateAroundAxis(const glm::vec3 &v, const glm::vec3 &axis, float angle) {
     glm::vec3 a = glm::normalize(axis);
     float c = std::cos(angle);
@@ -469,6 +471,7 @@ void Realtime::sceneChanged() {
         updateProjectionMatrix();
 
     }
+    setupCameraPath();
 
     update(); // asks for a PaintGL() call to occur
 }
@@ -622,9 +625,17 @@ void Realtime::rotateCameraPitch(float rad) {
 }
 
 void Realtime::timerEvent(QTimerEvent *event) {
+
+
     int elapsedms   = m_elapsedTimer.elapsed();
     float deltaTime = elapsedms * 0.001f;
     m_elapsedTimer.restart();
+
+    m_camera_path.setEnabled(settings.cameraPath);
+    m_camera_path.update(deltaTime);
+    m_camera_path.applyToCamera(m_camera.pos, m_camera.look, m_camera.up);
+    std::cout<<"camera look: "<< m_camera.look.x<< " " << m_camera.look.y << " "<<  m_camera.look.z <<std::endl;
+    std::cout<<"camera up: "<< m_camera.up.x<< " " << m_camera.up.y << " "<<  m_camera.up.z <<std::endl;
 
     // Use deltaTime and m_keyMap here to move around
 
@@ -664,6 +675,8 @@ void Realtime::timerEvent(QTimerEvent *event) {
 
         updateViewMatrix();
     }
+    updateViewMatrix();  // This will use the updated camera values
+
 
     if (settings.extraCredit4) updateParticleSystem(deltaTime);
 
@@ -701,6 +714,44 @@ void Realtime::updateParticleSystem(float deltaTime){
 
     m_particles.update(deltaTime, camPos);
 }
+
+// Example: Set up a simple circular camera path
+void Realtime::setupCameraPath() {
+    m_camera_path.clear();
+
+    glm::vec3 centerPoint(0.0f, 0.0f, 0.0f);  // Sphere center
+
+    float radius = 35.0f;
+    float height = 20.0f;
+    int numKeyframes = 64;  // CRITICAL: Need multiple keyframes for circle
+
+    for (int i = 0; i < numKeyframes; ++i) {
+        float t = i / float(numKeyframes);  // 0.0, 0.125, 0.25, ... 0.875
+        float angle = t * 2.0f * M_PI;      // Full 360° rotation
+
+        glm::vec3 pos(
+            centerPoint.x + radius * cos(angle),
+            height,
+            centerPoint.z + radius * sin(angle)
+            );
+
+        glm::vec3 lookAt = centerPoint;  // Always look at sphere
+        glm::vec3 up(0.0f, 1.0f, 0.0f);
+
+        m_camera_path.addKeyframe(pos, lookAt, up, t);
+    }
+
+    std::cout << "Camera path keyframes:" << std::endl;
+    for (size_t i = 0; i < m_camera_path.getKeyframeCount(); ++i) {
+        // You'll need to add a getter or make keyframes public temporarily
+        std::cout << "Keyframe " << i << ": check your setup" << std::endl;
+    }
+    m_camera_path.setSpeed(0.1f);
+    m_camera_path.setLooping(true);
+
+
+}
+
 void Realtime::tick(QTimerEvent *event) {
     Q_UNUSED(event);
 }
@@ -831,7 +882,7 @@ void Realtime::makeShadowFBO(){
         m_shadow_fbos[i] = 0;
     }
 
-    m_shadow_res = 2048;
+    m_shadow_res = 16384;
 
     for (int i = 0; i < 8; i++) {
 
@@ -919,8 +970,8 @@ void Realtime::paintLightView(const SceneLightData &light, const glm::mat4 &ligh
 glm::mat4 Realtime::getLightVP(const SceneLightData& light) {
 
     if (light.type == LightType::LIGHT_DIRECTIONAL) {
-        float backDist = 5.f;   // have to put the light somewhere, as dir doesnt have a position
-        float B = 5.f;          // orthogonal vals so we can use half-width/height
+        float backDist = 40.f;   // have to put the light somewhere, as dir doesnt have a position
+        float B = 40.f;          // orthogonal vals so we can use half-width/height
 
         glm::vec3 dir = glm::normalize(glm::vec3(light.dir));
 
@@ -941,7 +992,7 @@ glm::mat4 Realtime::getLightVP(const SceneLightData& light) {
         // float farL  = settings.farPlane;
 
         // glm::mat4 P = glm::ortho(-B, B, -B, B, nearL, farL); //proj mat
-        glm::mat4 P = glm::ortho(-B, B, -B, B, 0.f, 15.f); //proj mat
+        glm::mat4 P = glm::ortho(-B, B, -B, B, 0.f, 80.f); //proj mat
 
         return P * V;
     }
@@ -951,22 +1002,26 @@ glm::mat4 Realtime::getLightVP(const SceneLightData& light) {
         glm::vec3 dir = glm::normalize(glm::vec3(light.dir));
         glm::vec3 target = pos + dir;
 
-        glm::vec3 up = glm::vec3(0,1,0);
+        glm::vec3 up(0,1,0);
         if (std::abs(glm::dot(up, dir)) > 0.95f) {
             up = glm::vec3(1,0,0);
         }
 
-        glm::mat4 V = glm::lookAt(pos, target, up); //view mat
+        glm::mat4 V = glm::lookAt(pos, target, up);
 
-        float fov = 2.f * light.angle; // angle already radians
-        float aspect = 1.f;            // shadow map is square
+        // IMPORTANT: keep angle in the SAME units the shader is currently using.
+        // Shader is using lightAngle[] directly against acos() result.
+        // So we mirror that here: treat light.angle as already in "shader units".
+        float fov = 2.f * light.angle;
+
+        // Safety clamp to avoid invalid perspective FOVs
+        fov = glm::clamp(fov, 0.01f, glm::radians(179.0f));
+
+        float aspect = 1.f;
         float nearL = settings.nearPlane;
         float farL  = settings.farPlane;
 
-        glm::mat4 P = glm::perspective(fov, aspect, nearL, farL); //proj mat
-
-        // glm::mat4 P = glm::perspective(fov, aspect, 0.f, 15.f); //proj mat
-
+        glm::mat4 P = glm::perspective(fov, aspect, nearL, farL);
         return P * V;
     }
 

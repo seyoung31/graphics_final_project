@@ -53,7 +53,7 @@ void Particles::spawnNewParticles(int newCount) {
         float rz = (static_cast<float>(rand())/RAND_MAX - 0.5f) * 0.5f * m_spawnDistance * 0.15f;
 
         // world spawn pos: topCenter + right*rx + up*ry + forward*rz
-        p.pos = topCenter + m_camRight * rx + m_camUp * ry + m_camForward * rz;
+        p.pos = topCenter + m_camRight * rx*2.f + m_camUp * ry*2.f + m_camForward * 4.f*rz;
 
         // velocity: mostly downward in world-space relative to camera up
         float downSpeed = 0.15f + (static_cast<float>(rand())/RAND_MAX) * 0.35f;
@@ -66,7 +66,7 @@ void Particles::spawnNewParticles(int newCount) {
         // visual attributes
         unsigned char alpha = static_cast<unsigned char>(200 + (rand() % 56));
         p.r = 255; p.g = 255; p.b = 255; p.a = alpha;
-        p.size = 0.02f + (static_cast<float>(rand())/RAND_MAX) * 0.06f; // a bit smaller for distance realism
+        p.size = 0.15f + (static_cast<float>(rand())/RAND_MAX) * 0.06f; // a bit smaller for distance realism
 
         p.cameradistance = glm::length2(p.pos - m_camPos);
     }

@@ -27,6 +27,7 @@
 #include "shapes/ObjLoader.h"
 
 #include "particles/particles.h"
+#include "camera_path/camerapath.h"
 #include "utils/watereffect.h"
 
 class Realtime : public QOpenGLWidget {
@@ -106,6 +107,7 @@ private:
     void rotateCamera(float rad);
     void rotateCameraPitch(float rad);
     void updateParticleSystem(float deltaTime);
+    void setupCameraPath();
     // Tick Related Variables
     int m_timer;                                        // Stores timer which attempts to run ~60 times per second
     QElapsedTimer m_elapsedTimer;                       // Stores timer which keeps track of actual time between frames
@@ -123,6 +125,8 @@ private:
 
     GLuint m_particles_shader;    //particle shader
     Particles m_particles;        //particle object
+
+    CameraPath m_camera_path;
 
     GLuint m_vaos[PRIM_COUNT];
     GLuint m_vbos[PRIM_COUNT];

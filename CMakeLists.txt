@@ -40,6 +40,7 @@ add_executable(${PROJECT_NAME}
     src/shapes/ObjLoader.cpp
     src/utils/shaderutils.cpp
     src/particles/particles.cpp
+    src/camera_path/camerapath.cpp
 
 
     src/mainwindow.h

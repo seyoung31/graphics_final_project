@@ -60,6 +60,25 @@ vec3 gradeColor(vec3 c) {
     return mix(c, lutColor, u_GradeStrength);
 }
 
+vec3 samplePixelated(vec2 uv) {
+    float pixelSize = uPixelSize;
+
+    vec2 screenSize = 1.0 / uInvScreenSize;   // (width, height)
+    vec2 pixelGrid  = screenSize / pixelSize; // how many blocks across
+
+    vec2 quantizedUV = floor(uv * pixelGrid) / pixelGrid;
+    vec2 pixelCenter = quantizedUV + vec2(0.5) / pixelGrid;
+    pixelCenter = clamp(pixelCenter, vec2(0.0), vec2(1.0));
+
+    vec3 c = texture(tOrig, pixelCenter).rgb;
+
+    // optional palette quantization
+    float levels = 8.0;
+    c = floor(c * levels) / levels;
+
+    return c;
+}
+
 vec3 dofBlur(vec2 uv, float zView) {
     const float DEAD_ZONE_M   = 0.4;
     const float MAX_BLUR_PX   = 14.0;
@@ -80,8 +99,11 @@ vec3 dofBlur(vec2 uv, float zView) {
     float radiusPx = MAX_BLUR_PX * coc; // or * (1.0 - exp(-3.0*coc))
 
     if (radiusPx < 0.5) {
-        vec3 c = texture(tOrig, uv).rgb;
-        return useColorGrade ? gradeColor(c) : c;
+        vec3 c = pixelated ? samplePixelated(uv)
+                           : texture(tOrig, uv).rgb;
+
+        if (useColorGrade) c = gradeColor(c);
+        return c;
     }
 
     const int TAP_COUNT = 13;
@@ -100,22 +122,16 @@ vec3 dofBlur(vec2 uv, float zView) {
 
     for (int i = 0; i < TAP_COUNT; i++) {
         vec2 offsetUV = taps[i] * radiusPx * uInvScreenSize;
+            vec2 sampleUV = clamp(uv + offsetUV, vec2(0.0), vec2(1.0));
 
-        // EXACT match: clamp like your original
-        vec2 sampleUV = clamp(uv + offsetUV, vec2(0.0), vec2(1.0));
+            vec3 raw = pixelated ? samplePixelated(sampleUV)
+                                 : texture(tOrig, sampleUV).rgb;
 
-        vec3 raw = texture(tOrig, sampleUV).rgb;
-        if (useColorGrade){
-            vec3 processed = gradeColor(raw);   // DOF second fix
-            float w = (i == 0) ? 3.0 : 1.0;
-            accum += processed * w;
-            wsum  += w;
+            if (useColorGrade) raw = gradeColor(raw);
 
-        }else{
             float w = (i == 0) ? 3.0 : 1.0;
             accum += raw * w;
             wsum  += w;
-        }
     }
 
     return accum / wsum;
@@ -275,6 +291,7 @@ vec3 applyPixelated(vec3 baseColor, vec2 uv) {
     return pixelatedColor;
 }
 
+
 void main() {
     vec3 baseColor = texture(tOrig, v_uv).rgb;
 
@@ -300,7 +317,7 @@ void main() {
     }
 
     // Pixelated effect (applied after line art)
-    if (pixelated) {
+    if (pixelated && !dof) {
         finalColor = applyPixelated(finalColor, v_uv);
     }
 

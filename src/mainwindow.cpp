@@ -233,6 +233,10 @@ void MainWindow::initialize() {
     ec4->setText(QStringLiteral("Let it snow!!!"));
     ec4->setChecked(false);
 
+    cameraPathCB = new QCheckBox();
+    cameraPathCB->setText(QStringLiteral("Camera Path"));
+    cameraPathCB->setChecked(false);
+
     colorGradeCB = new QCheckBox();
     colorGradeCB->setText(QStringLiteral("Color Grading"));
     colorGradeCB->setChecked(false);
@@ -244,6 +248,7 @@ void MainWindow::initialize() {
     pixelatedCB = new QCheckBox();
     pixelatedCB->setText(QStringLiteral("Pixelated Style"));
     pixelatedCB->setChecked(false);
+
 
     vLayout->addWidget(uploadFile);
     vLayout->addWidget(saveImage);
@@ -270,17 +275,30 @@ void MainWindow::initialize() {
     // vLayout->addWidget(filter2);
 
     // Extra Credit:
+    // Extra Credit:
     vLayout->addWidget(ec_label);
-    vLayout->addWidget(ec1);
-    vLayout->addWidget(ec2);
-    vLayout->addWidget(ec3);
-    vLayout->addWidget(ec4);
-    vLayout->addWidget(colorGradeCB);
-    vLayout->addWidget(watercolorCB);
-    vLayout->addWidget(pixelatedCB);
-    //pixel size
-    vLayout->addWidget(pixelSize_label);
-    vLayout->addWidget(pixelSizeLayout);
+
+    //CHANGED THESE TO BE SIDE BY SIDE
+    QWidget *ecWidget = new QWidget();
+    QGridLayout *ecLayout = new QGridLayout();
+    ecLayout->setSpacing(10); // optional, spacing between checkboxes
+    //below line creates more space in side by side
+    ecLayout->setColumnMinimumWidth(0, 150); // forces left column to be at least 150px wide
+
+    // Add checkboxes to the grid layout in 2 columns
+    ecLayout->addWidget(ec1, 0, 0);
+    ecLayout->addWidget(ec2, 1, 0);
+    ecLayout->addWidget(ec3, 2, 0);
+    ecLayout->addWidget(ec4, 3, 0);
+
+    ecLayout->addWidget(cameraPathCB, 0, 1);
+    ecLayout->addWidget(colorGradeCB, 1, 1);
+    ecLayout->addWidget(watercolorCB, 2, 1);
+    ecLayout->addWidget(pixelatedCB, 3, 1);
+
+    ecWidget->setLayout(ecLayout);
+    vLayout->addWidget(ecWidget);
+
 
     connectUIElements();
 
@@ -290,13 +308,13 @@ void MainWindow::initialize() {
 
     // Set default values for near and far planes
     onValChangeNearBox(0.1f);
-    onValChangeFarBox(10.f);
+    onValChangeFarBox(100.f);
     //default focus
     onValChangeFocusBox(5.f);
     //defaul Speed
     onValChangeSpeedBox(1.f);
     //default Pixel Size
-    onValChangePixelSizeBox(12.0f);
+    onValChangePixelSizeBox(3.0f);
 }
 
 void MainWindow::finish() {
@@ -384,6 +402,7 @@ void MainWindow::connectExtraCredit() {
     connect(ec2, &QCheckBox::clicked, this, &MainWindow::onScreenSpaceDOF);
     connect(ec3, &QCheckBox::clicked, this, &MainWindow::onExtraCredit3);
     connect(ec4, &QCheckBox::clicked, this, &MainWindow::onExtraCredit4);
+    connect(cameraPathCB, &QCheckBox::clicked, this, &MainWindow::onCameraPath);
     connect(colorGradeCB, &QCheckBox::clicked, this, &MainWindow::onColorGrading);
     connect(watercolorCB, &QCheckBox::clicked, this, &MainWindow::onWatercolor);
     connect(pixelatedCB, &QCheckBox::clicked, this, &MainWindow::onPixelated);
@@ -532,6 +551,11 @@ void MainWindow::onExtraCredit3() {
 
 void MainWindow::onExtraCredit4() {
     settings.extraCredit4 = !settings.extraCredit4;
+    realtime->settingsChanged();
+}
+
+void MainWindow::onCameraPath() {
+    settings.cameraPath = !settings.cameraPath;
     realtime->settingsChanged();
 }
 
