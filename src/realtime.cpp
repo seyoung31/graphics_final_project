@@ -541,6 +541,15 @@ void Realtime::settingsChanged() {
         doneCurrent();
     }
 
+    if (m_glInitialized) {
+        makeCurrent();
+        if (settings.isNight) {
+            glClearColor(7.f/255.f, 18.f/255.f, 46.f/255.f, 1.0f);
+        } else {
+            glClearColor(145.f/255.f, 182.f/255.f, 201.f/255.f, 1.0f);
+        }
+        doneCurrent();
+    }
 
     update(); // asks for a PaintGL() call to occur
 }
@@ -1012,14 +1021,19 @@ glm::mat4 Realtime::getLightVP(const SceneLightData& light) {
         // IMPORTANT: keep angle in the SAME units the shader is currently using.
         // Shader is using lightAngle[] directly against acos() result.
         // So we mirror that here: treat light.angle as already in "shader units".
-        float fov = 2.f * light.angle;
+        // float fov = light.angle;
+        float outerHalf = light.angle;           // radians, half-angle
+        float fov = 2.f * outerHalf * 1.05f;     // 5% pad
+        fov = glm::clamp(fov, 0.01f, glm::radians(170.f));
 
         // Safety clamp to avoid invalid perspective FOVs
         fov = glm::clamp(fov, 0.01f, glm::radians(179.0f));
 
         float aspect = 1.f;
-        float nearL = settings.nearPlane;
-        float farL  = settings.farPlane;
+        // float nearL = settings.nearPlane;
+        // float farL  = settings.farPlane;
+        float nearL = .79;
+        float farL = 40.0;
 
         glm::mat4 P = glm::perspective(fov, aspect, nearL, farL);
         return P * V;

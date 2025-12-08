@@ -22,6 +22,7 @@ struct Settings {
     bool colorGrading = false;
     bool watercolor = false;
     bool pixelated = false;
+    bool isNight = false;
     float pixelSize = 12.0;
 };
 
