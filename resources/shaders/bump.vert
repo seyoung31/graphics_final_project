@@ -18,6 +18,9 @@ out vec3 tangent_cameraspace;
 out vec3 bitangent_cameraspace;
 out vec3 normal_cameraspace;
 
+// Shadow mapping
+out vec4 lightSpacePos[8];
+
 uniform mat4 m_model;
 uniform mat4 view;
 uniform mat4 proj;
@@ -25,6 +28,10 @@ uniform mat3 MV3x3;
 
 // UV shift for bump mapping
 uniform vec2 uvShift;
+
+// Shadow mapping light view-projection matrices
+uniform mat4 lightVP[8];
+uniform int numLights;
 
 void main() {
     // Compute world-space position and normal
@@ -46,6 +53,12 @@ void main() {
         bitangent_cameraspace,
         normal_cameraspace
     ));
+
+    // Shadow mapping: compute light space positions
+    vec4 posWorld = m_model * vec4(objPosition, 1.0);
+    for (int i = 0; i < numLights; i++) {
+        lightSpacePos[i] = lightVP[i] * posWorld;
+    }
 
     // Transform to clip space
     gl_Position = proj * view * m_model * vec4(objPosition, 1.0);

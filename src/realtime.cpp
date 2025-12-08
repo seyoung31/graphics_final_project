@@ -1244,6 +1244,29 @@ void Realtime::redrawbump() {
     ShaderUtils::uploadGlobals(m_bumpShader, m_renderData);
     ShaderUtils::uploadLights(m_bumpShader, m_renderData);
     
+    // Upload shadow mapping uniforms
+    GLint useShadowLoc = glGetUniformLocation(m_bumpShader, "use_shadow_mapping");
+    glUniform1i(useShadowLoc, settings.shadowMapping);
+    
+    if (settings.shadowMapping) {
+        int count = std::min((int)m_renderData.lights.size(), 8);
+        for (int i = 0; i < count; i++) {
+            if (m_renderData.lights[i].type == LightType::LIGHT_POINT) continue;
+            
+            int texUnit = 2 + i;
+            glActiveTexture(GL_TEXTURE0 + texUnit);
+            glBindTexture(GL_TEXTURE_2D, m_shadow_depth_texs[i]);
+            
+            std::string smName = "shadowMaps[" + std::to_string(i) + "]";
+            GLint smLoc = glGetUniformLocation(m_bumpShader, smName.c_str());
+            glUniform1i(smLoc, texUnit);
+            
+            std::string vpName = "lightVP[" + std::to_string(i) + "]";
+            GLint vpLoc = glGetUniformLocation(m_bumpShader, vpName.c_str());
+            glUniformMatrix4fv(vpLoc, 1, GL_FALSE, glm::value_ptr(m_lightVPs[i]));
+        }
+    }
+    
     // Set view matrix for TBN calculations
     GLint viewMatLoc = glGetUniformLocation(m_bumpShader, "view");
     if (viewMatLoc != -1) {

@@ -45,6 +45,43 @@ uniform vec3 lightFunc[MAX_LIGHTS];
 uniform float lightAngle[MAX_LIGHTS];
 uniform float lightPenumbra[MAX_LIGHTS];
 
+// Shadow mapping
+in vec4 lightSpacePos[8];
+uniform sampler2D shadowMaps[8];
+uniform int use_shadow_mapping;
+
+float shadowFactorPCF(int i) {
+    vec3 proj = lightSpacePos[i].xyz / lightSpacePos[i].w;
+    proj = proj * 0.5 + 0.5;
+
+    if (proj.x < 0.0 || proj.x > 1.0 ||
+        proj.y < 0.0 || proj.y > 1.0 ||
+        proj.z < 0.0 || proj.z > 1.0) {
+        return 1.0;
+    }
+
+    float current = proj.z;
+    float alpha = 0.02;
+
+    vec2 texelSize = 1.0 / vec2(textureSize(shadowMaps[i], 0));
+    int radius = 2;
+    float sum = 0.0;
+    float count = 0.0;
+    float softness = 2.5;
+
+    for (int x = -radius; x <= radius; x++) {
+        for (int y = -radius; y <= radius; y++) {
+            vec2 offset = vec2(x, y) * texelSize * softness;
+            vec2 uvTap = clamp(proj.xy + offset, vec2(0.0), vec2(1.0));
+            float closest = texture(shadowMaps[i], uvTap).r;
+            sum += (current - alpha > closest) ? 0.0 : 1.0;
+            count += 1.0;
+        }
+    }
+
+    return sum / count;
+}
+
 // Compute perturbed normal from height map using finite differences
 vec3 computeBumpNormal(vec2 uv, vec3 N) {
     float bumpStrength = 1.5;
@@ -136,7 +173,13 @@ void main() {
             specular *= attenuation * spotFactor;
         }
         
-        color += diffuse + specular;
+        // Apply shadow factor
+        float s = 1.0;
+        if (use_shadow_mapping == 1 && t != 0) {
+            s = shadowFactorPCF(i);
+        }
+        
+        color += (diffuse + specular) * s;
     }
     
     fragColor = vec4(color, 1.0);
