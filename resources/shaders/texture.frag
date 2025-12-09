@@ -61,26 +61,42 @@ vec3 gradeColor(vec3 c) {
     return mix(c, lutColor, u_GradeStrength);
 }
 
+// NEW: Sample with optional color grading applied
+vec3 sampleWithGrading(vec2 uv) {
+    vec3 c = texture(tOrig, uv).rgb;
+    if (useColorGrade) {
+        c = gradeColor(c);
+    }
+    return c;
+}
+
 vec3 samplePixelated(vec2 uv) {
     float pixelSize = uPixelSize;
 
-    vec2 screenSize = 1.0 / uInvScreenSize;   // (width, height)
-    vec2 pixelGrid  = screenSize / pixelSize; // how many blocks across
+    vec2 screenSize = 1.0 / uInvScreenSize;
+    vec2 pixelGrid  = screenSize / pixelSize;
 
     vec2 quantizedUV = floor(uv * pixelGrid) / pixelGrid;
     vec2 pixelCenter = quantizedUV + vec2(0.5) / pixelGrid;
     pixelCenter = clamp(pixelCenter, vec2(0.0), vec2(1.0));
 
-    vec3 c = texture(tOrig, pixelCenter).rgb;
+    // FIX: Use sampleWithGrading instead of texture(tOrig)
+    vec3 c = sampleWithGrading(pixelCenter);
 
     // optional palette quantization
     float levels = 8.0;
     c = floor(c * levels) / levels;
 
     if (isNight) {
-        float lum = dot(c, vec3(0.299, 0.587, 0.114)); // perceptual brightness
-        if (lum > 1e-4) {
-            c = clamp(c + vec3(0.05), 0.0, 1.0);
+        // Apply a cool blue tint instead of brightening everything
+        // This creates a moonlight effect rather than a swampy look
+        vec3 nightTint = vec3(0.6, 0.7, 1.0); // Cool blue tint
+        c *= nightTint;
+
+        // Optional: Slightly boost very dark areas to maintain visibility
+        float lum = dot(c, vec3(0.299, 0.587, 0.114));
+        if (lum < 0.1) {
+            c = mix(c, vec3(0.05, 0.06, 0.08), 0.3); // Very subtle dark blue lift
         }
     }
 
@@ -93,24 +109,19 @@ vec3 dofBlur(vec2 uv, float zView) {
 
     float depthRange = max(uFar - uNear, 1e-3);
 
-    // normalize defocus to [0,1-ish]
     float defocusN = abs(zView - uFocus) / depthRange;
     float deadN    = DEAD_ZONE_M / depthRange;
 
     float defocus = max(defocusN - deadN, 0.0);
 
-    // focus band is now a fraction of depth range
-    const float FOCUS_RANGE_N = 0.12;  // tune 0.06..0.2
+    const float FOCUS_RANGE_N = 0.12;
     float coc = smoothstep(0.0, FOCUS_RANGE_N, defocus);
 
-    // gentler radius growth
-    float radiusPx = MAX_BLUR_PX * coc; // or * (1.0 - exp(-3.0*coc))
+    float radiusPx = MAX_BLUR_PX * coc;
 
     if (radiusPx < 0.5) {
         vec3 c = pixelated ? samplePixelated(uv)
-                           : texture(tOrig, uv).rgb;
-
-        if (useColorGrade) c = gradeColor(c);
+                           : sampleWithGrading(uv);
         return c;
     }
 
@@ -130,16 +141,14 @@ vec3 dofBlur(vec2 uv, float zView) {
 
     for (int i = 0; i < TAP_COUNT; i++) {
         vec2 offsetUV = taps[i] * radiusPx * uInvScreenSize;
-            vec2 sampleUV = clamp(uv + offsetUV, vec2(0.0), vec2(1.0));
+        vec2 sampleUV = clamp(uv + offsetUV, vec2(0.0), vec2(1.0));
 
-            vec3 raw = pixelated ? samplePixelated(sampleUV)
-                                 : texture(tOrig, sampleUV).rgb;
+        vec3 raw = pixelated ? samplePixelated(sampleUV)
+                             : sampleWithGrading(sampleUV);
 
-            if (useColorGrade) raw = gradeColor(raw);
-
-            float w = (i == 0) ? 3.0 : 1.0;
-            accum += raw * w;
-            wsum  += w;
+        float w = (i == 0) ? 3.0 : 1.0;
+        accum += raw * w;
+        wsum  += w;
     }
 
     return accum / wsum;
@@ -153,8 +162,7 @@ float noise(vec2 p) {
 // Enhanced edge detection using Sobel operator (multiple scales)
 float detectEdge(sampler2D tex, vec2 uv) {
     vec2 offset = uInvScreenSize;
-    
-    // Fine-scale edge detection
+
     float tl = dot(texture(tex, uv + vec2(-offset.x, -offset.y)).rgb, vec3(0.299, 0.587, 0.114));
     float tm = dot(texture(tex, uv + vec2(0.0, -offset.y)).rgb, vec3(0.299, 0.587, 0.114));
     float tr = dot(texture(tex, uv + vec2(offset.x, -offset.y)).rgb, vec3(0.299, 0.587, 0.114));
@@ -164,177 +172,113 @@ float detectEdge(sampler2D tex, vec2 uv) {
     float bl = dot(texture(tex, uv + vec2(-offset.x, offset.y)).rgb, vec3(0.299, 0.587, 0.114));
     float bm = dot(texture(tex, uv + vec2(0.0, offset.y)).rgb, vec3(0.299, 0.587, 0.114));
     float br = dot(texture(tex, uv + vec2(offset.x, offset.y)).rgb, vec3(0.299, 0.587, 0.114));
-    
-    // Sobel X kernel
+
     float sobelX = -tl + tr - 2.0 * ml + 2.0 * mr - bl + br;
-    // Sobel Y kernel
     float sobelY = -tl - 2.0 * tm - tr + bl + 2.0 * bm + br;
     float fineEdge = sqrt(sobelX * sobelX + sobelY * sobelY);
-    
-    // Coarse-scale edge detection (catches larger features)
+
     vec2 coarseOffset = offset * 2.0;
     float coarseTl = dot(texture(tex, clamp(uv + vec2(-coarseOffset.x, -coarseOffset.y), vec2(0.0), vec2(1.0))).rgb, vec3(0.299, 0.587, 0.114));
     float coarseTr = dot(texture(tex, clamp(uv + vec2(coarseOffset.x, -coarseOffset.y), vec2(0.0), vec2(1.0))).rgb, vec3(0.299, 0.587, 0.114));
     float coarseBl = dot(texture(tex, clamp(uv + vec2(-coarseOffset.x, coarseOffset.y), vec2(0.0), vec2(1.0))).rgb, vec3(0.299, 0.587, 0.114));
     float coarseBr = dot(texture(tex, clamp(uv + vec2(coarseOffset.x, coarseOffset.y), vec2(0.0), vec2(1.0))).rgb, vec3(0.299, 0.587, 0.114));
     float coarseEdge = abs(coarseTl - coarseBr) + abs(coarseTr - coarseBl);
-    
-    // Laplacian edge detection (catches subtle edges)
+
     float laplacian = abs(4.0 * mm - tl - tr - bl - br);
-    
-    // Combine all edge detection methods
+
     return max(fineEdge, max(coarseEdge * 0.5, laplacian * 0.3));
 }
 
-// Depth-based edge detection for additional line definition
 float detectDepthEdge(sampler2D depthTex, vec2 uv) {
     vec2 offset = uInvScreenSize;
-    
+
     float center = texture(depthTex, uv).r;
     float left = texture(depthTex, clamp(uv + vec2(-offset.x, 0.0), vec2(0.0), vec2(1.0))).r;
     float right = texture(depthTex, clamp(uv + vec2(offset.x, 0.0), vec2(0.0), vec2(1.0))).r;
     float top = texture(depthTex, clamp(uv + vec2(0.0, -offset.y), vec2(0.0), vec2(1.0))).r;
     float bottom = texture(depthTex, clamp(uv + vec2(0.0, offset.y), vec2(0.0), vec2(1.0))).r;
-    
-    // Diagonal samples for better edge detection
+
     float tl = texture(depthTex, clamp(uv + vec2(-offset.x, -offset.y), vec2(0.0), vec2(1.0))).r;
     float tr = texture(depthTex, clamp(uv + vec2(offset.x, -offset.y), vec2(0.0), vec2(1.0))).r;
     float bl = texture(depthTex, clamp(uv + vec2(-offset.x, offset.y), vec2(0.0), vec2(1.0))).r;
     float br = texture(depthTex, clamp(uv + vec2(offset.x, offset.y), vec2(0.0), vec2(1.0))).r;
-    
-    // Sobel on depth
+
     float sobelX = -tl + tr - 2.0 * left + 2.0 * right - bl + br;
     float sobelY = -tl - 2.0 * top - tr + bl + 2.0 * bottom + br;
-    
-    // Also check for large depth differences
-    float maxDiff = max(max(abs(left - right), abs(top - bottom)), 
+
+    float maxDiff = max(max(abs(left - right), abs(top - bottom)),
                        max(abs(tl - br), abs(tr - bl)));
-    
+
     return max(sqrt(sobelX * sobelX + sobelY * sobelY) * 15.0, maxDiff * 20.0);
 }
 
-// Crosshatching pattern for shading
 float crosshatch(vec2 uv) {
     float angle1 = 45.0 * 3.14159 / 180.0;
     float angle2 = -45.0 * 3.14159 / 180.0;
-    
+
     float scale = 200.0;
     float line1 = abs(sin(dot(uv, vec2(cos(angle1), sin(angle1)) * scale)));
     float line2 = abs(sin(dot(uv, vec2(cos(angle2), sin(angle2)) * scale)));
-    
+
     return min(line1, line2);
 }
 
-// Line art effect
 vec3 applyLineArt(vec3 baseColor, vec2 uv) {
-    // Step 1: Detect edges from color (multi-scale Sobel + Laplacian)
     float colorEdge = detectEdge(tOrig, uv);
-    
-    // Step 2: Detect edges from depth for additional definition
     float depthEdge = detectDepthEdge(sceneDepthTex, uv);
-    
-    // Step 3: Also detect edges from color differences (catches texture edges)
+
     vec3 centerColor = texture(tOrig, uv).rgb;
     vec3 leftColor = texture(tOrig, clamp(uv + vec2(-uInvScreenSize.x, 0.0), vec2(0.0), vec2(1.0))).rgb;
     vec3 rightColor = texture(tOrig, clamp(uv + vec2(uInvScreenSize.x, 0.0), vec2(0.0), vec2(1.0))).rgb;
     vec3 topColor = texture(tOrig, clamp(uv + vec2(0.0, -uInvScreenSize.y), vec2(0.0), vec2(1.0))).rgb;
     vec3 bottomColor = texture(tOrig, clamp(uv + vec2(0.0, uInvScreenSize.y), vec2(0.0), vec2(1.0))).rgb;
-    
+
     float colorDiff = max(max(length(centerColor - leftColor), length(centerColor - rightColor)),
                         max(length(centerColor - topColor), length(centerColor - bottomColor)));
-    
-    // Step 4: Combine all edge detections (more sensitive)
+
     float combinedEdge = max(max(colorEdge, depthEdge * 0.7), colorDiff * 2.0);
-    
-    // Step 5: Lower threshold to catch more edges, with sharper transition
     float edgeStrength = smoothstep(0.1, 0.4, combinedEdge);
-    
-    // Step 6: Convert to grayscale for line art look
+
     float gray = dot(baseColor, vec3(0.299, 0.587, 0.114));
-    
-    // Step 7: Add crosshatching for shading areas (lighter areas)
+
     float hatch = crosshatch(uv);
-    float hatchMask = 1.0 - smoothstep(0.3, 0.7, gray); // Only in lighter areas
+    float hatchMask = 1.0 - smoothstep(0.3, 0.7, gray);
     float hatched = mix(1.0, hatch, hatchMask * 0.3);
-    
-    // Step 8: Combine: white background, black lines, gray crosshatching
+
     vec3 lineArt = vec3(1.0);
-    
-    // Draw black lines where edges are strong
     lineArt = mix(lineArt, vec3(0.0), edgeStrength);
-    
-    // Add crosshatching for mid-tones
     lineArt = mix(lineArt, vec3(0.7) * hatched, (1.0 - edgeStrength) * (1.0 - gray) * 0.4);
-    
-    // Step 9: Add subtle paper texture
+
     float paper = noise(uv * 300.0) * 0.05;
     lineArt += paper;
-    
+
     return clamp(lineArt, 0.0, 1.0);
 }
 
-// Pixelated effect
-vec3 applyPixelated(vec3 baseColor, vec2 uv) {
-    // Pixelation size (adjustable - smaller = more pixelated)
-    float pixelSize = uPixelSize; // Number of pixels to combine
-    
-    // Calculate the pixel grid using inverse screen size
-    vec2 screenSize = 1.0 / uInvScreenSize;
-    vec2 pixelGrid = screenSize / pixelSize;
-    
-    // Quantize UV coordinates to create pixel blocks
-    vec2 quantizedUV = floor(uv * pixelGrid) / pixelGrid;
-    
-    // Sample the color at the quantized UV (nearest neighbor)
-    // Add half pixel offset to sample from center of pixel block
-    vec2 pixelCenter = quantizedUV + vec2(0.5) / pixelGrid;
-    pixelCenter = clamp(pixelCenter, vec2(0.0), vec2(1.0));
-    
-    vec3 pixelatedColor = texture(tOrig, pixelCenter).rgb;
-    
-    // Optional: Color quantization for retro look (reduce color palette)
-    float colorLevels = 8.0; // Number of color levels per channel
-    pixelatedColor = floor(pixelatedColor * colorLevels) / colorLevels;
-
-    if (isNight) {
-        float lum = dot(pixelatedColor, vec3(0.299, 0.587, 0.114)); // perceptual brightness
-        if (lum > 1e-4) {
-            pixelatedColor = clamp(pixelatedColor + vec3(0.05), 0.0, 1.0);
-        }
-    }
-
-    return pixelatedColor;
-}
-
-
+// REMOVED: applyPixelated function - no longer needed as standalone
 
 void main() {
-    vec3 baseColor = texture(tOrig, v_uv).rgb;
-
     float depth = texture(sceneDepthTex, v_uv).r;
     float zView = linearizeDepth(depth);
 
-    // LUT first
-    if (useColorGrade){
-        vec3 lutColor = applyLUT(baseColor);
-        baseColor = mix(baseColor, lutColor, u_GradeStrength);
-    }
+    vec3 finalColor;
 
-    vec3 finalColor = baseColor;
-
-    // DOF second (now blurs graded samples)
+    // Apply DOF first (which handles both pixelation and color grading internally)
     if (dof) {
         finalColor = dofBlur(v_uv, zView);
     }
-
-    // Line art effect (applied after DOF)
-    if (watercolor) {
-        finalColor = applyLineArt(finalColor, v_uv);
+    // If no DOF, handle pixelation + grading together
+    else if (pixelated) {
+        finalColor = samplePixelated(v_uv);
+    }
+    // Otherwise just sample with grading
+    else {
+        finalColor = sampleWithGrading(v_uv);
     }
 
-    // Pixelated effect (applied after line art)
-    if (pixelated && !dof) {
-        finalColor = applyPixelated(finalColor, v_uv);
+    // Apply watercolor/line art effect last
+    if (watercolor) {
+        finalColor = applyLineArt(finalColor, v_uv);
     }
 
     fragColor = vec4(finalColor, 1.0);

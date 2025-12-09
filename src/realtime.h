@@ -150,7 +150,7 @@ private:
     WaterEffect m_water;
 
     // Post-processing controls
-    float m_gradeStrength = 0.4f; // how strong LUT is
+    float m_gradeStrength = 0.2f; // how strong LUT is
     bool m_enableColorGrading = true;
 
     //Shadow Mapping

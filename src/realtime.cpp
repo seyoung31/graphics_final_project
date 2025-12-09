@@ -298,7 +298,7 @@ void Realtime::initializeGL() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     m_post.init(m_screen_width, m_screen_height,
-                QString(":/resources/images/noir_lut_4x4.png"));
+                QString(":/resources/images/teal_orange_lut_4x4.png"));
     m_glInitialized = true;
 
     // Initialize particle system (Particles will create VAO/VBO/texture)
