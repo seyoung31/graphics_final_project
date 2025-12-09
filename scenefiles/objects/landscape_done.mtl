@@ -1,0 +1,1002 @@
+# Blender 4.4.3 MTL File: 'landscape_done.blend'
+# www.blender.org
+
+newmtl cliff.002
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd /Users/sueanpark/Downloads/cliff_texture.jpg
+
+newmtl BottomsRcoPantsHalf
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Tom Nook/images/PantsHalf/mBottoms_Alb.png
+map_Ns /Users/sueanpark/Downloads/Tom Nook/images/PantsHalf/mBottoms_Rgh.png
+map_d /Users/sueanpark/Downloads/Tom Nook/images/PantsHalf/mBottoms_Alb.png
+map_Bump -bm 1.000000 /Users/sueanpark/Downloads/Tom Nook/images/PantsHalf/mBottoms_Nrm.png
+
+newmtl BottomsRcoPantsNormal00
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Tom Nook/images/PantsNormal00/mBottoms_Alb.png
+map_Ns /Users/sueanpark/Downloads/Tom Nook/images/PantsNormal00/mBottoms_Rgh.png
+map_d /Users/sueanpark/Downloads/Tom Nook/images/PantsNormal00/mBottoms_Alb.png
+map_Bump -bm 1.000000 /Users/sueanpark/Downloads/Tom Nook/images/PantsNormal00/mBottoms_Nrm.png
+
+newmtl BottomsRcoPantsNormal01
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Tom Nook/images/PantsNormal01/mBottoms_Alb.png
+map_Ns /Users/sueanpark/Downloads/Tom Nook/images/PantsNormal01/mBottoms_Rgh.png
+map_d /Users/sueanpark/Downloads/Tom Nook/images/PantsNormal01/mBottoms_Alb.png
+map_Bump -bm 1.000000 /Users/sueanpark/Downloads/Tom Nook/images/PantsNormal01/mBottoms_Nrm.png
+
+newmtl Mat.001
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800416 0.416461 0.083943
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+
+newmtl Mat.002
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.183285 0.801865 0.801865
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+
+newmtl Mat.003
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.223348 0.173970 0.803668
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+
+newmtl Mat_3.001
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800466 0.038317 0.070251
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+
+newmtl Mat_3.002
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800466 0.038317 0.070251
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+
+newmtl Mat_3.003
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800466 0.038317 0.070251
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+
+newmtl Material.001
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd /Users/sueanpark/Downloads/brick.jpg
+
+newmtl Material.003
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd /Users/sueanpark/Downloads/brick.jpg
+
+newmtl Material.006
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd /Users/sueanpark/Downloads/brick.jpg
+
+newmtl Material.007
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd /Users/sueanpark/Downloads/brick.jpg
+
+newmtl Material.008
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.434151 0.194618 0.068478
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl Material.009
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.187820 0.068478 0.027321
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl Material.010
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd /Users/sueanpark/Downloads/water_texture.jpg
+
+newmtl Material.011
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.483933 0.302715 0.002551
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl Material.012
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.216975 0.122245 0.056390
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl Material.013
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.801327 0.074111 0.030560
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl Material.014
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.152925 0.051270 0.021219
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl Material.016
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.152925 0.051270 0.021219
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl Material.114
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.152925 0.051270 0.021219
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl Material.116
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.152925 0.051270 0.021219
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl Material.118
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.152925 0.051270 0.021219
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl Material.120
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.152925 0.051270 0.021219
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl Material.122
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.152925 0.051270 0.021219
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl Material.124
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.152925 0.051270 0.021219
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl Material.126
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.152925 0.051270 0.021219
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl None
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.800000 0.800000 0.800000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd /Users/sueanpark/Downloads/Campfire/PUSHILIN_campfire.png
+
+newmtl TopsRcoOuterL
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd /Users/sueanpark/Downloads/Tom Nook/images/TopOuterL/mTops_Alb.png
+map_d /Users/sueanpark/Downloads/Tom Nook/images/TopOuterL/mTops_Alb.png
+map_Bump -bm 1.000000 /Users/sueanpark/Downloads/Tom Nook/images/TopOuterL/mTops_Nrm.png
+
+newmtl brown
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.305407 0.100762 0.036805
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+
+newmtl cliff.002
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd /Users/sueanpark/Downloads/cliff_texture.jpg
+
+newmtl eyes
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.002693 0.002693 0.002693
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl eyes.001
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.002693 0.002693 0.002693
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl eyes.002
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.002693 0.002693 0.002693
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl eyes.003
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.002693 0.002693 0.002693
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl eyes.004
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.002693 0.002693 0.002693
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl eyes.005
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.002693 0.002693 0.002693
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl ground.002
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd /Users/sueanpark/Downloads/ground1_diffuse.jpg
+
+newmtl lamp
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd /Users/sueanpark/Downloads/lamp_top.jpg
+
+newmtl mBody
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Isabelle_NH/mBody_Alb.png
+
+newmtl mBody.001
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Rover/Textures/mBody_Alb.png
+map_d /Users/sueanpark/Downloads/Rover/Textures/mBody_Alb.png
+map_Bump -bm 0.300000 /Users/sueanpark/Downloads/Rover/Textures/mBody_Nrm.png
+
+newmtl mBody.002
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Tom Nook/images/mBody_Alb.png
+map_d /Users/sueanpark/Downloads/Tom Nook/images/mBody_Alb.png
+map_Bump -bm 1.000000 /Users/sueanpark/Downloads/Tom Nook/images/mBody_Nrm.png
+
+newmtl mBody.003
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Goats/02 - Billy/mBody_Alb.png
+
+newmtl mBody.004
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Stone/mBody_Alb.png
+
+newmtl mBody.005
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Stone/mBody_Alb.png
+
+newmtl mBody.006
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Stone/mBody_Alb.png
+
+newmtl mBody.007
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Stone/mBody_Alb.png
+
+newmtl mBottoms
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Isabelle_NH/mBottoms_Alb.png
+
+newmtl mCap
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Isabelle_NH/mCap_Alb.png
+
+newmtl mCapVis
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Isabelle_NH/mBody_Alb.png
+
+newmtl mCapVis.001
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Goats/02 - Billy/mBody_Alb.png
+
+newmtl mEye
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Isabelle_NH/mEye_Alb.0.png
+
+newmtl mEye.001
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Rover/Textures/mEye_Alb.0.png
+map_d /Users/sueanpark/Downloads/Rover/Textures/mEye_Alb.0.png
+map_Bump -bm 0.300000 /Users/sueanpark/Downloads/Rover/Textures/mEye_Nrm.0.png
+
+newmtl mEye.002
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Tom Nook/images/mEye_Alb.0.png
+map_d /Users/sueanpark/Downloads/Tom Nook/images/mEye_Alb.0.png
+map_Bump -bm 1.000000 /Users/sueanpark/Downloads/Tom Nook/images/mEye_Nrm.0.png
+
+newmtl mEye.003
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Goats/02 - Billy/mEye_Alb.0.png
+
+newmtl mMouth
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Isabelle_NH/mMouth_Alb.0.png
+
+newmtl mMouth.001
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Rover/Textures/mMouth_Alb.0.png
+map_d /Users/sueanpark/Downloads/Rover/Textures/mMouth_Alb.0.png
+map_Bump -bm 0.300000 /Users/sueanpark/Downloads/Rover/Textures/mMouth_Nrm.0.png
+
+newmtl mMouth.002
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Goats/02 - Billy/mMouth_Alb.0.png
+
+newmtl mReBody
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Froggy Chair/Textures/mReBody_Alb.png
+
+newmtl mShoes
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Isabelle_NH/mShoes_Alb.png
+
+newmtl mSoftmesh
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Isabelle_NH/mBottoms_Alb.png
+
+newmtl mTops
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Isabelle_NH/mTops_Alb.png
+
+newmtl mTops.001
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Rover/Textures/Shirt/mTops_Alb.png
+map_d /Users/sueanpark/Downloads/Rover/Textures/Shirt/mTops_Alb.png
+map_Bump -bm 0.300000 /Users/sueanpark/Downloads/Rover/Textures/Shirt/mTops_Nrm.png
+
+newmtl mTops.002
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Goats/02 - Billy/mTops_Alb.png
+
+newmtl mTops.003
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Goats/02 - Billy/mTops_Alb.png
+
+newmtl mTops.004
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Goats/02 - Billy/mTops_Alb.png
+
+newmtl mTops.005
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Goats/02 - Billy/mTops_Alb.png
+
+newmtl mTops.006
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Goats/02 - Billy/mTops_Alb.png
+
+newmtl mTops.007
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Goats/02 - Billy/mTops_Alb.png
+
+newmtl mTops.008
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Goats/02 - Billy/mTops_Alb.png
+
+newmtl mTops.009
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Goats/02 - Billy/mTops_Alb.png
+
+newmtl mTops.010
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Goats/02 - Billy/mTops_Alb.png
+
+newmtl mTops.011
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Goats/02 - Billy/mTops_Alb.png
+
+newmtl mTops.012
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Goats/02 - Billy/mTops_Alb.png
+
+newmtl mTops.013
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Goats/02 - Billy/mTops_Alb.png
+
+newmtl mUnitIconHoleON
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Holes/mUnitIconHoleON_Alb.png
+
+newmtl mUnitIconHoleON.001
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Holes/mUnitIconHoleON_Alb.png
+
+newmtl mUnitIconHoleON.002
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Holes/mUnitIconHoleON_Alb.png
+
+newmtl mUnitIconHoleON.003
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Holes/mUnitIconHoleON_Alb.png
+
+newmtl mUnitIconHoleON.004
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Holes/mUnitIconHoleON_Alb.png
+
+newmtl mUnitIconHoleON.005
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Holes/mUnitIconHoleON_Alb.png
+
+newmtl mUnitIconHoleOff
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Holes/mUnitIconHoleOff_Alb.png
+
+newmtl mUnitIconHoleOff.001
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Holes/mUnitIconHoleOff_Alb.png
+
+newmtl mUnitIconHoleOff.002
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Holes/mUnitIconHoleOff_Alb.png
+
+newmtl mUnitIconHoleOff.003
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /Users/sueanpark/Downloads/Holes/mUnitIconHoleOff_Alb.png
+
+newmtl m_default_mat.002
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd /Users/sueanpark/Downloads/StreetLamp/fobj_lamp.png
+
+newmtl m_default_mat.004
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd /Users/sueanpark/Downloads/StreetLamp/fobj_lamp.png
+
+newmtl m_default_mat.005
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd /Users/sueanpark/Downloads/StreetLamp/fobj_lamp.png
+
+newmtl m_default_mat.006
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd /Users/sueanpark/Downloads/StreetLamp/fobj_lamp.png
+
+newmtl snow
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd /Users/sueanpark/Downloads/snow_diffuse.png
+
+newmtl tree
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd /Users/sueanpark/Downloads/tree_texture.jpg
+
+newmtl tree.001
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd /Users/sueanpark/Downloads/tree_texture.jpg
+
+newmtl tree.002
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd /Users/sueanpark/Downloads/tree_texture.jpg
+
+newmtl tree.003
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd /Users/sueanpark/Downloads/tree_texture.jpg
+
+newmtl tree.004
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd /Users/sueanpark/Downloads/tree_diffuse.jpg
+
+newmtl tree_snow
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd /Users/sueanpark/Downloads/tree2_diffuse.jpg
+
+newmtl tree_snow.001
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd /Users/sueanpark/Downloads/tree2_diffuse.jpg
