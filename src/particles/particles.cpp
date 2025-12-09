@@ -55,7 +55,6 @@ void Particles::spawnNewParticles(int newCount) {
         // we will compute cameradistance later in render() so leave it for now
         p.cameradistance = -1.0f;
     }
-    std::cout<< "particles spawn"<<std::endl;
 }
 
 
@@ -83,7 +82,6 @@ void Particles::init(GLuint shaderProgram) {
         if (loc >= 0) glUniform1i(loc, 0);
         glUseProgram(0);
     }
-    std::cout<< "initialize"<<std::endl;
 
 }
 
@@ -136,7 +134,6 @@ void Particles::initInstancedBuffers() {
     // cleanup
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    std::cout<< "instanced buffers"<<std::endl;
 
 }
 
@@ -158,7 +155,6 @@ void Particles::loadTextureFromResource(const char* resourcePath) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glBindTexture(GL_TEXTURE_2D, 0);
-    std::cout<< "texture load"<<std::endl;
 
 }
 
@@ -200,7 +196,6 @@ void Particles::update(float dt) {
     }
 
     // don't sort or upload here — render will compute distances, sort, and upload
-    std::cout<< "updating"<<std::endl;
 }
 
 // --- render: compute camera distances, sort, fill GPU arrays and draw
@@ -297,7 +292,6 @@ void Particles::render(const glm::mat4 &view, const glm::mat4 &proj, const glm::
 
     glBindTexture(GL_TEXTURE_2D, 0);
     glUseProgram(0);
-    std::cout<<"rendering"<<std::endl;
 }
 
 // --- cleanup (unchanged)
@@ -307,5 +301,4 @@ void Particles::cleanup() {
     if (m_colors_vbo) { glDeleteBuffers(1, &m_colors_vbo); m_colors_vbo = 0; }
     if (m_vao) { glDeleteVertexArrays(1, &m_vao); m_vao = 0; }
     if (m_tex) { glDeleteTextures(1, &m_tex); m_tex = 0; }
-    std::cout<< "cleaning up"<<std::endl;
 }
