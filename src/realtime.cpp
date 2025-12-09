@@ -305,7 +305,9 @@ void Realtime::initializeGL() {
     m_particles.init(m_particles_shader);
 
     // Load displacement textures
-    GLuint waterDisp = loadTexture(":/resources/images/water_displacement.png");
+    GLuint waterDisp = loadTexture(":/resources/images/scroll_disp_simple.png");
+    // GLuint waterDisp = loadTexture(":/resources/images/water_displacement.png");
+
     m_water.init(waterDisp);
 
     //prep shadow fbos for shadows if we use them :)

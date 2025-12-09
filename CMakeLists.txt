@@ -104,6 +104,7 @@ qt6_add_resources(${PROJECT_NAME} "Resources"
         resources/images/snowflake_only.png
         resources/images/water_color.png
         resources/images/water_displacement.png
+        resources/images/scroll_disp_simple.png
 )
 
 # GLEW: this provides support for Windows (including 64-bit)
