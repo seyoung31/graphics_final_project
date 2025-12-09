@@ -295,7 +295,7 @@ vec3 applyPixelated(vec3 baseColor, vec2 uv) {
     // Optional: Color quantization for retro look (reduce color palette)
     float colorLevels = 8.0; // Number of color levels per channel
     pixelatedColor = floor(pixelatedColor * colorLevels) / colorLevels;
-    
+
     if (isNight) {
         float lum = dot(pixelatedColor, vec3(0.299, 0.587, 0.114)); // perceptual brightness
         if (lum > 1e-4) {
@@ -305,6 +305,7 @@ vec3 applyPixelated(vec3 baseColor, vec2 uv) {
 
     return pixelatedColor;
 }
+
 
 
 void main() {
