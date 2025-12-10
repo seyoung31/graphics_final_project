@@ -72,14 +72,14 @@
           "type": "spot",
           "color": [0.8, 0.6, 0.4],
           "direction": [0.0, -1.0, 0.0],
-          "angle": 100.0,
-          "penumbra": 70.0,
+          "angle": 65.0,
+          "penumbra": 30.0,
           "attenuationCoeff": [1.0, 0.015, 0.001]
         }
       ]
     },
     {
-      "translate": [16.1, 8.4, -30],
+      "translate": [16.1, 5.9, -30],
       "lights": [
         {
           "type": "spot",
