@@ -14,7 +14,7 @@
   },
   "groups": [
     {
-      "translate": [2.9, 5.9, -8.6],
+      "translate": [2.65, 5.9, -8.9],
       "lights": [
         {
           "type": "spot",
@@ -79,7 +79,7 @@
       ]
     },
     {
-      "translate": [19.6, 8.4, -26.1],
+      "translate": [16.1, 8.4, -30],
       "lights": [
         {
           "type": "spot",
@@ -87,6 +87,19 @@
           "direction": [0.0, -1.0, 0.0],
           "angle": 100.0,
           "penumbra": 70,
+          "attenuationCoeff": [1.0, 0.015, 0.001]
+        }
+      ]
+    },
+    {
+      "translate": [-1.2, 2.9, -5.2],
+      "lights": [
+        {
+          "type": "spot",
+          "color": [0.89, 0.271, 0.008],
+          "direction": [0.0, -1.0, 0.0],
+          "angle": 150.0,
+          "penumbra": 90,
           "attenuationCoeff": [1.0, 0.015, 0.001]
         }
       ]
@@ -109,7 +122,11 @@
             {
               "type": "mesh",
               "ambient": [0.4, 0.4, 0.4],
+<<<<<<< HEAD
               "meshFile": "objects/landscape_DONE2.obj",
+=======
+              "meshFile": "objects/landscape_done.obj",
+>>>>>>> 8a5756c863232d97b2ee15959e7e1c4dc9c00d64
               "diffuse": [0.8, 0.8, 0.8],
               "specular": [0.3, 0.3, 0.3],
               "shininess": 20.0
