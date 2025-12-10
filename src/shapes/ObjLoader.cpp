@@ -4,6 +4,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cmath>
+#include <cctype>
 #include <vector>
 
 ObjLoader::ObjLoader() {
@@ -216,6 +217,9 @@ bool ObjLoader::parseMtlFile(const std::string& filepath) {
             std::string texPath;
             std::getline(iss, texPath);
             texPath = trim(texPath);
+            // Parse out any options (like -bm, -o, -s) before the actual filename
+            // Options start with '-' and have values, the filename is the last part
+            texPath = extractTexturePathFromOptions(texPath);
             // Resolve relative paths relative to MTL file directory
             if (!texPath.empty() && texPath[0] != '/') {
                 // Relative path - resolve relative to MTL file directory
@@ -523,5 +527,70 @@ std::string ObjLoader::trim(const std::string& str) {
     if (first == std::string::npos) return "";
     size_t last = str.find_last_not_of(" \t\r\n");
     return str.substr(first, last - first + 1);
+}
+
+std::string ObjLoader::extractTexturePathFromOptions(const std::string& line) {
+    // MTL texture lines can have options before the filename, e.g.:
+    // map_Bump -bm 1.000000 ../path/to/texture.jpg
+    // Options are: -bm (bump multiplier), -o (offset), -s (scale), -t (turbulence), etc.
+    // The filename is the part that doesn't start with '-' and comes after all options
+    
+    std::istringstream iss(line);
+    std::string token;
+    std::string result;
+    
+    while (iss >> token) {
+        if (token[0] == '-') {
+            // This is an option flag, skip it and its value(s)
+            if (token == "-bm" || token == "-boost" || token == "-mm" || 
+                token == "-texres" || token == "-clamp" || token == "-blendu" || 
+                token == "-blendv" || token == "-imfchan") {
+                // These options take 1 value, skip it
+                std::string value;
+                if (iss >> value) {
+                    // Value consumed
+                }
+            } else if (token == "-o" || token == "-s" || token == "-t") {
+                // These options take up to 3 values (u v w), but often just 1-2
+                // Read values until we hit another option or the filename
+                std::streampos pos = iss.tellg();
+                std::string value;
+                int count = 0;
+                while (count < 3 && iss >> value) {
+                    if (value[0] == '-' || value.find('.') != std::string::npos && 
+                        (value.find('/') != std::string::npos || value.find('\\') != std::string::npos)) {
+                        // This looks like an option or a path, put it back
+                        iss.seekg(pos);
+                        break;
+                    }
+                    // Check if it's a number
+                    bool isNumber = true;
+                    for (size_t i = 0; i < value.size(); i++) {
+                        if (!std::isdigit(value[i]) && value[i] != '.' && value[i] != '-' && value[i] != '+') {
+                            isNumber = false;
+                            break;
+                        }
+                    }
+                    if (!isNumber) {
+                        iss.seekg(pos);
+                        break;
+                    }
+                    pos = iss.tellg();
+                    count++;
+                }
+            }
+        } else {
+            // This should be the start of the filename
+            // The filename might contain spaces, so get the rest of the line
+            result = token;
+            std::string rest;
+            if (std::getline(iss, rest)) {
+                result += rest;
+            }
+            break;
+        }
+    }
+    
+    return trim(result);
 }
 

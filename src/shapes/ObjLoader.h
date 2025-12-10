@@ -107,6 +107,9 @@ private:
     
     // Helper to trim whitespace
     std::string trim(const std::string& str);
+    
+    // Helper to extract texture path from line with options (e.g., -bm 1.0 path/to/tex.jpg)
+    std::string extractTexturePathFromOptions(const std::string& line);
 
     std::string m_filepath;
     std::string m_directory;

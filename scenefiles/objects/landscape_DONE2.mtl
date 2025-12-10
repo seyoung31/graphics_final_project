@@ -123,6 +123,7 @@ Ni 1.500000
 d 1.000000
 illum 2
 map_Kd ../normal_mapping/textures/brick_diffuse.jpg
+map_Bump -bm 1.000000 ../normal_mapping/textures/brick_bump.jpg
 
 newmtl Material.002
 Ns 250.000000
@@ -143,6 +144,7 @@ Ni 1.500000
 d 1.000000
 illum 2
 map_Kd ../normal_mapping/textures/brick_diffuse.jpg
+map_Bump -bm 1.000000 ../normal_mapping/textures/brick_bump.jpg
 
 newmtl Material.004
 Ns 250.000000
@@ -173,6 +175,7 @@ Ni 1.500000
 d 1.000000
 illum 2
 map_Kd ../normal_mapping/textures/brick_diffuse.jpg
+map_Bump -bm 1.000000 ../normal_mapping/textures/brick_bump.jpg
 
 newmtl Material.007
 Ns 250.000000
@@ -183,6 +186,7 @@ Ni 1.500000
 d 1.000000
 illum 2
 map_Kd ../normal_mapping/textures/brick_diffuse.jpg
+map_Bump -bm 1.000000 ../normal_mapping/textures/brick_bump.jpg
 
 newmtl Material.008
 Ns 250.000000
@@ -384,6 +388,7 @@ Ni 1.500000
 d 1.000000
 illum 2
 map_Kd ../normal_mapping/textures/ground1_diffuse.jpg
+map_Bump -bm 1.000000 ../normal_mapping/textures/ground1_bump.jpg
 
 newmtl lamp
 Ns 250.000000
