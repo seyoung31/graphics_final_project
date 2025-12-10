@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <asset>
+    <contributor>
+      <author>Centrixe</author>
+      <authoring_tool>OpenCOLLADA for 3ds Max;  Version: 1.6;  Revision: 68</authoring_tool>
+    </contributor>
+    <created>2020-04-03T00:03:51</created>
+    <modified>2020-04-03T00:03:51</modified>
+    <unit name="inch" meter="0.0254"/>
+    <up_axis>Z_UP</up_axis>
+  </asset>
+  <library_effects>
+    <effect id="mUnitIconHoleOff">
+      <profile_COMMON>
+        <newparam sid="mUnitIconHoleOff_Alb_png-surface">
+          <surface type="2D">
+            <init_from>mUnitIconHoleOff_Alb_png</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="mUnitIconHoleOff_Alb_png-sampler">
+          <sampler2D>
+            <source>mUnitIconHoleOff_Alb_png-surface</source>
+          </sampler2D>
+        </newparam>
+        <newparam sid="mUnitIconHoleOff_Nrm_png-surface">
+          <surface type="2D">
+            <init_from>mUnitIconHoleOff_Nrm_png</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="mUnitIconHoleOff_Nrm_png-sampler">
+          <sampler2D>
+            <source>mUnitIconHoleOff_Nrm_png-surface</source>
+          </sampler2D>
+        </newparam>
+        <technique sid="common">
+          <blinn>
+            <emission>
+              <color>0 0 0 1</color>
+            </emission>
+            <ambient>
+              <color>0.588 0.588 0.588 1</color>
+            </ambient>
+            <diffuse>
+              <texture texture="mUnitIconHoleOff_Alb_png-sampler" texcoord="CHANNEL1"/>
+            </diffuse>
+            <specular>
+              <color>0 0 0 1</color>
+            </specular>
+            <shininess>
+              <float>10</float>
+            </shininess>
+            <reflective>
+              <color>0 0 0 1</color>
+            </reflective>
+            <transparent opaque="A_ONE">
+              <texture texture="mUnitIconHoleOff_Alb_png-sampler" texcoord="CHANNEL1"/>
+            </transparent>
+            <transparency>
+              <float>1</float>
+            </transparency>
+          </blinn>
+          <extra>
+            <technique profile="OpenCOLLADA3dsMax">
+              <bump bumptype="HEIGHTFIELD">
+                <texture texture="mUnitIconHoleOff_Nrm_png-sampler" texcoord="CHANNEL1"/>
+              </bump>
+            </technique>
+          </extra>
+        </technique>
+      </profile_COMMON>
+      <extra>
+        <technique profile="OpenCOLLADA3dsMax">
+          <extended_shader>
+            <opacity_type sid="opacity_type" type="int">0</opacity_type>
+            <falloff_type sid="falloff_type" type="int">0</falloff_type>
+            <falloff sid="falloff" type="float">0</falloff>
+            <index_of_refraction sid="index_of_refraction" type="float">1.5</index_of_refraction>
+            <wire_size sid="wire_size" type="float">1</wire_size>
+            <wire_units sid="wire_units" type="int">0</wire_units>
+            <apply_reflection_dimming sid="apply_reflection_dimming" type="bool">0</apply_reflection_dimming>
+            <dim_level sid="dim_level" type="float">0</dim_level>
+            <reflection_level sid="reflection_level" type="float">3</reflection_level>
+          </extended_shader>
+          <shader>
+            <ambient_diffuse_texture_lock sid="ambient_diffuse_texture_lock" type="bool">1</ambient_diffuse_texture_lock>
+            <ambient_diffuse_lock sid="ambient_diffuse_lock" type="bool">1</ambient_diffuse_lock>
+            <diffuse_specular_lock sid="diffuse_specular_lock" type="bool">0</diffuse_specular_lock>
+            <use_self_illum_color sid="use_self_illum_color" type="bool">0</use_self_illum_color>
+            <self_illumination sid="self_illumination" type="float">0</self_illumination>
+            <specular_level sid="specular_level" type="float">0</specular_level>
+            <soften sid="soften" type="float">0.1</soften>
+          </shader>
+        </technique>
+      </extra>
+    </effect>
+  </library_effects>
+  <library_materials>
+    <material id="mUnitIconHoleOff-material" name="mUnitIconHoleOff">
+      <instance_effect url="#mUnitIconHoleOff"/>
+    </material>
+  </library_materials>
+  <library_geometries>
+    <geometry id="geom-pPlane10__mUnitIconHoleOff" name="pPlane10__mUnitIconHoleOff">
+      <mesh>
+        <source id="geom-pPlane10__mUnitIconHoleOff-positions">
+          <float_array id="geom-pPlane10__mUnitIconHoleOff-positions-array" count="150">1.798946 1.701424 0.1 2.777865 3.380598 0.0999999 2.700541 3.441259 0.0999999 1.436347 1.848175 0.1 2.636714 3.491333 0.0999999 1.464547 0.9670222 0.09999996 1.061085 2.223098 0.0999999 0.8491501 0.9288014 0.1 0.1478472 1.488026 0.1 1.400351 0.5981919 0.1 0.04918997 1.44502 0.1 -0.006047057 -0.1731651 0.1 1.004564 -0.5396984 0.09999999 1.955968 -0.06830391 0.1 -0.6872815 0.8844789 0.1 -0.04658104 1.480191 0.1 1.610649 -0.7548822 0.1 -1.163859 1.600701 0.1 -0.8081053 2.049318 0.0999999 -2.360621 3.569478 0.0999999 -2.446176 3.527825 0.0999999 -1.625301 1.440693 0.1 -2.51523 3.494205 0.0999999 -1.298972 0.4491461 0.09999999 0.9760677 -1.165264 0.1 0.7703699 -1.213009 0.1 1.536592 -1.245541 0.1 -0.1120955 -1.327158 0.1 2.884554 -1.207169 0.1 2.810807 -1.436982 0.1 3.060897 -0.9662783 0.1 3.690005 -1.557174 0.1 3.72788 -1.400186 0.1 3.704236 -1.498188 0.1 0.1623075 -2.308746 0.0999999 -0.2502531 -1.951098 0.1 -0.655942 -3.783245 0.0999999 -0.6943955 -2.042507 0.1 -0.7406035 -1.23568 0.1 -0.7678582 -1.107197 0.1 -0.8289706 -0.9960898 0.1 -1.006504 -0.2483385 0.1 -0.9131185 -0.9219232 0.1 -1.029864 -0.8710751 0.1 -1.891528 -0.6959516 0.1 -1.890756 -0.297751 0.09999999 -3.457663 -0.4553737 0.09999999 -2.091162 0.1491074 0.1 -3.470318 -0.3899098 0.1 -3.480162 -0.3389849 0.1</float_array>
+          <technique_common>
+            <accessor source="#geom-pPlane10__mUnitIconHoleOff-positions-array" count="50" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="geom-pPlane10__mUnitIconHoleOff-normals">
+          <float_array id="geom-pPlane10__mUnitIconHoleOff-normals-array" count="150">0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 1.49012e-6 1 0 0 1 0 7.45058e-7 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 2.98024e-6 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 0 1 0 1.49012e-6 1 0 0 1 0 0 1 0 0 1 0 2.98023e-6 1 0 2.98023e-6 1 0 0 1 0 0 1 0 -2.98023e-6 1</float_array>
+          <technique_common>
+            <accessor source="#geom-pPlane10__mUnitIconHoleOff-normals-array" count="50" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="geom-pPlane10__mUnitIconHoleOff-map-2">
+          <float_array id="geom-pPlane10__mUnitIconHoleOff-map-2-array" count="150">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</float_array>
+          <technique_common>
+            <accessor source="#geom-pPlane10__mUnitIconHoleOff-map-2-array" count="50" stride="3">
+              <param name="R" type="float"/>
+              <param name="G" type="float"/>
+              <param name="B" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="geom-pPlane10__mUnitIconHoleOff-map0">
+          <float_array id="geom-pPlane10__mUnitIconHoleOff-map0-array" count="150">1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</float_array>
+          <technique_common>
+            <accessor source="#geom-pPlane10__mUnitIconHoleOff-map0-array" count="50" stride="3">
+              <param name="R" type="float"/>
+              <param name="G" type="float"/>
+              <param name="B" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="geom-pPlane10__mUnitIconHoleOff-map1">
+          <float_array id="geom-pPlane10__mUnitIconHoleOff-map1-array" count="150">0.6738537 0.6763104 0 0.7658198 0.8475471 0 0.7578851 0.8533455 0 0.6370947 0.689723 0 0.7513237 0.8581216 0 0.649897 0.6019989 0 0.598291 0.7258717 0 0.5816281 0.5957885 0 0.509575 0.6492256 0 0.6378576 0.5646753 0 0.4999924 0.64094 0 0.4999924 0.4826734 0 0.6022736 0.4495613 0 0.6957198 0.4999924 0 0.4282292 0.5859922 0 0.4901808 0.6477607 0 0.6635996 0.4301823 0 0.3781033 0.6559091 0 0.4120851 0.7019913 0 0.2516213 0.8484932 0 0.2432135 0.8440375 0 0.3325399 0.6383154 0 0.2364385 0.8404364 0 0.3686122 0.5403525 0 0.6018158 0.3813077 0 0.5812162 0.3814603 0 0.657908 0.3808805 0 0.493431 0.3669795 0 0.7924926 0.3894255 0 0.7859312 0.3662013 0 0.8092775 0.4141146 0 0.8742046 0.3572595 0 0.8774548 0.3730831 0 0.8754253 0.3631952 0 0.5242847 0.2698253 0 0.4818036 0.3041428 0 0.4476539 0.1196155 0 0.4377356 0.2934462 0 0.433051 0.3754177 0 0.4322576 0.3894408 0 0.4314183 0.4041199 0 0.4002747 0.4716716 0 0.4157626 0.4067292 0 0.4001221 0.4093538 0 0.3133898 0.4238499 0 0.3120775 0.4636454 0 0.1560388 0.4424201 0 0.290486 0.5076066 0 0.1545434 0.4489204 0 0.1533837 0.4539711 0</float_array>
+          <technique_common>
+            <accessor source="#geom-pPlane10__mUnitIconHoleOff-map1-array" count="50" stride="3">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+              <param name="P" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="geom-pPlane10__mUnitIconHoleOff-vertices">
+          <input semantic="POSITION" source="#geom-pPlane10__mUnitIconHoleOff-positions"/>
+        </vertices>
+        <triangles material="mUnitIconHoleOff" count="60">
+          <input semantic="VERTEX" source="#geom-pPlane10__mUnitIconHoleOff-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#geom-pPlane10__mUnitIconHoleOff-normals" offset="1"/>
+          <input semantic="COLOR" source="#geom-pPlane10__mUnitIconHoleOff-map0" offset="2" set="0"/>
+          <input semantic="TEXCOORD" source="#geom-pPlane10__mUnitIconHoleOff-map1" offset="3" set="0"/>
+          <p>0 0 0 0 1 1 1 1 2 2 2 2 3 3 3 3 0 0 0 0 2 2 2 2 3 3 3 3 2 2 2 2 4 4 4 4 3 3 3 3 5 5 5 5 0 0 0 0 6 6 6 6 3 3 3 3 4 4 4 4 3 3 3 3 7 7 7 7 5 5 5 5 7 7 7 7 3 3 3 3 6 6 6 6 8 8 8 8 7 7 7 7 6 6 6 6 7 7 7 7 9 9 9 9 5 5 5 5 10 10 10 10 7 7 7 7 8 8 8 8 11 11 11 11 9 9 9 9 7 7 7 7 11 11 11 11 7 7 7 7 10 10 10 10 11 11 11 11 12 12 12 12 9 9 9 9 9 9 9 9 12 12 12 12 13 13 13 13 10 10 10 10 14 14 14 14 11 11 11 11 15 15 15 15 14 14 14 14 10 10 10 10 12 12 12 12 16 16 16 16 13 13 13 13 17 17 17 17 14 14 14 14 15 15 15 15 18 18 18 18 17 17 17 17 15 15 15 15 17 17 17 17 18 18 18 18 19 19 19 19 20 20 20 20 17 17 17 17 19 19 19 19 17 17 17 17 20 20 20 20 21 21 21 21 14 14 14 14 17 17 17 17 21 21 21 21 20 20 20 20 22 22 22 22 21 21 21 21 23 23 23 23 14 14 14 14 21 21 21 21 11 11 11 11 14 14 14 14 23 23 23 23 16 16 16 16 12 12 12 12 24 24 24 24 24 24 24 24 12 12 12 12 25 25 25 25 11 11 11 11 25 25 25 25 12 12 12 12 26 26 26 26 16 16 16 16 24 24 24 24 11 11 11 11 27 27 27 27 25 25 25 25 28 28 28 28 16 16 16 16 26 26 26 26 16 16 16 16 28 28 28 28 13 13 13 13 29 29 29 29 28 28 28 28 26 26 26 26 28 28 28 28 30 30 30 30 13 13 13 13 28 28 28 28 29 29 29 29 31 31 31 31 30 30 30 30 28 28 28 28 32 32 32 32 33 33 33 33 28 28 28 28 31 31 31 31 28 28 28 28 33 33 33 33 32 32 32 32 25 25 25 25 27 27 27 27 34 34 34 34 27 27 27 27 35 35 35 35 34 34 34 34 34 34 34 34 35 35 35 35 36 36 36 36 36 36 36 36 35 35 35 35 37 37 37 37 37 37 37 37 35 35 35 35 38 38 38 38 35 35 35 35 27 27 27 27 38 38 38 38 27 27 27 27 39 39 39 39 38 38 38 38 40 40 40 40 39 39 39 39 27 27 27 27 11 11 11 11 40 40 40 40 27 27 27 27 11 11 11 11 41 41 41 41 40 40 40 40 40 40 40 40 41 41 41 41 42 42 42 42 11 11 11 11 23 23 23 23 41 41 41 41 42 42 42 42 41 41 41 41 43 43 43 43 43 43 43 43 41 41 41 41 44 44 44 44 41 41 41 41 23 23 23 23 45 45 45 45 41 41 41 41 45 45 45 45 44 44 44 44 44 44 44 44 45 45 45 45 46 46 46 46 23 23 23 23 47 47 47 47 45 45 45 45 45 45 45 45 48 48 48 48 46 46 46 46 45 45 45 45 47 47 47 47 48 48 48 48 47 47 47 47 49 49 49 49 48 48 48 48</p>
+        </triangles>
+      </mesh>
+    </geometry>
+  </library_geometries>
+  <library_controllers>
+    <controller id="geom-pPlane10__mUnitIconHoleOff-skin1">
+      <skin source="#geom-pPlane10__mUnitIconHoleOff">
+        <bind_shape_matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</bind_shape_matrix>
+        <source id="geom-pPlane10__mUnitIconHoleOff-skin1-joints">
+          <Name_array id="geom-pPlane10__mUnitIconHoleOff-skin1-joints-array" count="1">joint0</Name_array>
+          <technique_common>
+            <accessor source="#geom-pPlane10__mUnitIconHoleOff-skin1-joints-array" count="1" stride="1">
+              <param name="JOINT" type="name"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="geom-pPlane10__mUnitIconHoleOff-skin1-bind_poses">
+          <float_array id="geom-pPlane10__mUnitIconHoleOff-skin1-bind_poses-array" count="16">1 0 0 0 0 0 1 0 0 -1 0 0 0 0 0 1</float_array>
+          <technique_common>
+            <accessor source="#geom-pPlane10__mUnitIconHoleOff-skin1-bind_poses-array" count="1" stride="16">
+              <param name="TRANSFORM" type="float4x4"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="geom-pPlane10__mUnitIconHoleOff-skin1-weights">
+          <float_array id="geom-pPlane10__mUnitIconHoleOff-skin1-weights-array" count="1">1</float_array>
+          <technique_common>
+            <accessor source="#geom-pPlane10__mUnitIconHoleOff-skin1-weights-array" count="1" stride="1">
+              <param name="WEIGHT" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <joints>
+          <input semantic="JOINT" source="#geom-pPlane10__mUnitIconHoleOff-skin1-joints"/>
+          <input semantic="INV_BIND_MATRIX" source="#geom-pPlane10__mUnitIconHoleOff-skin1-bind_poses"/>
+        </joints>
+        <vertex_weights count="50">
+          <input semantic="JOINT" source="#geom-pPlane10__mUnitIconHoleOff-skin1-joints" offset="0"/>
+          <input semantic="WEIGHT" source="#geom-pPlane10__mUnitIconHoleOff-skin1-weights" offset="1"/>
+          <vcount>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</vcount>
+          <v>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0</v>
+        </vertex_weights>
+      </skin>
+    </controller>
+  </library_controllers>
+  <library_lights>
+    <light id="EnvironmentAmbientLight" name="EnvironmentAmbientLight">
+      <technique_common>
+        <ambient>
+          <color>0 0 0</color>
+        </ambient>
+      </technique_common>
+    </light>
+  </library_lights>
+  <library_images>
+    <image id="mUnitIconHoleOff_Alb_png">
+      <init_from>./mUnitIconHoleOff_Alb.png</init_from>
+    </image>
+    <image id="mUnitIconHoleOff_Nrm_png">
+      <init_from>./mUnitIconHoleOff_Nrm.png</init_from>
+    </image>
+  </library_images>
+  <library_visual_scenes>
+    <visual_scene id="MaxScene">
+      <node name="EnvironmentAmbientLight">
+        <instance_light url="#EnvironmentAmbientLight"/>
+      </node>
+      <node id="node-Mdl_Root" name="Mdl_Root" sid="joint0" type="JOINT">
+        <rotate>-1 0 0 -90</rotate>
+        <extra>
+          <technique profile="OpenCOLLADA">
+            <cast_shadows sid="cast_shadows" type="bool">1</cast_shadows>
+            <receive_shadows sid="receive_shadows" type="bool">1</receive_shadows>
+            <primary_visibility sid="primary_visibility" type="bool">1</primary_visibility>
+            <secondary_visibility sid="secondary_visibility" type="bool">1</secondary_visibility>
+          </technique>
+        </extra>
+      </node>
+      <node id="node-pPlane10__mUnitIconHoleOff" name="pPlane10__mUnitIconHoleOff">
+        <instance_controller url="#geom-pPlane10__mUnitIconHoleOff-skin1">
+          <skeleton>#node-Mdl_Root</skeleton>
+          <bind_material>
+            <technique_common>
+              <instance_material symbol="mUnitIconHoleOff" target="#mUnitIconHoleOff-material">
+                <bind_vertex_input semantic="CHANNEL1" input_semantic="TEXCOORD" input_set="0"/>
+                <bind_vertex_input semantic="CHANNEL1" input_semantic="TEXCOORD" input_set="0"/>
+                <bind_vertex_input semantic="CHANNEL1" input_semantic="TEXCOORD" input_set="0"/>
+              </instance_material>
+            </technique_common>
+          </bind_material>
+        </instance_controller>
+        <extra>
+          <technique profile="OpenCOLLADA">
+            <cast_shadows sid="cast_shadows" type="bool">1</cast_shadows>
+            <receive_shadows sid="receive_shadows" type="bool">1</receive_shadows>
+            <primary_visibility sid="primary_visibility" type="bool">1</primary_visibility>
+            <secondary_visibility sid="secondary_visibility" type="bool">1</secondary_visibility>
+          </technique>
+        </extra>
+      </node>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#MaxScene"/>
+  </scene>
+</COLLADA>

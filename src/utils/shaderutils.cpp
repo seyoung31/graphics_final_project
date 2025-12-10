@@ -331,7 +331,7 @@ namespace ShaderUtils {
                 GLuint useScrollingTexLoc = glGetUniformLocation(m_shader, "u_useScrollingTex");
                 if (useScrollingTexLoc >= 0) glUniform1i(useScrollingTexLoc, useScrollingTex ? 1 : 0);
 
-                GLuint diffuseTextureLoc = glGetUniformLocation(m_shader, "DiffuseTexutreSampler");
+                GLuint diffuseTextureLoc = glGetUniformLocation(m_shader, "DiffuseTextureSampler");
                 
                 // Get loader and group info for per-group rendering
                 const ObjLoader* loader = realtime->getMeshLoader(meshPath);
