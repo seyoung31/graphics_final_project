@@ -1,8 +1,11 @@
 # Final Project: Danimal Glossing
 
+<<<<<<< HEAD
 ## How to run
 Upload scenefiles/objects/landscape-new-lights.json OR scenefiles/objects/landscape.json
 
+=======
+>>>>>>> 9ee350ca62f8d67cae440c936590d30db1f75211
 ## Technical Features 
 Seyoung Jang: 
 * Color Grading, \*Scrolling Textures, Instanced Rendering, Post Processing Pipeline
