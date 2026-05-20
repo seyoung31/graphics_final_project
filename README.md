@@ -1,7 +1,7 @@
 # Final Project: Danimal Glossing
 
 ## How to run
-Upload scenefiles/objects/landscape-new-lights.json OR scenefiles/objects/landscape.json
+Upload scenefiles/landscape/final_landscape.json
 
 ## Technical Features 
 Seyoung Jang: 

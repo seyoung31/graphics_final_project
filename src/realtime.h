@@ -20,11 +20,7 @@
 #include <QTime>
 #include <QTimer>
 
-#include "shapes/Cube.h"
-#include "shapes/Sphere.h"
-#include "shapes/Cone.h"
-#include "shapes/Cylinder.h"
-#include "shapes/ObjLoader.h"
+#include "objLoader/ObjLoader.h"
 
 #include "particles/particles.h"
 #include "camera_path/camerapath.h"
@@ -35,12 +31,6 @@ class Realtime : public QOpenGLWidget {
 public:
     // Parsed scene
     RenderData m_renderData;
-
-    // Shape generators
-    Cube m_cube;
-    Sphere m_sphere;
-    Cone m_cone;
-    Cylinder m_cylinder;
 
     bool m_glInitialized = false;
 
@@ -72,7 +62,6 @@ public:
     std::unordered_map<std::string, ObjLoader> m_meshLoaders;
     std::unordered_map<std::string, std::vector<MeshGroupInfo>> m_meshGroupInfos;
 
-    void rebuildGeometryFromSettings();
     void uploadPrimitive(PrimitiveIndex idx, const std::vector<float> &data);
 
     Realtime(QWidget *parent = nullptr);

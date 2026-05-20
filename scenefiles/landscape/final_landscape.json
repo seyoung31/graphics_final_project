@@ -122,7 +122,7 @@
             {
               "type": "mesh",
               "ambient": [0.4, 0.4, 0.4],
-              "meshFile": "objects/landscape_DONE2.obj",
+              "meshFile": "landscape/landscape_DONE2.obj",
               "diffuse": [0.8, 0.8, 0.8],
               "specular": [0.3, 0.3, 0.3],
               "shininess": 20.0

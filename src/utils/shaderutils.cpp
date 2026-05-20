@@ -4,7 +4,7 @@
 #include <iostream>
 #include "realtime.h"
 #include "settings.h"
-#include "shapes/ObjLoader.h"
+#include "objLoader/ObjLoader.h"
 
 using namespace glm;
 

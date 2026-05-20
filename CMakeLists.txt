@@ -32,12 +32,9 @@ add_executable(${PROJECT_NAME}
     src/settings.cpp
     src/utils/scenefilereader.cpp
     src/utils/sceneparser.cpp
-    src/shapes/Shape.cpp
-    src/shapes/Cone.cpp
-    src/shapes/Cube.cpp
-    src/shapes/Sphere.cpp
-    src/shapes/Cylinder.cpp
-    src/shapes/ObjLoader.cpp
+
+
+    src/objLoader/ObjLoader.cpp
     src/utils/shaderutils.cpp
     src/particles/particles.cpp
     src/camera_path/camerapath.cpp
@@ -51,12 +48,9 @@ add_executable(${PROJECT_NAME}
     src/utils/sceneparser.h
     src/utils/shaderloader.h
     src/utils/aspectratiowidget/aspectratiowidget.hpp
-    src/shapes/Shape.h
-    src/shapes/Cone.h
-    src/shapes/Cube.h
-    src/shapes/Sphere.h 
-    src/shapes/Cylinder.h
-    src/shapes/ObjLoader.h
+
+
+    src/objLoader/ObjLoader.h
     src/shaderloader.h
     src/utils/shaderutils.h
     src/postprocess.h src/postprocess.cpp
@@ -90,17 +84,17 @@ qt6_add_resources(${PROJECT_NAME} "Resources"
     FILES
         resources/shaders/default.frag
         resources/shaders/default.vert
-	resources/shaders/texture.frag
-    	resources/shaders/texture.vert
+	      resources/shaders/texture.frag
+    	  resources/shaders/texture.vert
         resources/shaders/shadow.frag
         resources/shaders/shadow.vert
         resources/shaders/bump.frag
         resources/shaders/bump.vert
         resources/shaders/particles/particles.frag
         resources/shaders/particles/particles.vert
-	resources/images/teal_orange_lut_4x4.png
-	resources/images/noir_lut_4x4.png
-	resources/images/vaporwave_lut_4x4.png
+	      resources/images/teal_orange_lut_4x4.png
+	      resources/images/noir_lut_4x4.png
+	      resources/images/vaporwave_lut_4x4.png
         resources/images/snowflake_only.png
         resources/images/water_color.png
         resources/images/water_displacement.png

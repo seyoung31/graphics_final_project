@@ -270,9 +270,6 @@ void Realtime::initializeGL() {
     glGenVertexArrays(PRIM_COUNT, m_vaos);
     glGenBuffers(PRIM_COUNT, m_vbos);
 
-    // Build initial vertex data
-    rebuildGeometryFromSettings();
-
     // Create instance VBOs for per-instance model matrices
     glGenBuffers(PRIM_COUNT, m_instanceVBOs);
 
@@ -317,33 +314,6 @@ void Realtime::initializeGL() {
     setupBumpMapping();
     
     glClearColor(145.f/255.f, 182.f/255.f, 201.f/255.f, 1.0f);  // dark bluish-gray
-}
-
-void Realtime::rebuildGeometryFromSettings() {
-
-    // Get current tessellation params from setting slides
-    int p1 = std::max(1, settings.shapeParameter1);
-    int p2 = std::max(3, settings.shapeParameter2);
-
-    // Cube
-    m_cube.updateParams(p1);
-    std::vector<float> cubeData = m_cube.generateShape();
-    uploadPrimitive(PRIM_CUBE, cubeData);
-
-    // Sphere
-    m_sphere.updateParams(p1, p2);
-    std::vector<float> sphereData = m_sphere.generateShape();
-    uploadPrimitive(PRIM_SPHERE, sphereData);
-
-    // Cone
-    m_cone.updateParams(p1, p2);
-    std::vector<float> coneData = m_cone.generateShape();
-    uploadPrimitive(PRIM_CONE, coneData);
-
-    // Cylinder
-    m_cylinder.updateParams(p1, p2);
-    std::vector<float> cylData = m_cylinder.generateShape();
-    uploadPrimitive(PRIM_CYLINDER, cylData);
 }
 
 void Realtime::uploadPrimitive(PrimitiveIndex idx, const std::vector<float> &data) {
@@ -601,7 +571,6 @@ void Realtime::settingsChanged() {
     if (m_glInitialized) {
         // Rebuild VAOs and VBOs when the shape paramater changes
         makeCurrent();
-        rebuildGeometryFromSettings();
         doneCurrent();
     }
 
@@ -707,8 +676,6 @@ void Realtime::timerEvent(QTimerEvent *event) {
     m_camera_path.setEnabled(settings.cameraPath);
     m_camera_path.update(deltaTime);
     m_camera_path.applyToCamera(m_camera.pos, m_camera.look, m_camera.up);
-    // std::cout<<"camera look: "<< m_camera.look.x<< " " << m_camera.look.y << " "<<  m_camera.look.z <<std::endl;
-    // std::cout<<"camera up: "<< m_camera.up.x<< " " << m_camera.up.y << " "<<  m_camera.up.z <<std::endl;
 
     // Use deltaTime and m_keyMap here to move around
 
